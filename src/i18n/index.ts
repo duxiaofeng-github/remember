@@ -1,0 +1,26 @@
+export const translations = {
+  en: {
+    tasks: "Tasks",
+    settings: "Settings",
+    rewards: "Rewards",
+    homepage: "Home Page",
+    daily: "Daily",
+    weekly: "Weekly",
+    monthly: "Monthly",
+    others: "Others",
+    "Network error, please": "Network error, please",
+    retry: "retry",
+  },
+  zhCN: {
+    tasks: "任务",
+    settings: "设置",
+    rewards: "奖励",
+    homepage: "首页",
+    daily: "每日",
+    weekly: "每周",
+    monthly: "每月",
+    others: "其他",
+    "Network error, please": "网络错误，请",
+    retry: "重试",
+  },
+};
