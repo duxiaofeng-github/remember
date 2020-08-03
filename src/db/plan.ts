@@ -24,7 +24,7 @@ export async function listPlans(): Promise<Plan[]> {
   const db = await getDBInstance();
   const table = await db.docs(tableName);
 
-  return table.query();
+  return table.query(() => true);
 }
 
 export async function getPlan(id: string): Promise<Plan> {

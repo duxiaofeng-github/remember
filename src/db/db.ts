@@ -4,10 +4,11 @@ import { storage } from "../utils/storage";
 
 let ipfsInstance: any;
 
-function getIpfsInstance() {
+async function getIpfsInstance() {
   if (ipfsInstance == null) {
-    ipfsInstance = IPFS.create({
+    ipfsInstance = await IPFS.create({
       repo: "/remember/orbitdb",
+      init: true,
       start: false,
       preload: {
         enabled: false,
@@ -31,7 +32,7 @@ let orbitDBInstance: any;
 
 export async function getDBInstance() {
   if (orbitDBInstance == null) {
-    const ipfsInstance = getIpfsInstance();
+    const ipfsInstance = await getIpfsInstance();
     const remoteAddr = await getRemoteDbAddress();
     const isLocalMode = remoteAddr == null;
 

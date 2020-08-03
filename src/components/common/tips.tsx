@@ -1,15 +1,22 @@
 import React from "react";
 import { View, StyleSheet } from "react-native";
 import { Text } from "./text";
+import { Icon } from "react-native-elements";
+import { colorTextLight } from "../../utils/style";
 
-interface IProps {}
+interface IProps {
+  iconName?: string;
+  iconSize?: number;
+  iconColor?: string;
+}
 
 export const Tips: React.SFC<IProps> = (props) => {
-  const { children } = props;
+  const { iconName, iconSize = 40, iconColor = colorTextLight, children } = props;
 
   return (
     <View style={s.container}>
-      <Text>{children}</Text>
+      {iconName && <Icon type="feather" name={iconName} size={iconSize} color={iconColor} />}
+      <Text style={s.text}>{children}</Text>
     </View>
   );
 };
@@ -17,8 +24,11 @@ export const Tips: React.SFC<IProps> = (props) => {
 const s = StyleSheet.create({
   container: {
     flex: 1,
-    flexDirection: "row",
     alignItems: "center",
     justifyContent: "center",
+  },
+  text: {
+    marginTop: 10,
+    color: colorTextLight,
   },
 });

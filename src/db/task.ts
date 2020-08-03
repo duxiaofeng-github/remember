@@ -24,7 +24,7 @@ export async function listTasks(ids?: string[]): Promise<Task[]> {
   const table = await db.docs(tableName);
 
   return !ids
-    ? table.query()
+    ? table.query(() => true)
     : table.query((item: Task) => {
         return ids.includes(item._id);
       });

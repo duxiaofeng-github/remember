@@ -5,5 +5,5 @@ import { translate } from "../../utils/common";
 interface IProps {}
 
 export const Empty: React.SFC<IProps> = (props) => {
-  return <Tips>{translate("emptyHere")}</Tips>;
+  return <Tips iconName="inbox">{translate("emptyHere")}</Tips>;
 };

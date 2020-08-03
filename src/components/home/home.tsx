@@ -19,7 +19,7 @@ export const Home: React.SFC<IProps> = () => {
         tabBarIcon: ({ focused, color, size }) => {
           switch (route.name) {
             case Route.Plan:
-              return <Icon type="feather" name="crosshair" color={focused ? colorPrimary : "gray"} />;
+              return <Icon type="feather" name="list" color={focused ? colorPrimary : "gray"} />;
             case Route.Reward:
               return <Icon type="feather" name="gift" color={focused ? colorPrimary : "gray"} />;
             case Route.Setting:
