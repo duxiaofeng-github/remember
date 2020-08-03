@@ -1,7 +1,8 @@
 import React from "react";
 import { View, StyleSheet } from "react-native";
-import I18n from "react-native-i18n";
 import { Text } from "./text";
+import { translate } from "../../utils/common";
+import { colorPrimary } from "../../utils/style";
 
 interface IProps {
   retry: () => void;
@@ -13,9 +14,9 @@ export const Retry: React.SFC<IProps> = (props) => {
 
   return (
     <View style={s.container}>
-      <Text>{tips || I18n.t("Network error, please")}</Text>
-      <View onTouchEnd={retry}>
-        <Text>{I18n.t("retry")}</Text>
+      <Text>{tips || translate("Network error, please")}</Text>
+      <View style={s.retry} onTouchEnd={retry}>
+        <Text style={s.retryText}>{translate("retry")}</Text>
       </View>
     </View>
   );
@@ -28,4 +29,6 @@ const s = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
   },
+  retry: { marginLeft: 5 },
+  retryText: { color: colorPrimary },
 });

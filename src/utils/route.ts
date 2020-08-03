@@ -1,7 +1,7 @@
 export enum Route {
   Home = "home",
-  Task = "task",
-  EditTask = "editTask",
+  Plan = "plan",
+  EditPlan = "editPlan",
   Reward = "reward",
   EditReward = "editReward",
   Setting = "setting",

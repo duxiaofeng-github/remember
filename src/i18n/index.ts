@@ -1,6 +1,6 @@
 export const translations = {
   en: {
-    tasks: "Tasks",
+    plans: "Plans",
     settings: "Settings",
     rewards: "Rewards",
     homepage: "Home Page",
@@ -10,9 +10,13 @@ export const translations = {
     others: "Others",
     "Network error, please": "Network error, please",
     retry: "retry",
+    emptyHere: "Empty here",
+    times: "Times",
+    repeat: "Repeat",
+    duration: "Duration",
   },
-  zhCN: {
-    tasks: "任务",
+  zh_CN: {
+    plans: "计划",
     settings: "设置",
     rewards: "奖励",
     homepage: "首页",
@@ -22,5 +26,9 @@ export const translations = {
     others: "其他",
     "Network error, please": "网络错误，请",
     retry: "重试",
+    emptyHere: "空空如也",
+    times: "次",
+    repeat: "重复",
+    duration: "持续时间",
   },
 };

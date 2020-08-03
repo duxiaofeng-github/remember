@@ -4,11 +4,11 @@ import { Header } from "../common/header";
 
 interface IProps {}
 
-export const EditTask: React.SFC<IProps> = () => {
+export const EditPlan: React.SFC<IProps> = () => {
   return (
     <View>
       <Header title="Remember" />
-      <Text>edit task</Text>
+      <Text>edit plan</Text>
     </View>
   );
 };
