@@ -1,7 +1,7 @@
 import React from "react";
 import { View, StyleSheet } from "react-native";
 import { Text } from "./text";
-import { Icon } from "react-native-elements";
+import { Icon } from "../common/icon";
 import { colorTextLight } from "../../utils/style";
 
 interface IProps {
@@ -15,7 +15,7 @@ export const Tips: React.SFC<IProps> = (props) => {
 
   return (
     <View style={s.container}>
-      {iconName && <Icon type="feather" name={iconName} size={iconSize} color={iconColor} />}
+      {iconName && <Icon name={iconName} size={iconSize} color={iconColor} />}
       <Text style={s.text}>{children}</Text>
     </View>
   );

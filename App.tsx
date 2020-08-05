@@ -7,6 +7,7 @@ import { globalStore } from "./src/store";
 import { RexProvider } from "@jimengio/rex";
 import dayjs from "dayjs";
 import duration from "dayjs/plugin/duration";
+import { PickerProvider } from "./src/components/common/picker/provider";
 
 dayjs.extend(duration);
 
@@ -19,7 +20,9 @@ interface IProps {}
 const App: React.SFC<IProps> = () => {
   return (
     <RexProvider value={globalStore}>
-      <Index />
+      <PickerProvider>
+        <Index />
+      </PickerProvider>
     </RexProvider>
   );
 };

@@ -1,5 +1,5 @@
 import React, { useRef, useEffect } from "react";
-import { Icon } from "react-native-elements";
+import { Icon } from "../common/icon";
 import { Animated, Easing, StyleSheet } from "react-native";
 import { colorText } from "../../utils/style";
 
@@ -25,7 +25,7 @@ export const LoadingIcon: React.SFC<IProps> = (props) => {
 
   return (
     <Animated.View style={[s.container, { transform: [{ rotate: spin }] }]}>
-      <Icon type="feather" name="loader" size={30} color={colorText} />
+      <Icon name="loader" size={30} color={colorText} />
     </Animated.View>
   );
 };

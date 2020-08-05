@@ -8,6 +8,11 @@ declare module "orbit-db" {
   export default content;
 }
 
+declare module "react-native-picker-xg" {
+  const content: any;
+  export default content;
+}
+
 declare module "*.ttf" {
   const content: any;
   export default content;

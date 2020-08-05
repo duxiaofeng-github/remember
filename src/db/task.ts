@@ -1,7 +1,7 @@
 import { getDBInstance } from "./db";
 import dayjs from "dayjs";
 
-interface TaskBase {
+export interface TaskBase {
   planId: string;
   startedAt: number;
   duration: number;
@@ -11,7 +11,7 @@ interface TaskBase {
   updatedAt: number;
 }
 
-interface Task extends TaskBase {
+export interface Task extends TaskBase {
   _id: string;
   createdAt: number;
   updatedAt: number;

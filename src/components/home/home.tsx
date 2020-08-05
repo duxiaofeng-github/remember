@@ -1,7 +1,7 @@
 import React from "react";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { Setting } from "../setting/setting";
-import { Icon } from "react-native-elements";
+import { Icon } from "../common/icon";
 import { colorPrimary } from "../../utils/style";
 import { Reward } from "../reward/reward";
 import { Route } from "../../utils/route";
@@ -19,11 +19,11 @@ export const Home: React.SFC<IProps> = () => {
         tabBarIcon: ({ focused, color, size }) => {
           switch (route.name) {
             case Route.Plan:
-              return <Icon type="feather" name="list" color={focused ? colorPrimary : "gray"} />;
+              return <Icon name="list" color={focused ? colorPrimary : "gray"} />;
             case Route.Reward:
-              return <Icon type="feather" name="gift" color={focused ? colorPrimary : "gray"} />;
+              return <Icon name="gift" color={focused ? colorPrimary : "gray"} />;
             case Route.Setting:
-              return <Icon type="feather" name="settings" color={focused ? colorPrimary : "gray"} />;
+              return <Icon name="settings" color={focused ? colorPrimary : "gray"} />;
           }
 
           return null;

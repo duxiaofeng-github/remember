@@ -14,3 +14,21 @@ export function humanizeCron(cron: string) {
 export function humanizeDuration(duration: number) {
   return _humanizeDuration(duration, { language: "es" });
 }
+
+export function isDailySchedule(schedule: string) {
+  const [min, hour, day, month, week] = schedule.split(" ");
+
+  return day === "*" && week === "*" && month === "*";
+}
+
+export function isWeeklySchedule(schedule: string) {
+  const [min, hour, day, month, week] = schedule.split(" ");
+
+  return day !== "*" && week === "*" && month === "*";
+}
+
+export function isMonthlySchedule(schedule: string) {
+  const [min, hour, day, month, week] = schedule.split(" ");
+
+  return day !== "*" && week !== "*" && month === "*";
+}

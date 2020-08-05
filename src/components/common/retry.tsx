@@ -3,7 +3,7 @@ import { View, StyleSheet } from "react-native";
 import { Text } from "./text";
 import { translate } from "../../utils/common";
 import { colorPrimary, colorTextLight } from "../../utils/style";
-import { Icon } from "react-native-elements";
+import { Icon } from "./icon";
 
 interface IProps {
   retry: () => void;
@@ -15,7 +15,7 @@ export const Retry: React.SFC<IProps> = (props) => {
 
   return (
     <View style={s.container}>
-      <Icon type="feather" name="alert-circle" size={40} color={colorTextLight} />
+      <Icon name="alert-circle" size={40} color={colorTextLight} />
       <View style={s.tipsContainer}>
         <Text style={s.text}>{tips || translate("Network error, please")}</Text>
         <View style={s.retry} onTouchEnd={retry}>

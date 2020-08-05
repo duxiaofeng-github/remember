@@ -11,6 +11,10 @@ function renderApp() {
           font-family: 'Feather';
           src: url(${featherFont}) format('truetype');
         }
+
+        *:focus {
+          outline: none;
+        } 
       `}</style>
       <App />
     </>,

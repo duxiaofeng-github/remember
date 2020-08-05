@@ -2,7 +2,7 @@ import { getDBInstance } from "./db";
 import dayjs from "dayjs";
 import { deleteTask } from "./task";
 
-interface PlanBase {
+export interface PlanBase {
   content: string;
   schedule: string;
   duration: number;
@@ -12,7 +12,7 @@ interface PlanBase {
   taskIds: string[];
 }
 
-interface Plan extends PlanBase {
+export interface Plan extends PlanBase {
   _id: string;
   createdAt: number;
   updatedAt: number;
