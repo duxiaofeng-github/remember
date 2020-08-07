@@ -7,12 +7,15 @@ export interface IPickerProps<T> extends IBasicProps<T> {
   data: IBasicData<T>;
   dropDownIconColor?: string;
   value?: T[];
-  onFormat?: (labels: string[]) => string;
+  onFormat?: (labels: string[], values: T[]) => string;
 }
 
 export const Picker: <T>(p: IPickerProps<T>) => React.ReactElement<IPickerProps<T>> | null = (props) => {
   const { data, value, onFormat, onCancel, onConfirm, textStyle, dropDownIconColor, ...restProps } = props;
-  const { selectedIndexes, labels } = useMemo(() => getSelectedIndexesAndLabelsByValue(data, value), [data, value]);
+  const { selectedIndexes, labels, values } = useMemo(() => getSelectedIndexesAndLabelsByValue(data, value), [
+    data,
+    value,
+  ]);
   const [innerVisible, setInnerVisible] = useState(false);
 
   function syncStore() {
@@ -85,7 +88,7 @@ export const Picker: <T>(p: IPickerProps<T>) => React.ReactElement<IPickerProps<
     <Input
       textStyle={textStyle}
       dropDownIconColor={dropDownIconColor}
-      text={labels ? (onFormat ? onFormat(labels) : labels.join(" ")) : ""}
+      text={labels && values ? (onFormat ? onFormat(labels, values) : labels.join(" ")) : ""}
       onTouchStart={() => {
         setVisible(true);
       }}
@@ -118,11 +121,12 @@ export function getSelectedIndexesAndLabelsByValue<T>(data: IBasicData<T>, value
     });
   }
 
-  const newLabels = newIndexes
-    ? (newIndexes
-        .map((index, columnIndex) => (data[columnIndex][index] ? data[columnIndex][index].label : undefined))
-        .filter((item) => item != null) as string[])
+  const newItems = newIndexes
+    ? (newIndexes.map((index, columnIndex) => data[columnIndex][index]).filter((item) => item != null) as IData<T>[])
     : undefined;
 
-  return { selectedIndexes: newIndexes, labels: newLabels };
+  const newLabels = newItems ? newItems.map((item) => item.label) : undefined;
+  const newValues = newItems ? newItems.map((item) => item.value) : undefined;
+
+  return { selectedIndexes: newIndexes, labels: newLabels, values: newValues };
 }

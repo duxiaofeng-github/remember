@@ -11,6 +11,7 @@ import { Loading } from "./common/loading";
 import { globalStore, IStore } from "../store";
 import { useRexContext } from "@jimengio/rex";
 import I18n from "react-native-i18n";
+import dayjs from "dayjs";
 
 interface IProps {}
 
@@ -30,6 +31,7 @@ export const Index: React.SFC<IProps> = () => {
 
   useEffect(() => {
     I18n.locale = lang;
+    dayjs.locale(lang);
   }, [lang]);
 
   return (

@@ -7,8 +7,10 @@ import { globalStore } from "./src/store";
 import { RexProvider } from "@jimengio/rex";
 import dayjs from "dayjs";
 import duration from "dayjs/plugin/duration";
+import localizedFormat from "dayjs/plugin/localizedFormat";
 import { PickerProvider } from "./src/components/common/picker/provider";
 
+dayjs.extend(localizedFormat);
 dayjs.extend(duration);
 
 I18n.fallbacks = true;

@@ -2,7 +2,7 @@ import I18n from "react-native-i18n";
 import cronstrue from "cronstrue";
 import { globalStore } from "../store";
 import _humanizeDuration from "humanize-duration";
-import dayjs from "dayjs";
+import dayjs, { Dayjs } from "dayjs";
 
 export function translate(key: string) {
   return I18n.t(key);
@@ -46,4 +46,8 @@ export function isMonthlySchedule(schedule: string) {
   const [min, hour, day, month, week] = schedule.split(" ");
 
   return day !== "*" && week !== "*" && month === "*";
+}
+
+export function formatTime(time: Dayjs, layout?: string) {
+  return time.format(layout || "L LT");
 }

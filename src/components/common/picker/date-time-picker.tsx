@@ -2,6 +2,7 @@ import React, { useState, useEffect, useMemo } from "react";
 import dayjs from "dayjs";
 import { Picker } from "./picker";
 import { IStyleProps } from "./picker-view";
+import { formatTime } from "../../../utils/common";
 
 export interface IDateTimePickerProps extends IStyleProps {
   value?: number;
@@ -53,12 +54,10 @@ export const DateTimePicker: React.SFC<IDateTimePickerProps> = (props) => {
       title={title}
       value={values}
       data={[years, months, dates, hours, minutes]}
-      onFormat={([year, month, date, hour, minute]) => {
-        return `${year}-${month}-${date} ${hour}:${minute}`;
+      onFormat={(labels, [year, month, date, hour, minute]) => {
+        return formatTime(dayjs(new Date(year, month, date, hour, minute)), "YYYY/MM/DD HH:mm");
       }}
-      onChange={(columnIndex, newValue, index, newValues) => {
-        const [year, month, date, hour, minute] = newValues;
-
+      onChange={(columnIndex, newValue, index, [year, month, date, hour, minute]) => {
         setInnerValue(dayjs(new Date(year, month, date, hour, minute)).unix());
       }}
       onConfirm={([year, month, date, hour, minute]) => {
