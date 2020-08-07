@@ -9,7 +9,7 @@ import { listPlans } from "../../db/plan";
 import { ListItem } from "react-native-elements";
 import { Text } from "../common/text";
 import { Empty } from "../common/empty";
-import { humanizeCron, humanizeDuration, translate } from "../../utils/common";
+import { humanizeCron } from "../../utils/common";
 
 interface IProps {}
 
@@ -50,13 +50,7 @@ export const Plan: React.SFC<IProps> = () => {
                   <ListItem
                     key={item._id}
                     title={item.content}
-                    subtitle={
-                      <Text>
-                        {humanizeCron(item.schedule)}
-                        {item.duration ? `, ${translate("duration")}: ${humanizeDuration(item.duration)}` : ""}
-                        {item.repeat ? `, ${translate("repeat")}: ${item.repeat}${translate("times")}` : ""}
-                      </Text>
-                    }
+                    subtitle={<Text>{humanizeCron(item.schedule)}</Text>}
                     bottomDivider
                   />
                 );

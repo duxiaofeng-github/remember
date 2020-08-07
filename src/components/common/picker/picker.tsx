@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useMemo, useEffect, useState } from "react";
 import { IBasicProps, IBasicData, IData } from "./picker-view";
 import { pickerStore, IPickerStore } from "./provider";
 import { Input } from "./input";
@@ -6,36 +6,20 @@ import { Input } from "./input";
 export interface IPickerProps<T> extends IBasicProps<T> {
   data: IBasicData<T>;
   dropDownIconColor?: string;
-  value: T[];
+  value?: T[];
+  onFormat?: (labels: string[]) => string;
 }
 
 export const Picker: <T>(p: IPickerProps<T>) => React.ReactElement<IPickerProps<T>> | null = (props) => {
-  const { data, value, onCancel, onConfirm, textStyle, dropDownIconColor, ...restProps } = props;
-  const [labels, setLabels] = useState<string[]>([]);
+  const { data, value, onFormat, onCancel, onConfirm, textStyle, dropDownIconColor, ...restProps } = props;
+  const { selectedIndexes, labels } = useMemo(() => getSelectedIndexesAndLabelsByValue(data, value), [data, value]);
+  const [innerVisible, setInnerVisible] = useState(false);
 
-  function setVisible(visible: boolean) {
+  function syncStore() {
     pickerStore.update((store: IPickerStore) => {
-      store.visible = visible;
-
-      if (visible) {
-        store.commonData = data;
-      } else {
-        store.commonData = undefined;
-      }
-    });
-  }
-
-  useEffect(() => {
-    pickerStore.update((store: IPickerStore) => {
-      store.visible = store.visible;
+      store.commonData = data;
       store.textStyle = textStyle;
-
-      const selectedIndexes = value.map((v, columnIndex) => {
-        return data[columnIndex].findIndex((item) => item.value === v);
-      });
-
       store.selectedIndexes = selectedIndexes;
-
       store.onCancel = () => {
         setVisible(false);
 
@@ -43,46 +27,102 @@ export const Picker: <T>(p: IPickerProps<T>) => React.ReactElement<IPickerProps<
           onCancel();
         }
       };
-
       store.onConfirm = (value: any[], index: number[], records: IData<any>[]) => {
         setVisible(false);
-        setLabels(
-          records.map((item) => {
-            return item.label;
-          }),
-        );
 
         if (onConfirm) {
           onConfirm(value, index, records);
         }
       };
 
-      store.onInit = (labels) => {
-        setLabels(labels);
-      };
-
       Object.keys(restProps).forEach((key) => {
         (store as any)[key] = (restProps as any)[key];
       });
-
-      store.commonData = data;
     });
+  }
+
+  function discardStore() {
+    pickerStore.update((store: IPickerStore) => {
+      store.commonData = undefined;
+      store.textStyle = undefined;
+      store.selectedIndexes = undefined;
+      store.onCancel = undefined;
+      store.onConfirm = undefined;
+
+      Object.keys(restProps).forEach((key) => {
+        (store as any)[key] = undefined;
+      });
+    });
+  }
+
+  useEffect(() => {
+    if (innerVisible) {
+      syncStore();
+    }
 
     return () => {
-      pickerStore.update((store) => {
-        store.commonData = undefined;
-      });
+      if (innerVisible) {
+        discardStore();
+      }
     };
   }, [props]);
+
+  function setVisible(visible: boolean) {
+    pickerStore.update((store: IPickerStore) => {
+      setInnerVisible(visible);
+
+      store.visible = visible;
+    });
+
+    if (visible) {
+      syncStore();
+    } else {
+      discardStore();
+    }
+  }
 
   return (
     <Input
       textStyle={textStyle}
       dropDownIconColor={dropDownIconColor}
-      text={labels.join(" ")}
+      text={labels ? (onFormat ? onFormat(labels) : labels.join(" ")) : ""}
       onTouchStart={() => {
         setVisible(true);
       }}
     />
   );
 };
+
+export function getSelectedIndexesAndLabelsByValue<T>(data: IBasicData<T>, value?: T[]) {
+  const selectedIndexes = value
+    ? value.map((v, columnIndex) => {
+        return data[columnIndex].findIndex((item) => item.value === v);
+      })
+    : undefined;
+
+  let newIndexes: number[] | undefined = undefined;
+
+  if (selectedIndexes) {
+    newIndexes = [];
+
+    data.forEach((item, columnIndex) => {
+      if (newIndexes) {
+        newIndexes[columnIndex] = (selectedIndexes && selectedIndexes[columnIndex]) || 0;
+      }
+    });
+
+    newIndexes.forEach((index, columnIndex) => {
+      if (newIndexes) {
+        newIndexes[columnIndex] = data[columnIndex][index] ? index : 0;
+      }
+    });
+  }
+
+  const newLabels = newIndexes
+    ? (newIndexes
+        .map((index, columnIndex) => (data[columnIndex][index] ? data[columnIndex][index].label : undefined))
+        .filter((item) => item != null) as string[])
+    : undefined;
+
+  return { selectedIndexes: newIndexes, labels: newLabels };
+}

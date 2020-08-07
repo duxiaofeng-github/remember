@@ -6,7 +6,8 @@ export interface PlanBase {
   content: string;
   schedule: string;
   duration: number;
-  repeat: number;
+  repeatEndedAt?: number;
+  repeatEndedCount?: number;
   advanceTime: number;
   pointsPerTask: number;
   taskIds: string[];

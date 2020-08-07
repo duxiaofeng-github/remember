@@ -16,7 +16,7 @@ export const CascadeSelect: <T>(p: IProps<T>) => React.ReactElement<IProps<T>> |
   return (
     <View style={s.container}>
       {label && <Text style={s.label}>{label}</Text>}
-      <CascadePicker textStyle={s.pickerText} dropDownIconColor={colorText} {...restProps} />
+      <CascadePicker titleStyle={s.pickerText} textStyle={s.pickerText} dropDownIconColor={colorText} {...restProps} />
       {error && <Text style={s.error}>{error.message}</Text>}
     </View>
   );

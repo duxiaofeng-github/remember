@@ -16,11 +16,15 @@ const en = {
   content: "Content",
   "Please input plan content": "Please input plan content",
   "Plan content is required": "Plan content is required",
-  dailyPlan: "Daily Plan",
-  weeklyPlan: "Weekly Plan",
-  monthlyPlan: "Monthly Plan",
+  oneTime: "One time plan",
+  dailyPlan: "Daily plan",
+  weeklyPlan: "Weekly plan",
+  monthlyPlan: "Monthly plan",
   customized: "Customized",
   type: "Type",
+  "Select time": "Select time",
+  "Start time": "Start time",
+  "End time": "End time",
 };
 
 const zhCN = {
@@ -41,11 +45,15 @@ const zhCN = {
   content: "内容",
   "Please input plan content": "请输入计划内容",
   "Plan content is required": "计划内容必填",
+  oneTime: "一次性计划",
   dailyPlan: "每日计划",
   weeklyPlan: "每周计划",
   monthlyPlan: "每月计划",
   customized: "自定义",
   type: "类型",
+  "Select time": "选择时间",
+  "Start time": "开始时间",
+  "End time": "结束时间",
 };
 
 export const translations = {

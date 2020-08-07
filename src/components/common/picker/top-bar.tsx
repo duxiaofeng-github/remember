@@ -13,16 +13,25 @@ interface ITopbarProps {
 }
 
 export const Topbar: React.SFC<ITopbarProps> = (props) => {
-  const { title, titleStyle, cancelText, cancelStyle, confirmText, confirmStyle, onCancel, onConfirm } = props;
+  const {
+    title,
+    titleStyle,
+    cancelText = "Cancel",
+    cancelStyle,
+    confirmText = "Confirm",
+    confirmStyle,
+    onCancel,
+    onConfirm,
+  } = props;
 
   return (
     <View style={s.container}>
       {title && <Text style={[s.titleText, titleStyle]}>{title}</Text>}
       <View style={s.cancelContainer} onTouchEnd={onCancel}>
-        <Text style={[s.cancelText, cancelStyle]}>{cancelText || "Cancel"}</Text>
+        <Text style={[s.cancelText, cancelStyle]}>{cancelText}</Text>
       </View>
       <View style={s.confirmContainer} onTouchEnd={onConfirm}>
-        <Text style={[s.confirmText, confirmStyle]}>{confirmText || "Confirm"}</Text>
+        <Text style={[s.confirmText, confirmStyle]}>{confirmText}</Text>
       </View>
     </View>
   );

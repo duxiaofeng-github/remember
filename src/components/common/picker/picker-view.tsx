@@ -22,7 +22,7 @@ function getVisibleTop() {
   return getWindowHeight() - panelHeight;
 }
 
-export type IBasicData<T> = [IData<T>[], IData<T>[], IData<T>[]] | [IData<T>[], IData<T>[]] | [IData<T>[]];
+export type IBasicData<T> = IData<T>[][];
 
 export interface IData<T> {
   key?: string;
@@ -30,7 +30,7 @@ export interface IData<T> {
   value: T;
 }
 
-export interface IBasicProps<T> {
+export interface IStyleProps {
   title?: string;
   titleStyle?: StyleProp<TextStyle>;
   textStyle?: StyleProp<TextStyle>;
@@ -38,10 +38,12 @@ export interface IBasicProps<T> {
   cancelStyle?: StyleProp<TextStyle>;
   confirmText?: string;
   confirmStyle?: StyleProp<TextStyle>;
-  onInit?: (labels: string[]) => void;
+}
+
+export interface IBasicProps<T> extends IStyleProps {
   onConfirm?: (values: T[], indexes: number[], records: IData<T>[]) => void;
   onCancel?: () => void;
-  onChange?: (columnIndex: number, value: T, index: number) => void;
+  onChange?: (columnIndex: number, value: T, index: number, values: T[], indexes: number[]) => void;
 }
 
 export interface IStoreProps<T> extends IBasicProps<T> {
@@ -68,7 +70,6 @@ export const PickerView: <T>(p: IProps<T>) => React.ReactElement<IProps<T>> | nu
     onCancel,
     onConfirm,
     onChange,
-    onInit,
   } = props;
   const topValue = useRef(new Animated.Value(getWindowHeight())).current;
   const [innerSelectedIndexes, setInnerSelectIndexes] = useState<number[]>([]);
@@ -128,24 +129,9 @@ export const PickerView: <T>(p: IProps<T>) => React.ReactElement<IProps<T>> | nu
   }, [visible]);
 
   useEffect(() => {
-    const newIndexes: number[] = [];
-
-    data.forEach((item, columnIndex) => {
-      newIndexes[columnIndex] = (selectedIndexes && selectedIndexes[columnIndex]) || 0;
-    });
-
-    newIndexes.forEach((index, columnIndex) => {
-      newIndexes[columnIndex] = data[columnIndex][index] ? index : 0;
-    });
-
-    setInnerSelectIndexes(newIndexes);
-
-    if (onInit) {
-      const labels = newIndexes.map((index, columnIndex) => data[columnIndex][index].label);
-
-      onInit(labels);
-    }
-  }, [data, selectedIndexes]);
+    const defaultIndexes = data.map(() => 0);
+    setInnerSelectIndexes(selectedIndexes || defaultIndexes);
+  }, [selectedIndexes, data]);
 
   return (
     <View style={[s.container, innerVisible && s.containerVisible]} onTouchStart={cancel}>
@@ -182,7 +168,15 @@ export const PickerView: <T>(p: IProps<T>) => React.ReactElement<IProps<T>> | nu
                   setInnerSelectIndexes(newIndexes);
 
                   if (onChange) {
-                    onChange(columnIndex, record.value, newIndex);
+                    onChange(
+                      columnIndex,
+                      record.value,
+                      newIndex,
+                      newIndexes.map(
+                        (index, columnIndex) => data[columnIndex][index] && data[columnIndex][index].value,
+                      ),
+                      newIndexes,
+                    );
                   }
                 }}
               />
@@ -221,6 +215,9 @@ const s = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "center",
+    overflowX: "auto",
+    paddingLeft: 10,
+    paddingRight: 10,
   },
   scrollView: {
     marginLeft: 10,

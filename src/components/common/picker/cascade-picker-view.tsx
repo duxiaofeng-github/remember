@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { PickerView, IStoreProps } from "./picker-view";
+import { IBasicData as IPickerBasicData } from "./picker-view";
 
 export type IBasicData<T> = IData<T>[];
 
@@ -24,7 +25,7 @@ export const CascadePickerView: <T>(p: IProps<T>) => React.ReactElement<IProps<T
     const data2 = data1[data1SelectedIndex] && data1[indexes[0] || 0].children;
     const data2SelectedIndex = indexes[1] || 0;
     const data3 = data2 && data2[data2SelectedIndex] && data2[data2SelectedIndex].children;
-    const _data = [data1, data2, data3].filter((item) => item != null) as any;
+    const _data = [data1, data2, data3].filter((item) => item != null) as IPickerBasicData<any>;
 
     return _data;
   }
@@ -52,7 +53,13 @@ export const CascadePickerView: <T>(p: IProps<T>) => React.ReactElement<IProps<T
         setInnerSelectedIndexes(newIndexes);
 
         if (onChange) {
-          onChange(columnIndex, value, index);
+          onChange(
+            columnIndex,
+            value,
+            index,
+            newIndexes.map((index, columnIndex) => newData[columnIndex][index] && newData[columnIndex][index].value),
+            newIndexes,
+          );
         }
       }}
     />

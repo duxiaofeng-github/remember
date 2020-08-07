@@ -21,128 +21,158 @@ interface IProps<T> {
   onChange: (index: number, record: IData<T>) => void;
 }
 
+interface IState {
+  topValue: Animated.Value;
+}
+
 const itemHeight = 30;
 const itemCount = 5;
 const indicatorUpperBounce = ((itemCount - 1) / 2) * itemHeight;
 
-let originY = 0;
-let originTop = 0;
-let prevTop = 0;
-let distance = 0;
+export class ScrollView<T> extends React.Component<IProps<T>, IState> {
+  originY = 0;
+  originTop = 0;
+  prevTop = 0;
+  distance = 0;
+  containerHeight = 0;
+  innerHeight = 0;
 
-function getTopByIndex(index: number) {
-  return indicatorUpperBounce - index * itemHeight;
-}
+  constructor(props: IProps<T>) {
+    super(props);
 
-export const ScrollView: <T>(p: IProps<T>) => React.ReactElement<IProps<T>> | null = (props) => {
-  const { data, selectedIndex = 0, textStyle, style, onChange } = props;
-  const innerHeight = data.length * itemHeight;
-  const [containerHeight, setContainerHeight] = useState(0);
-  const initialTop = getTopByIndex(selectedIndex);
-  const topValue = useRef(new Animated.Value(initialTop)).current;
-  prevTop = initialTop;
-
-  useEffect(() => {
-    Animated.timing(topValue, {
-      toValue: getTopByIndex(selectedIndex),
-      duration: 300,
-      easing: Easing.out(Easing.ease),
-      useNativeDriver: true,
-    }).start();
-  }, [selectedIndex]);
-
-  function touchStart(e: GestureResponderEvent) {
-    const touch = e.nativeEvent.touches[0];
-    originY = touch.pageY;
-    originTop = prevTop;
+    this.state = {
+      topValue: new Animated.Value(0),
+    };
   }
-  function touchMove(e: GestureResponderEvent) {
-    const touch = e.nativeEvent.touches[0];
 
-    distance = touch.pageY - originY;
+  componentDidMount() {
+    const { selectedIndex = 0, data } = this.props;
+    const top = getTopByIndex(selectedIndex);
 
-    let top = originTop + distance;
-    const bottom = containerHeight - (innerHeight + top);
+    this.innerHeight = data.length * itemHeight;
+    this.autoRollToTop(top);
+  }
 
-    if (top > indicatorUpperBounce + 1) {
-      top = 10 / top + prevTop;
-    } else if (bottom > indicatorUpperBounce + 1) {
-      top = prevTop - 10 / bottom;
+  componentDidUpdate(prevProps: IProps<T>) {
+    if (prevProps.data !== this.props.data) {
+      this.innerHeight = this.props.data.length * itemHeight;
     }
 
-    prevTop = top;
+    if (prevProps.selectedIndex !== this.props.selectedIndex) {
+      const top = getTopByIndex(this.props.selectedIndex || 0);
 
-    Animated.timing(topValue, {
+      this.autoRollToTop(top);
+    }
+  }
+
+  render() {
+    const { style, textStyle } = this.props;
+
+    return (
+      <View
+        style={[s.container, style]}
+        onLayout={(e) => {
+          const { height } = e.nativeEvent.layout;
+
+          this.containerHeight = height;
+        }}
+      >
+        <Animated.View
+          style={[s.inner, { transform: [{ translateY: this.state.topValue }] }]}
+          onTouchStart={this.touchStart}
+          onTouchMove={this.touchMove}
+          onTouchEnd={this.touchEnd}
+        >
+          {this.props.data.map((item) => {
+            return (
+              <View key={item.key || item.label} style={s.item}>
+                <Text style={textStyle}>{item.label}</Text>
+              </View>
+            );
+          })}
+        </Animated.View>
+        <View style={s.indicator} pointerEvents="none" />
+      </View>
+    );
+  }
+
+  touchStart = (e: GestureResponderEvent) => {
+    const touch = e.nativeEvent.touches[0];
+    this.originY = touch.pageY;
+    this.originTop = this.prevTop;
+  };
+
+  touchMove = (e: GestureResponderEvent) => {
+    const touch = e.nativeEvent.touches[0];
+
+    this.distance = touch.pageY - this.originY;
+
+    let top = this.originTop + this.distance;
+    const bottom = this.containerHeight - (this.innerHeight + top);
+
+    if (top > indicatorUpperBounce + 1) {
+      top = 10 / top + this.prevTop;
+    } else if (bottom > indicatorUpperBounce + 1) {
+      top = this.prevTop - 10 / bottom;
+    }
+
+    this.prevTop = top;
+
+    Animated.timing(this.state.topValue, {
       toValue: top,
       duration: 0,
       easing: Easing.linear,
       useNativeDriver: true,
     }).start();
-  }
-  function touchEnd() {
-    const top = originTop + distance;
-    const bottom = containerHeight - (innerHeight + top);
+  };
+
+  touchEnd = () => {
+    const top = this.originTop + this.distance;
+    const bottom = this.containerHeight - (this.innerHeight + top);
     let toTop = 0;
 
     if (top > indicatorUpperBounce) {
       toTop = indicatorUpperBounce;
-      onSelect(0);
+      this.onSelect(0);
     } else if (bottom > indicatorUpperBounce) {
-      toTop = -(innerHeight - containerHeight) - indicatorUpperBounce;
-      onSelect(data.length - 1);
+      toTop = -(this.innerHeight - this.containerHeight) - indicatorUpperBounce;
+      this.onSelect(this.props.data.length - 1);
     } else {
       const offsetTop = -(top - indicatorUpperBounce);
       const offsetItemIndex = Math.round(offsetTop / itemHeight);
       toTop = -(offsetItemIndex * itemHeight) + indicatorUpperBounce;
-      onSelect(offsetItemIndex);
+      this.onSelect(offsetItemIndex);
     }
 
-    prevTop = toTop;
+    this.autoRollToTop(toTop);
+  };
 
-    Animated.timing(topValue, {
-      toValue: toTop,
+  onSelect(index: number) {
+    this.props.onChange(index, this.props.data[index]);
+  }
+
+  autoRollToTop(top: number) {
+    this.prevTop = top;
+
+    Animated.timing(this.state.topValue, {
+      toValue: top,
       duration: 300,
       easing: Easing.out(Easing.ease),
       useNativeDriver: true,
     }).start();
   }
-  function onSelect(index: number) {
-    onChange(index, data[index]);
-  }
+}
 
-  return (
-    <View
-      style={[s.container, style]}
-      onLayout={(e) => {
-        const { height } = e.nativeEvent.layout;
-
-        setContainerHeight(height);
-      }}
-    >
-      <Animated.View
-        style={[s.inner, { transform: [{ translateY: topValue }] }]}
-        onTouchStart={touchStart}
-        onTouchMove={touchMove}
-        onTouchEnd={touchEnd}
-      >
-        {data.map((item) => {
-          return (
-            <View key={item.key || item.label} style={s.item}>
-              <Text style={textStyle}>{item.label}</Text>
-            </View>
-          );
-        })}
-      </Animated.View>
-      <View style={s.indicator} pointerEvents="none" />
-    </View>
-  );
-};
+function getTopByIndex(index: number) {
+  return indicatorUpperBounce - index * itemHeight;
+}
 
 const s = StyleSheet.create({
   container: {
     position: "relative",
     height: itemHeight * itemCount,
-    width: "30%",
+    paddingLeft: 10,
+    paddingRight: 10,
     overflow: "hidden",
   },
   inner: {
