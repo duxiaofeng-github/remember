@@ -27,12 +27,16 @@ const en = {
   "Select time": "Select time",
   "Start time": "Start time",
   "End time": "End time",
-  Notification: "Notification",
+  Notice: "Notice",
   NoticeDurationInAdvance: "Notice %{duration} in advance",
-  "No notification": "No notification",
+  "No notice": "No notice",
   Hours: "Hours",
   Minutes: "Minutes",
   Days: "Days",
+  "Select advance notice time": "Select advance notice time",
+  Confirm: "Confirm",
+  Cancel: "Cancel",
+  "Select type": "Select type",
 };
 
 const zhCN = {
@@ -64,12 +68,16 @@ const zhCN = {
   "Select time": "选择时间",
   "Start time": "开始时间",
   "End time": "结束时间",
-  Notification: "通知",
+  Notice: "通知",
   NoticeDurationInAdvance: "提前%{duration}通知",
-  "No notification": "没有通知",
+  "No notice": "没有通知",
   Hours: "小时",
   Minutes: "分钟",
   Days: "天",
+  "Select advance notice time": "选择通知提前时间",
+  Confirm: "确定",
+  Cancel: "取消",
+  "Select type": "选择类型",
 };
 
 export const translations = {

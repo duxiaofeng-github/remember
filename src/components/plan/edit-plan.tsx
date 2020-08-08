@@ -97,6 +97,7 @@ export const EditPlan: React.SFC<IProps> = () => {
                 onConfirm={(value) => {
                   onChange(value ? value[0] : undefined);
                 }}
+                title={translate("Select type")}
                 value={[value]}
                 data={[data]}
                 label={translate("type")}
@@ -113,8 +114,9 @@ export const EditPlan: React.SFC<IProps> = () => {
             return (
               <DurationSelect
                 clearable
-                label={translate("Notification")}
+                label={translate("Notice")}
                 value={value}
+                title={translate("Select advance notice time")}
                 onChange={onChange}
                 onFormat={(value) => {
                   if (value != null) {
@@ -123,7 +125,7 @@ export const EditPlan: React.SFC<IProps> = () => {
                     });
                   }
 
-                  return translate("No notification");
+                  return translate("No notice");
                 }}
                 onFormatUnit={(unit) => {
                   return translate(`${unit}`);

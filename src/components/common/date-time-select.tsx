@@ -17,6 +17,8 @@ export const DateTimeSelect: React.SFC<IProps> = (props) => {
         title={translate("Select time")}
         titleStyle={s.pickerText}
         textStyle={s.pickerText}
+        confirmText={translate("Confirm")}
+        cancelText={translate("Cancel")}
         dropDownIconColor={colorText}
       />
     </Field>
