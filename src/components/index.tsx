@@ -31,7 +31,7 @@ export const Index: React.SFC<IProps> = () => {
 
   useEffect(() => {
     I18n.locale = lang;
-    dayjs.locale(lang);
+    dayjs.locale(lang.toLowerCase());
   }, [lang]);
 
   return (

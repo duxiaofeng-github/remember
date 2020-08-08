@@ -1,41 +1,23 @@
 import React from "react";
-import { View, StyleSheet } from "react-native";
-import { FieldError } from "react-hook-form";
-import { Text } from "./text";
+import { StyleSheet } from "react-native";
 import { CascadePicker, ICascadePickerProps } from "./picker/cascade-picker";
-import { colorError, colorText } from "../../utils/style";
+import { colorText } from "../../utils/style";
+import { IFieldProps, Field } from "./field";
 
-interface IProps<T> extends ICascadePickerProps<T> {
-  label?: string;
-  error?: FieldError;
-}
+interface IProps<T> extends ICascadePickerProps<T>, IFieldProps {}
 
 export const CascadeSelect: <T>(p: IProps<T>) => React.ReactElement<IProps<T>> | null = (props) => {
   const { label, error, ...restProps } = props;
 
   return (
-    <View style={s.container}>
-      {label && <Text style={s.label}>{label}</Text>}
+    <Field label={label} error={error}>
       <CascadePicker titleStyle={s.pickerText} textStyle={s.pickerText} dropDownIconColor={colorText} {...restProps} />
-      {error && <Text style={s.error}>{error.message}</Text>}
-    </View>
+    </Field>
   );
 };
 
 const s = StyleSheet.create({
-  container: {
-    marginBottom: 15,
-  },
-  label: {
-    fontWeight: "bold",
-    marginBottom: 10,
-  },
   pickerText: {
     color: colorText,
-  },
-  error: {
-    marginTop: 5,
-    color: colorError,
-    fontSize: 12,
   },
 });

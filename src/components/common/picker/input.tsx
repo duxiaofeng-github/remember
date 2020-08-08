@@ -1,4 +1,4 @@
-import React from "react";
+import React, { ReactNode } from "react";
 import { View, StyleSheet, Text, StyleProp, ViewStyle, TextStyle } from "react-native";
 import { Icon } from "react-native-elements";
 
@@ -6,17 +6,43 @@ interface IProps {
   style?: StyleProp<ViewStyle>;
   textStyle?: StyleProp<TextStyle>;
   text: string;
+  dropDownIcon?: ReactNode;
   dropDownIconColor?: string;
+  showClearIcon?: boolean;
+  onIconTouchStart?: () => void;
   onTouchStart: () => void;
 }
 
 export const Input: React.SFC<IProps> = (props) => {
-  const { style, text, textStyle, dropDownIconColor, onTouchStart } = props;
+  const {
+    style,
+    text,
+    textStyle,
+    showClearIcon,
+    dropDownIcon,
+    dropDownIconColor,
+    onTouchStart,
+    onIconTouchStart,
+  } = props;
 
   return (
     <View style={[s.pickerPlaceHolder, style]} onTouchStart={onTouchStart}>
       <Text style={textStyle}>{text}</Text>
-      <Icon type="feather" name="chevron-down" size={20} color={dropDownIconColor} />
+      {dropDownIcon ? (
+        dropDownIcon
+      ) : (
+        <View
+          onTouchStart={(e) => {
+            e.stopPropagation();
+
+            if (onIconTouchStart) {
+              onIconTouchStart();
+            }
+          }}
+        >
+          <Icon type="feather" name={showClearIcon ? "x" : "chevron-down"} size={20} color={dropDownIconColor} />
+        </View>
+      )}
     </View>
   );
 };

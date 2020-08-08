@@ -1,10 +1,10 @@
 import React, { useMemo, useState, useEffect } from "react";
-import { IBasicProps } from "./picker-view";
+import { IPickerViewProps } from "./picker-view";
 import { pickerStore, IPickerStore } from "./provider";
 import { Input } from "./input";
 import { IBasicData, IData } from "./cascade-picker-view";
 
-export interface ICascadePickerProps<T> extends IBasicProps<T> {
+export interface ICascadePickerProps<T> extends IPickerViewProps<T> {
   data: IBasicData<T>;
   dropDownIconColor?: string;
   value?: T[];
@@ -30,7 +30,7 @@ export const CascadePicker: <T>(p: ICascadePickerProps<T>) => React.ReactElement
           onCancel();
         }
       };
-      store.onConfirm = (value: any[], index: number[], records: IData<any>[]) => {
+      store.onConfirm = (value?: any[], index?: number[], records?: IData<any>[]) => {
         setVisible(false);
 
         if (onConfirm) {

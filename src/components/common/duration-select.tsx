@@ -1,17 +1,17 @@
 import React from "react";
 import { StyleSheet } from "react-native";
-import { Picker, IPickerProps } from "./picker/picker";
 import { colorText } from "../../utils/style";
+import { DurationPicker, IDurationPickerProps } from "./picker/duration-picker";
 import { Field, IFieldProps } from "./field";
 
-interface IProps<T> extends IPickerProps<T>, IFieldProps {}
+interface IProps extends IDurationPickerProps, IFieldProps {}
 
-export const Select: <T>(p: IProps<T>) => React.ReactElement<IProps<T>> | null = (props) => {
+export const DurationSelect: React.SFC<IProps> = (props) => {
   const { label, error, ...restProps } = props;
 
   return (
     <Field label={label} error={error}>
-      <Picker titleStyle={s.pickerText} textStyle={s.pickerText} dropDownIconColor={colorText} {...restProps} />
+      <DurationPicker {...restProps} titleStyle={s.pickerText} textStyle={s.pickerText} dropDownIconColor={colorText} />
     </Field>
   );
 };

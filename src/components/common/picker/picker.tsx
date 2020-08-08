@@ -1,17 +1,30 @@
-import React, { useMemo, useEffect, useState } from "react";
-import { IBasicProps, IBasicData, IData } from "./picker-view";
+import React, { useMemo, useEffect, useState, ReactNode } from "react";
+import { IPickerViewProps, IBasicData, IData } from "./picker-view";
 import { pickerStore, IPickerStore } from "./provider";
 import { Input } from "./input";
 
-export interface IPickerProps<T> extends IBasicProps<T> {
+export interface IPickerProps<T> extends IPickerViewProps<T> {
   data: IBasicData<T>;
+  dropDownIcon?: ReactNode;
   dropDownIconColor?: string;
+  clearable?: boolean;
   value?: T[];
-  onFormat?: (labels: string[], values: T[]) => string;
+  onFormat?: (labels?: string[], values?: T[]) => string;
 }
 
 export const Picker: <T>(p: IPickerProps<T>) => React.ReactElement<IPickerProps<T>> | null = (props) => {
-  const { data, value, onFormat, onCancel, onConfirm, textStyle, dropDownIconColor, ...restProps } = props;
+  const {
+    data,
+    value,
+    onFormat,
+    onCancel,
+    onConfirm,
+    textStyle,
+    dropDownIcon,
+    dropDownIconColor,
+    clearable,
+    ...restProps
+  } = props;
   const { selectedIndexes, labels, values } = useMemo(() => getSelectedIndexesAndLabelsByValue(data, value), [
     data,
     value,
@@ -30,7 +43,7 @@ export const Picker: <T>(p: IPickerProps<T>) => React.ReactElement<IPickerProps<
           onCancel();
         }
       };
-      store.onConfirm = (value: any[], index: number[], records: IData<any>[]) => {
+      store.onConfirm = (value?: any[], index?: number[], records?: IData<any>[]) => {
         setVisible(false);
 
         if (onConfirm) {
@@ -87,8 +100,15 @@ export const Picker: <T>(p: IPickerProps<T>) => React.ReactElement<IPickerProps<
   return (
     <Input
       textStyle={textStyle}
+      dropDownIcon={dropDownIcon}
       dropDownIconColor={dropDownIconColor}
-      text={labels && values ? (onFormat ? onFormat(labels, values) : labels.join(" ")) : ""}
+      showClearIcon={clearable && values != null}
+      text={onFormat ? onFormat(labels, values) : labels ? labels.join(" ") : ""}
+      onIconTouchStart={() => {
+        if (clearable && values && onConfirm) {
+          onConfirm();
+        }
+      }}
       onTouchStart={() => {
         setVisible(true);
       }}

@@ -16,6 +16,8 @@ const en = {
   content: "Content",
   "Please input plan content": "Please input plan content",
   "Plan content is required": "Plan content is required",
+  "Plan end time is required": "Plan end time is required",
+  "Plan start time is required": "Plan start time is required",
   oneTime: "One time plan",
   dailyPlan: "Daily plan",
   weeklyPlan: "Weekly plan",
@@ -25,6 +27,12 @@ const en = {
   "Select time": "Select time",
   "Start time": "Start time",
   "End time": "End time",
+  Notification: "Notification",
+  NoticeDurationInAdvance: "Notice %{duration} in advance",
+  "No notification": "No notification",
+  Hours: "Hours",
+  Minutes: "Minutes",
+  Days: "Days",
 };
 
 const zhCN = {
@@ -45,6 +53,8 @@ const zhCN = {
   content: "内容",
   "Please input plan content": "请输入计划内容",
   "Plan content is required": "计划内容必填",
+  "Plan end time is required": "计划结束时间必填",
+  "Plan start time is required": "计划开始时间必填",
   oneTime: "一次性计划",
   dailyPlan: "每日计划",
   weeklyPlan: "每周计划",
@@ -54,6 +64,12 @@ const zhCN = {
   "Select time": "选择时间",
   "Start time": "开始时间",
   "End time": "结束时间",
+  Notification: "通知",
+  NoticeDurationInAdvance: "提前%{duration}通知",
+  "No notification": "没有通知",
+  Hours: "小时",
+  Minutes: "分钟",
+  Days: "天",
 };
 
 export const translations = {

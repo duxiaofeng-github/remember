@@ -1,19 +1,15 @@
 import I18n from "react-native-i18n";
+import { TranslateOptions } from "i18n-js";
 import cronstrue from "cronstrue";
 import { globalStore } from "../store";
-import _humanizeDuration from "humanize-duration";
 import dayjs, { Dayjs } from "dayjs";
 
-export function translate(key: string) {
-  return I18n.t(key);
+export function translate(key: string, options?: TranslateOptions) {
+  return I18n.t(key, options);
 }
 
 export function humanizeCron(cron: string) {
   return cronstrue.toString(cron, { locale: globalStore.getState().lang });
-}
-
-export function humanizeDuration(duration: number) {
-  return _humanizeDuration(duration, { language: "es" });
 }
 
 export function getOneTimeScheduleStartTime(schedule: string) {
@@ -50,4 +46,8 @@ export function isMonthlySchedule(schedule: string) {
 
 export function formatTime(time: Dayjs, layout?: string) {
   return time.format(layout || "L LT");
+}
+
+export function secondsToDuration(seconds: number) {
+  return dayjs.duration(seconds, "second");
 }

@@ -1,15 +1,23 @@
 import React, { useState, useEffect, useMemo } from "react";
 import dayjs from "dayjs";
 import { Picker } from "./picker";
-import { IStyleProps } from "./picker-view";
 import { formatTime } from "../../../utils/common";
+import { TextStyle, StyleProp } from "react-native";
 
-export interface IDateTimePickerProps extends IStyleProps {
+export interface IDateTimePickerProps {
+  title?: string;
+  titleStyle?: StyleProp<TextStyle>;
+  textStyle?: StyleProp<TextStyle>;
+  cancelText?: string;
+  cancelStyle?: StyleProp<TextStyle>;
+  confirmText?: string;
+  confirmStyle?: StyleProp<TextStyle>;
   value?: number;
   minTime?: number;
   maxTime?: number;
   dropDownIconColor?: string;
-  onChange?: (value: number) => void;
+  clearable?: boolean;
+  onChange?: (value?: number) => void;
 }
 
 export const DateTimePicker: React.SFC<IDateTimePickerProps> = (props) => {
@@ -54,15 +62,25 @@ export const DateTimePicker: React.SFC<IDateTimePickerProps> = (props) => {
       title={title}
       value={values}
       data={[years, months, dates, hours, minutes]}
-      onFormat={(labels, [year, month, date, hour, minute]) => {
-        return formatTime(dayjs(new Date(year, month, date, hour, minute)), "YYYY/MM/DD HH:mm");
+      onFormat={(labels, values) => {
+        if (values) {
+          const [year, month, date, hour, minute] = values;
+
+          return dayjs(new Date(year, month, date, hour, minute)).format("YYYY/MM/DD HH:mm");
+        }
+
+        return "";
       }}
       onChange={(columnIndex, newValue, index, [year, month, date, hour, minute]) => {
         setInnerValue(dayjs(new Date(year, month, date, hour, minute)).unix());
       }}
-      onConfirm={([year, month, date, hour, minute]) => {
+      onConfirm={(newValue) => {
         if (onChange) {
-          onChange(dayjs(new Date(year, month, date, hour, minute)).unix());
+          const newDate =
+            newValue != null
+              ? dayjs(new Date(newValue[0], newValue[1], newValue[2], newValue[3], newValue[4])).unix()
+              : undefined;
+          onChange(newDate);
         }
       }}
     />

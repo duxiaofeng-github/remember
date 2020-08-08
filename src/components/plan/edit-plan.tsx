@@ -12,10 +12,12 @@ import {
   isMonthlySchedule,
   isOneTimeSchedule,
   getOneTimeScheduleStartTime,
+  secondsToDuration,
 } from "../../utils/common";
 import { Select } from "../common/select";
 import dayjs from "dayjs";
 import { DateTimeSelect } from "../common/date-time-select";
+import { DurationSelect } from "../common/duration-select";
 
 interface IProps {}
 
@@ -33,12 +35,12 @@ interface IForm {
   startTime: number;
   endTime: number;
   repeat: number;
-  advanceTime: number;
+  noticeDuration: number;
   pointsPerTask: number;
 }
 
 export const EditPlan: React.SFC<IProps> = () => {
-  const { edittingPlan } = useRexContext((store: IStore) => store);
+  const { edittingPlan, lang } = useRexContext((store: IStore) => store);
   const { content, schedule } = edittingPlan || {};
   const type = !schedule
     ? Period.OneTime
@@ -53,7 +55,6 @@ export const EditPlan: React.SFC<IProps> = () => {
     : Period.Customized;
   const startTime = schedule ? getOneTimeScheduleStartTime(schedule) : dayjs().unix();
   const endTime = schedule ? getOneTimeScheduleStartTime(schedule) : undefined;
-
   const form = useForm<IForm>({ mode: "onChange", defaultValues: { content, type, startTime, endTime } });
   const { control, handleSubmit, errors, watch } = form;
   const onSubmit = (data: IForm) => console.log(data);
@@ -94,7 +95,7 @@ export const EditPlan: React.SFC<IProps> = () => {
             return (
               <Select
                 onConfirm={(value) => {
-                  onChange(value[0]);
+                  onChange(value ? value[0] : undefined);
                 }}
                 value={[value]}
                 data={[data]}
@@ -105,6 +106,33 @@ export const EditPlan: React.SFC<IProps> = () => {
           }}
         />
         <StartTimeAndEndTimePicker type={watch("type")} form={form} />
+        <Controller
+          control={control}
+          name="noticeDuration"
+          render={({ onChange, onBlur, value }) => {
+            return (
+              <DurationSelect
+                clearable
+                label={translate("Notification")}
+                value={value}
+                onChange={onChange}
+                onFormat={(value) => {
+                  if (value != null) {
+                    return translate("NoticeDurationInAdvance", {
+                      duration: secondsToDuration(value).locale(lang).humanize(false),
+                    });
+                  }
+
+                  return translate("No notification");
+                }}
+                onFormatUnit={(unit) => {
+                  return translate(`${unit}`);
+                }}
+                error={errors.noticeDuration}
+              />
+            );
+          }}
+        />
       </View>
     </View>
   );
@@ -149,6 +177,7 @@ export const StartTimeAndEndTimePicker: React.SFC<IStartTimeAndEndTimePickerProp
                 <DateTimeSelect
                   onChange={onChange}
                   minTime={watch("startTime")}
+                  clearable
                   value={value}
                   label={translate("End time")}
                   error={errors.endTime}

@@ -1,21 +1,16 @@
 import React, { useState } from "react";
-import { TextInput, TextInputProps, View, StyleSheet } from "react-native";
-import { FieldError } from "react-hook-form";
-import { Text } from "./text";
-import { colorText, colorPrimary, colorError } from "../../utils/style";
+import { TextInput, TextInputProps, StyleSheet } from "react-native";
+import { colorText, colorPrimary } from "../../utils/style";
+import { Field, IFieldProps } from "./field";
 
-interface IProps extends TextInputProps {
-  label?: string;
-  error?: FieldError;
-}
+interface IProps extends TextInputProps, IFieldProps {}
 
 export const Input: React.SFC<IProps> = (props) => {
   const { label, style, error, onFocus, onBlur, ...restProps } = props;
   const [isFocus, setIsFocus] = useState(false);
 
   return (
-    <View style={s.container}>
-      {label && <Text style={[s.label, isFocus && s.labelActived]}>{label}</Text>}
+    <Field label={label} error={error} labelStyle={isFocus && s.labelActived}>
       <TextInput
         {...restProps}
         style={[s.input, isFocus && s.inputActived, style]}
@@ -34,22 +29,11 @@ export const Input: React.SFC<IProps> = (props) => {
           }
         }}
       />
-      {error && <Text style={s.error}>{error.message}</Text>}
-    </View>
+    </Field>
   );
 };
 
 const s = StyleSheet.create({
-  container: {
-    marginBottom: 15,
-  },
-  label: {
-    fontWeight: "bold",
-    marginBottom: 10,
-  },
-  labelActived: {
-    color: colorPrimary,
-  },
   input: {
     color: colorText,
     borderBottomWidth: 1,
@@ -58,9 +42,7 @@ const s = StyleSheet.create({
   inputActived: {
     borderBottomColor: colorPrimary,
   },
-  error: {
-    marginTop: 5,
-    color: colorError,
-    fontSize: 12,
+  labelActived: {
+    color: colorPrimary,
   },
 });

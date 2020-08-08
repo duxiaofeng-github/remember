@@ -8,7 +8,7 @@ export interface PlanBase {
   duration: number;
   repeatEndedAt?: number;
   repeatEndedCount?: number;
-  advanceTime: number;
+  noticeDuration: number;
   pointsPerTask: number;
   taskIds: string[];
 }

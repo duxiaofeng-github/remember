@@ -8,6 +8,7 @@ import {
   StyleProp,
   TextStyle,
   GestureResponderEvent,
+  Text,
 } from "react-native";
 import { Topbar } from "./top-bar";
 import { ScrollView } from "./scroll-view";
@@ -30,7 +31,7 @@ export interface IData<T> {
   value: T;
 }
 
-export interface IStyleProps {
+export interface IPickerProps {
   title?: string;
   titleStyle?: StyleProp<TextStyle>;
   textStyle?: StyleProp<TextStyle>;
@@ -38,15 +39,17 @@ export interface IStyleProps {
   cancelStyle?: StyleProp<TextStyle>;
   confirmText?: string;
   confirmStyle?: StyleProp<TextStyle>;
+  prefix?: string;
+  suffix?: string;
 }
 
-export interface IBasicProps<T> extends IStyleProps {
-  onConfirm?: (values: T[], indexes: number[], records: IData<T>[]) => void;
+export interface IPickerViewProps<T> extends IPickerProps {
+  onConfirm?: (values?: T[], indexes?: number[], records?: IData<T>[]) => void;
   onCancel?: () => void;
   onChange?: (columnIndex: number, value: T, index: number, values: T[], indexes: number[]) => void;
 }
 
-export interface IStoreProps<T> extends IBasicProps<T> {
+export interface IStoreProps<T> extends IPickerViewProps<T> {
   selectedIndexes?: number[];
   visible: boolean;
 }
@@ -66,6 +69,8 @@ export const PickerView: <T>(p: IProps<T>) => React.ReactElement<IProps<T>> | nu
     cancelStyle,
     confirmText,
     confirmStyle,
+    prefix,
+    suffix,
     selectedIndexes,
     onCancel,
     onConfirm,
@@ -152,6 +157,7 @@ export const PickerView: <T>(p: IProps<T>) => React.ReactElement<IProps<T>> | nu
           onConfirm={confirm}
         />
         <View style={s.pickerContainer}>
+          {prefix && <Text style={textStyle}>{prefix}</Text>}
           {data.map((columnData, columnIndex) => {
             return (
               <ScrollView
@@ -182,6 +188,7 @@ export const PickerView: <T>(p: IProps<T>) => React.ReactElement<IProps<T>> | nu
               />
             );
           })}
+          {suffix && <Text style={textStyle}>{suffix}</Text>}
         </View>
       </Animated.View>
     </View>
