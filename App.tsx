@@ -3,8 +3,8 @@ import "react-native-gesture-handler";
 import { Index } from "./src/components";
 import I18n from "react-native-i18n";
 import { translations } from "./src/i18n";
-import { globalStore } from "./src/store";
-import { RexProvider } from "@jimengio/rex";
+import { globalStore, getInitialStore } from "./src/store";
+import { RexProvider } from "./src/store/store";
 import dayjs from "dayjs";
 import duration from "dayjs/plugin/duration";
 import localizedFormat from "dayjs/plugin/localizedFormat";
@@ -13,6 +13,7 @@ import "dayjs/locale/en";
 import "dayjs/locale/zh-cn";
 
 import { PickerProvider } from "./src/components/common/picker/provider";
+import { ToastProvider } from "./src/components/common/toast";
 
 dayjs.extend(localizedFormat);
 dayjs.extend(relativeTime);
@@ -26,10 +27,12 @@ interface IProps {}
 
 const App: React.SFC<IProps> = () => {
   return (
-    <RexProvider value={globalStore}>
-      <PickerProvider>
-        <Index />
-      </PickerProvider>
+    <RexProvider store={globalStore} initialValue={getInitialStore()}>
+      <ToastProvider>
+        <PickerProvider>
+          <Index />
+        </PickerProvider>
+      </ToastProvider>
     </RexProvider>
   );
 };

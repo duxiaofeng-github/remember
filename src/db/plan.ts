@@ -1,6 +1,7 @@
-import { getDBInstance } from "./db";
+import { getDb } from "./db";
 import dayjs from "dayjs";
 import { deleteTask } from "./task";
+import { nanoid } from "nanoid";
 
 export interface PlanBase {
   content: string;
@@ -8,9 +9,9 @@ export interface PlanBase {
   duration: number;
   repeatEndedAt?: number;
   repeatEndedCount?: number;
-  noticeDuration: number;
-  pointsPerTask: number;
-  taskIds: string[];
+  noticeDuration?: number;
+  pointsPerTask?: number;
+  taskIds?: string[];
 }
 
 export interface Plan extends PlanBase {
@@ -19,49 +20,49 @@ export interface Plan extends PlanBase {
   updatedAt: number;
 }
 
-const tableName = "plans";
+const dbName = "plans";
 
 export async function listPlans(): Promise<Plan[]> {
-  const db = await getDBInstance();
-  const table = await db.docs(tableName);
+  const db = await getDb(dbName, "docs");
 
-  return table.query(() => true);
+  return db.query((item: Plan) => true);
 }
 
 export async function getPlan(id: string): Promise<Plan> {
-  const db = await getDBInstance();
-  const table = await db.docs(tableName);
+  const db = await getDb(dbName, "docs");
 
-  return table.get(id);
+  return db.get(id);
 }
 
 export async function createPlan(data: PlanBase): Promise<string> {
-  const db = await getDBInstance();
-  const table = await db.docs(tableName);
-  const now = dayjs().unix();
+  const db = await getDb(dbName, "docs");
 
-  return table.put({ ...data, updatedAt: now, createdAt: now });
+  const now = dayjs().unix();
+  const newPlan = { ...data, _id: nanoid(), updatedAt: now, createdAt: now };
+
+  return db.put(newPlan);
 }
 
 export async function updatePlan(data: Plan): Promise<string> {
-  const db = await getDBInstance();
-  const table = await db.docs(tableName);
+  const db = await getDb(dbName, "docs");
   const now = dayjs().unix();
 
-  return table.put({ ...data, updatedAt: now });
+  return db.put({ ...data, updatedAt: now });
 }
 
 export async function deletePlan(id: string): Promise<string> {
-  const db = await getDBInstance();
-  const table = await db.docs(tableName);
+  const db = await getDb(dbName, "docs");
 
   const plan = await getPlan(id);
   const taskIds = plan.taskIds;
-  const tasksPromise = taskIds.map((id) => {
-    return deleteTask(id);
-  });
 
-  await Promise.all(tasksPromise);
+  if (taskIds) {
+    const tasksPromise = taskIds.map((id) => {
+      return deleteTask(id);
+    });
 
-  return table.del(id);
+    await Promise.all(tasksPromise);
+  }
+
+  return db.del(id);
 }

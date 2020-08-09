@@ -1,21 +1,27 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { View, StyleSheet } from "react-native";
 import { Header } from "../common/header";
 import { useNavigation } from "@react-navigation/native";
 import { Route } from "../../utils/route";
 import { Loading } from "../common/loading";
-import { useData } from "../../utils/hooks/use-data";
-import { listPlans } from "../../db/plan";
 import { ListItem } from "react-native-elements";
 import { Text } from "../common/text";
 import { Empty } from "../common/empty";
-import { humanizeCron } from "../../utils/common";
+import { humanizeCron, isOneTimeSchedule, humanizeOneTimeSchedule } from "../../utils/common";
+import { colorTextLight } from "../../utils/style";
+import { globalStore, IStore } from "../../store";
+import { useRexContext } from "../../store/store";
+import { loadPlans } from "../../store/plan";
 
 interface IProps {}
 
 export const Plan: React.SFC<IProps> = () => {
   const navigation = useNavigation();
-  const { setData, ...restOptions } = useData(listPlans);
+  const { plansData } = useRexContext((store: IStore) => store);
+
+  useEffect(() => {
+    plansData.load();
+  }, []);
 
   return (
     <View style={s.container}>
@@ -30,7 +36,7 @@ export const Plan: React.SFC<IProps> = () => {
         }}
       />
       <Loading
-        options={restOptions}
+        options={plansData}
         render={(data) => {
           // return (
           //   <Tabs
@@ -46,12 +52,26 @@ export const Plan: React.SFC<IProps> = () => {
           return data!.length !== 0 ? (
             <View>
               {data!.map((item) => {
+                const { schedule, duration } = item;
                 return (
                   <ListItem
                     key={item._id}
-                    title={item.content}
-                    subtitle={<Text>{humanizeCron(item.schedule)}</Text>}
                     bottomDivider
+                    title={item.content}
+                    subtitle={
+                      <Text style={s.subTitle}>
+                        {isOneTimeSchedule(schedule)
+                          ? humanizeOneTimeSchedule(schedule, duration)
+                          : humanizeCron(schedule)}
+                      </Text>
+                    }
+                    onPress={async () => {
+                      await globalStore.update((store) => {
+                        store.edittingPlanId = item._id;
+                      });
+
+                      navigation.navigate(Route.EditPlan);
+                    }}
                   />
                 );
               })}
@@ -67,4 +87,7 @@ export const Plan: React.SFC<IProps> = () => {
 
 const s = StyleSheet.create({
   container: { flex: 1 },
+  subTitle: {
+    color: colorTextLight,
+  },
 });

@@ -1,5 +1,5 @@
-import { getDBInstance } from "./db";
 import dayjs from "dayjs";
+import { getDb } from "./db";
 
 export interface TaskBase {
   planId: string;
@@ -17,45 +17,40 @@ export interface Task extends TaskBase {
   updatedAt: number;
 }
 
-const tableName = "tasks";
+const dbName = "tasks";
 
 export async function listTasks(ids?: string[]): Promise<Task[]> {
-  const db = await getDBInstance();
-  const table = await db.docs(tableName);
+  const db = await getDb(dbName, "docs");
 
   return !ids
-    ? table.query(() => true)
-    : table.query((item: Task) => {
+    ? db.query(() => true)
+    : db.query((item: Task) => {
         return ids.includes(item._id);
       });
 }
 
 export async function getTask(id: string): Promise<Task> {
-  const db = await getDBInstance();
-  const table = await db.docs(tableName);
+  const db = await getDb(dbName, "docs");
 
-  return table.get(id);
+  return db.get(id);
 }
 
 export async function createTask(data: TaskBase): Promise<string> {
-  const db = await getDBInstance();
-  const table = await db.docs(tableName);
+  const db = await getDb(dbName, "docs");
   const now = dayjs().unix();
 
-  return table.put({ ...data, updatedAt: now, createdAt: now });
+  return db.put({ ...data, updatedAt: now, createdAt: now });
 }
 
 export async function updateTask(data: Task): Promise<string> {
-  const db = await getDBInstance();
-  const table = await db.docs(tableName);
+  const db = await getDb(dbName, "docs");
   const now = dayjs().unix();
 
-  return table.put({ ...data, updatedAt: now });
+  return db.put({ ...data, updatedAt: now });
 }
 
 export async function deleteTask(id: string): Promise<string> {
-  const db = await getDBInstance();
-  const table = await db.docs(tableName);
+  const db = await getDb(dbName, "docs");
 
-  return table.del(id);
+  return db.del(id);
 }

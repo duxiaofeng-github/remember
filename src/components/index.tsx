@@ -9,9 +9,9 @@ import { useData } from "../utils/hooks/use-data";
 import { getSettings } from "../db/setting";
 import { Loading } from "./common/loading";
 import { globalStore, IStore } from "../store";
-import { useRexContext } from "@jimengio/rex";
 import I18n from "react-native-i18n";
 import dayjs from "dayjs";
+import { useRexContext } from "../store/store";
 
 interface IProps {}
 

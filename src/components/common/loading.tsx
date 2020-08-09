@@ -6,7 +6,7 @@ interface IOptions<T> {
   data?: T;
   loading?: boolean;
   error?: Error | boolean;
-  retry?: () => void;
+  load?: () => void;
 }
 
 interface IProps<T> extends IOptions<T> {
@@ -19,13 +19,13 @@ interface IProps<T> extends IOptions<T> {
 
 function renderLoadingError<T>(props: IProps<T>) {
   const options: IOptions<any> = props.options || {};
-  const { renderError, retry = options.retry, errorTips } = props;
+  const { renderError, load = options.load, errorTips } = props;
 
   if (renderError != null) {
     return <>{renderError()}</>;
   }
 
-  return retry ? <Retry tips={errorTips} retry={retry} /> : null;
+  return load ? <Retry tips={errorTips} retry={load} /> : null;
 }
 
 function isLoadFailed(data: any | any[], loading: boolean) {

@@ -1,12 +1,12 @@
-import { getDBInstance } from "./db";
 import { getDeviceLocale } from "../utils/locale";
+import { getDb } from "./db";
 
 interface Setting {
   lang: string;
   points: number;
 }
 
-const tableName = "settings";
+const dbName = "settings";
 
 function getDefaultSetting(lang: string): Setting {
   return {
@@ -16,9 +16,9 @@ function getDefaultSetting(lang: string): Setting {
 }
 
 export async function getSettings(): Promise<Setting> {
-  const db = await getDBInstance();
-  const table = await db.keyvalue(tableName);
-  const data = table.get("settings");
+  const db = await getDb(dbName, "kv");
+
+  const data = db.get("settings");
 
   if (data != null) {
     return data;
@@ -30,8 +30,7 @@ export async function getSettings(): Promise<Setting> {
 }
 
 export async function updateSettings(data: Setting): Promise<void> {
-  const db = await getDBInstance();
-  const table = await db.keyvalue(tableName);
+  const db = await getDb(dbName, "kv");
 
-  return table.put("settings", data);
+  return db.put("settings", data);
 }

@@ -1,7 +1,6 @@
 import React, { useState, useEffect, useMemo } from "react";
 import dayjs from "dayjs";
 import { Picker } from "./picker";
-import { formatTime } from "../../../utils/common";
 import { TextStyle, StyleProp } from "react-native";
 
 export interface IDateTimePickerProps {
@@ -63,10 +62,8 @@ export const DateTimePicker: React.SFC<IDateTimePickerProps> = (props) => {
       value={values}
       data={[years, months, dates, hours, minutes]}
       onFormat={(labels, values) => {
-        if (values) {
-          const [year, month, date, hour, minute] = values;
-
-          return dayjs(new Date(year, month, date, hour, minute)).format("YYYY/MM/DD HH:mm");
+        if (innerValue) {
+          return dayjs.unix(innerValue).format("YYYY/MM/DD HH:mm");
         }
 
         return "";

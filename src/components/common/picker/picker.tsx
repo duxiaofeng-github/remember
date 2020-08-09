@@ -83,10 +83,10 @@ export const Picker: <T>(p: IPickerProps<T>) => React.ReactElement<IPickerProps<
     };
   }, [props]);
 
-  function setVisible(visible: boolean) {
-    pickerStore.update((store: IPickerStore) => {
-      setInnerVisible(visible);
+  async function setVisible(visible: boolean) {
+    setInnerVisible(visible);
 
+    pickerStore.update((store: IPickerStore) => {
       store.visible = visible;
     });
 

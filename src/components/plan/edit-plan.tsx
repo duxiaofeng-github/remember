@@ -1,10 +1,9 @@
-import React from "react";
+import React, { useEffect, useMemo } from "react";
 import { View, StyleSheet } from "react-native";
 import { Header } from "../common/header";
 import { useForm, Controller, UseFormMethods } from "react-hook-form";
 import { Textarea } from "../common/textarea";
-import { useRexContext } from "@jimengio/rex";
-import { IStore } from "../../store";
+import { IStore, globalStore } from "../../store";
 import {
   translate,
   isDailySchedule,
@@ -12,12 +11,18 @@ import {
   isMonthlySchedule,
   isOneTimeSchedule,
   getOneTimeScheduleStartTime,
+  getOneTimeScheduleEndTime,
   secondsToDuration,
 } from "../../utils/common";
 import { Select } from "../common/select";
 import dayjs from "dayjs";
 import { DateTimeSelect } from "../common/date-time-select";
 import { DurationSelect } from "../common/duration-select";
+import { Input } from "../common/input";
+import { useNavigation } from "@react-navigation/native";
+import { Toast } from "../common/toast";
+import { Plan, PlanBase, createPlan, updatePlan } from "../../db/plan";
+import { useRexContext } from "../../store/store";
 
 interface IProps {}
 
@@ -34,34 +39,67 @@ interface IForm {
   type: Period;
   startTime: number;
   endTime: number;
-  repeat: number;
-  noticeDuration: number;
-  pointsPerTask: number;
+  repeatEndedAt?: number;
+  repeatEndedCount?: number;
+  noticeDuration?: number;
+  pointsPerTask?: number;
 }
 
 export const EditPlan: React.SFC<IProps> = () => {
-  const { edittingPlan, lang } = useRexContext((store: IStore) => store);
-  const { content, schedule } = edittingPlan || {};
-  const type = !schedule
-    ? Period.OneTime
-    : isOneTimeSchedule(schedule)
-    ? Period.OneTime
-    : isDailySchedule(schedule)
-    ? Period.Daily
-    : isWeeklySchedule(schedule)
-    ? Period.Weekly
-    : isMonthlySchedule(schedule)
-    ? Period.Monthly
-    : Period.Customized;
-  const startTime = schedule ? getOneTimeScheduleStartTime(schedule) : dayjs().unix();
-  const endTime = schedule ? getOneTimeScheduleStartTime(schedule) : undefined;
-  const form = useForm<IForm>({ mode: "onChange", defaultValues: { content, type, startTime, endTime } });
+  const navigation = useNavigation();
+  const { plansData, edittingPlanId, lang } = useRexContext((store: IStore) => store);
+  const edittingPlan = useMemo(() => plansData.data && plansData.data.find((item) => item._id === edittingPlanId), [
+    edittingPlanId,
+    plansData,
+  ]);
+  const isCreating = useMemo(() => edittingPlan == null, [edittingPlan]);
+  const { content, type, startTime, endTime, noticeDuration, pointsPerTask } = useMemo(
+    () => transformPlanToForm(edittingPlan),
+    [edittingPlan],
+  );
+  const form = useForm<IForm>({
+    mode: "onChange",
+    defaultValues: { content, type, startTime, endTime, noticeDuration, pointsPerTask },
+  });
   const { control, handleSubmit, errors, watch } = form;
-  const onSubmit = (data: IForm) => console.log(data);
+  const triggerSubmit = handleSubmit(async (data: IForm) => {
+    if (edittingPlan == null) {
+      const planBase = transformFormToPlanBase(data);
+
+      await createPlan(planBase);
+    } else {
+      const plan = transformFormToPlan(edittingPlan, data);
+
+      await updatePlan(plan);
+    }
+
+    Toast.message(isCreating ? translate("Create successfully") : translate("Edit successfully"));
+  });
+
+  useEffect(() => {
+    return () => {
+      globalStore.update((store) => {
+        store.edittingPlanId = undefined;
+      });
+    };
+  }, []);
 
   return (
     <View style={s.container}>
-      <Header title="Remember" />
+      <Header
+        title="Remember"
+        createButton={{
+          visible: true,
+          text: isCreating ? translate("Create") : translate("Save"),
+          onTouchEnd: async () => {
+            await triggerSubmit();
+
+            await plansData.load();
+
+            navigation.goBack();
+          },
+        }}
+      />
       <View style={s.content}>
         <Controller
           control={control}
@@ -135,6 +173,20 @@ export const EditPlan: React.SFC<IProps> = () => {
             );
           }}
         />
+        <Controller
+          control={control}
+          name="pointsPerTask"
+          render={({ onChange, onBlur, value }) => (
+            <Input
+              keyboardType="numeric"
+              onBlur={onBlur}
+              onChangeText={(value) => onChange(value)}
+              label={translate("Points")}
+              error={errors.pointsPerTask}
+              placeholder={translate("Please input points")}
+            />
+          )}
+        />
       </View>
     </View>
   );
@@ -161,7 +213,6 @@ export const StartTimeAndEndTimePicker: React.SFC<IStartTimeAndEndTimePickerProp
               return (
                 <DateTimeSelect
                   onChange={onChange}
-                  minTime={dayjs().unix()}
                   maxTime={watch("endTime")}
                   value={value}
                   label={translate("Start time")}
@@ -179,7 +230,6 @@ export const StartTimeAndEndTimePicker: React.SFC<IStartTimeAndEndTimePickerProp
                 <DateTimeSelect
                   onChange={onChange}
                   minTime={watch("startTime")}
-                  clearable
                   value={value}
                   label={translate("End time")}
                   error={errors.endTime}
@@ -200,3 +250,79 @@ const s = StyleSheet.create({
     padding: 20,
   },
 });
+
+interface IDefaultForm {
+  content?: string;
+  type: Period;
+  startTime: number;
+  endTime?: number;
+  noticeDuration?: number;
+  pointsPerTask?: number;
+}
+
+function transformPlanToForm(plan?: Plan): IDefaultForm {
+  const { content, schedule, duration, repeatEndedAt, repeatEndedCount, noticeDuration, pointsPerTask } = plan || {};
+  const type = !schedule
+    ? Period.OneTime
+    : isOneTimeSchedule(schedule)
+    ? Period.OneTime
+    : isDailySchedule(schedule)
+    ? Period.Daily
+    : isWeeklySchedule(schedule)
+    ? Period.Weekly
+    : isMonthlySchedule(schedule)
+    ? Period.Monthly
+    : Period.Customized;
+  const startTime = schedule != null ? getOneTimeScheduleStartTime(schedule) : dayjs().unix();
+  const endTime = schedule != null && duration != null ? getOneTimeScheduleEndTime(schedule, duration) : undefined;
+
+  return {
+    content,
+    type,
+    startTime,
+    endTime,
+    noticeDuration,
+    pointsPerTask,
+  };
+}
+
+function transformFormToPlan(originalPlan: Plan, form: IForm): Plan {
+  const { _id, taskIds, createdAt, updatedAt } = originalPlan;
+  const planBase = transformFormToPlanBase(form);
+  const plan: Plan = {
+    ...planBase,
+    _id,
+    taskIds,
+    createdAt,
+    updatedAt,
+  };
+
+  return plan;
+}
+
+function transformFormToPlanBase(form: IForm): PlanBase {
+  const { content, type, startTime, endTime, repeatEndedAt, repeatEndedCount, noticeDuration, pointsPerTask } = form;
+  const { schedule, duration } = getScheduleAndDuration(type, startTime, endTime);
+
+  return {
+    content,
+    schedule,
+    duration,
+    repeatEndedAt,
+    repeatEndedCount,
+    noticeDuration,
+    pointsPerTask,
+  };
+}
+
+function getScheduleAndDuration(type: Period, startTime: number, endTime: number) {
+  const startTimeParsed = dayjs.unix(startTime);
+  const endTimeParsed = dayjs.unix(endTime);
+
+  switch (type) {
+    case Period.Daily:
+      return { schedule: ``, duration: 0 };
+  }
+
+  return { schedule: startTimeParsed.format(), duration: endTimeParsed.diff(startTimeParsed, "second", false) };
+}

@@ -37,6 +37,13 @@ const en = {
   Confirm: "Confirm",
   Cancel: "Cancel",
   "Select type": "Select type",
+  Points: "Points",
+  "Please input points": "Please input points",
+  Create: "Create",
+  Save: "Save",
+  "Create successfully": "Create successfully",
+  "Edit successfully": "Edit successfully",
+  fromTimeToTime: "%{from} to %{to}",
 };
 
 const zhCN = {
@@ -78,6 +85,13 @@ const zhCN = {
   Confirm: "确定",
   Cancel: "取消",
   "Select type": "选择类型",
+  Points: "积分",
+  "Please input points": "请输入积分",
+  Create: "创建",
+  Save: "保存",
+  "Create successfully": "创建成功",
+  "Edit successfully": "编辑成功",
+  fromTimeToTime: "%{from} 至 %{to}",
 };
 
 export const translations = {

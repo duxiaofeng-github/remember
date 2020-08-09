@@ -17,13 +17,20 @@ export function getOneTimeScheduleStartTime(schedule: string) {
 }
 
 export function getOneTimeScheduleEndTime(schedule: string, duration: number) {
-  return dayjs(getOneTimeScheduleStartTime(schedule) + duration).unix();
+  return dayjs.unix(getOneTimeScheduleStartTime(schedule)).add(duration, "second").unix();
 }
 
 export function isOneTimeSchedule(schedule: string) {
-  const [min, hour, day, month, week] = schedule.split(" ");
+  const scheduleArray = schedule.split(" ");
 
-  return min !== "*" && hour !== "*" && day !== "*" && week !== "*" && month !== "*";
+  return scheduleArray.length !== 5;
+}
+
+export function humanizeOneTimeSchedule(schedule: string, duration: number) {
+  const from = formatTime(dayjs(schedule));
+  const to = formatTime(dayjs(schedule).add(duration, "second"));
+
+  return translate("fromTimeToTime", { from, to });
 }
 
 export function isDailySchedule(schedule: string) {

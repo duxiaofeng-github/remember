@@ -1,19 +1,14 @@
 import React from "react";
-import { RexProvider, useRexContext } from "@jimengio/rex";
-import { createStore } from "@jimengio/rex";
 import { IBasicData as ICascadeData, CascadePickerView } from "./cascade-picker-view";
 import { IBasicData, IStoreProps, PickerView } from "./picker-view";
+import { RexProvider, createStore, useRexContext } from "../../../store/store";
 
 export interface IPickerStore extends IStoreProps<any> {
   cascadeData?: ICascadeData<any>;
   commonData?: IBasicData<any>;
 }
 
-const initialStore: IPickerStore = {
-  visible: false,
-};
-
-export const pickerStore = createStore<IPickerStore>(initialStore);
+export const pickerStore = createStore<IPickerStore>();
 
 interface IProps {}
 
@@ -21,7 +16,12 @@ export const PickerProvider: React.SFC<IProps> = (props) => {
   return (
     <>
       {props.children}
-      <RexProvider value={pickerStore}>
+      <RexProvider
+        store={pickerStore}
+        initialValue={{
+          visible: false,
+        }}
+      >
         <PickerWrapper />
       </RexProvider>
     </>
@@ -29,9 +29,7 @@ export const PickerProvider: React.SFC<IProps> = (props) => {
 };
 
 const PickerWrapper: React.SFC = () => {
-  const { cascadeData, commonData, ...restOptions } = useRexContext((store: IPickerStore) => {
-    return store;
-  });
+  const { cascadeData, commonData, ...restOptions } = useRexContext((store: IPickerStore) => store);
 
   return cascadeData ? (
     <CascadePickerView {...restOptions} data={cascadeData} />
