@@ -1,4 +1,4 @@
-import React, { useRef, useEffect, useState, ReactNode } from "react";
+import React, { useRef, useEffect, useState, ReactNode, useMemo } from "react";
 import {
   View,
   Dimensions,
@@ -152,7 +152,7 @@ export const PickerView: <T>(p: IProps<T>) => React.ReactElement<IProps<T>> | nu
     setInnerSelectIndexes(selectedIndexes || defaultIndexes);
   }, [selectedIndexes, data]);
 
-  const suffixElements = renderInsertions(insertions.slice(data.length));
+  const suffixElements = useMemo(() => renderInsertions(insertions.slice(data.length)), [insertions, data]);
 
   return (
     <View style={[s.container, innerVisible && s.containerVisible]} onTouchStart={cancel}>
