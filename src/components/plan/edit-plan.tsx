@@ -23,6 +23,7 @@ import { useNavigation } from "@react-navigation/native";
 import { Toast } from "../common/toast";
 import { Plan, PlanBase, createPlan, updatePlan } from "../../db/plan";
 import { useRexContext } from "../../store/store";
+import { Unit } from "../common/picker/duration-picker";
 
 interface IProps {}
 
@@ -152,9 +153,11 @@ export const EditPlan: React.SFC<IProps> = () => {
             return (
               <DurationSelect
                 clearable
+                title={translate("Select advance notice time")}
+                enabledUnits={[Unit.Minutes, Unit.Hours]}
                 label={translate("Notice")}
                 value={value}
-                title={translate("Select advance notice time")}
+                error={errors.noticeDuration}
                 onChange={onChange}
                 onFormat={(value) => {
                   if (value != null) {
@@ -168,7 +171,6 @@ export const EditPlan: React.SFC<IProps> = () => {
                 onFormatUnit={(unit) => {
                   return translate(`${unit}`);
                 }}
-                error={errors.noticeDuration}
               />
             );
           }}

@@ -21,6 +21,7 @@ export interface IDurationPickerProps {
   selectDays?: boolean;
   selectHours?: boolean;
   selectMinutes?: boolean;
+  enabledUnits?: Unit[];
   onFormat?: (value?: number) => string;
   onFormatUnit?: (unit?: Unit) => string;
   onChange?: (value?: number) => void;
@@ -42,6 +43,7 @@ export const DurationPicker: React.SFC<IDurationPickerProps> = (props) => {
     selectDays,
     selectHours,
     selectMinutes,
+    enabledUnits,
     title = "Select duration",
     onChange,
     onFormat,
@@ -71,7 +73,8 @@ export const DurationPicker: React.SFC<IDurationPickerProps> = (props) => {
     const numbersData = numbers.map((item) => {
       return { label: `${item}`, value: item };
     });
-    const unitsFormatted = onFormatUnit ? unitsArray.map((unit) => onFormatUnit(unit)) : unitsArray;
+    const units = getUnits(enabledUnits);
+    const unitsFormatted = onFormatUnit ? units.map((unit) => onFormatUnit(unit)) : units;
     const unitsData = unitsFormatted.map((item, index) => {
       return { label: item, value: index };
     });
@@ -81,14 +84,12 @@ export const DurationPicker: React.SFC<IDurationPickerProps> = (props) => {
     } else {
       return [numbersData, unitsData];
     }
-  }, [min, max, selectDays, selectHours, selectMinutes]);
+  }, [min, max, selectDays, selectHours, selectMinutes, enabledUnits]);
 
-  const values = useMemo(() => transformSecondsToValues(value, selectDays, selectHours, selectMinutes), [
-    value,
-    selectDays,
-    selectHours,
-    selectMinutes,
-  ]);
+  const values = useMemo(
+    () => transformSecondsToValues({ value, selectDays, selectHours, selectMinutes, enabledUnits }),
+    [value, selectDays, selectHours, selectMinutes, enabledUnits],
+  );
 
   return (
     <Picker
@@ -99,26 +100,33 @@ export const DurationPicker: React.SFC<IDurationPickerProps> = (props) => {
       suffix={suffix}
       onFormat={(newLabels, newValues) => {
         if (onFormat) {
-          return onFormat(transformValuesToSeconds(newValues));
+          return onFormat(
+            transformValuesToSeconds({ values: newValues, selectDays, selectHours, selectMinutes, enabledUnits }),
+          );
         }
 
         return "";
       }}
       onConfirm={(newValues) => {
         if (onChange) {
-          onChange(transformValuesToSeconds(newValues));
+          onChange(
+            transformValuesToSeconds({ values: newValues, selectDays, selectHours, selectMinutes, enabledUnits }),
+          );
         }
       }}
     />
   );
 };
 
-function transformSecondsToValues(
-  value?: number,
-  selectDays?: boolean,
-  selectHours?: boolean,
-  selectMinutes?: boolean,
-): number[] | undefined {
+function transformSecondsToValues(options: {
+  value?: number;
+  selectDays?: boolean;
+  selectHours?: boolean;
+  selectMinutes?: boolean;
+  enabledUnits?: Unit[];
+}): number[] | undefined {
+  const { value, selectDays, selectHours, selectMinutes, enabledUnits } = options;
+
   if (value) {
     const duration = secondsToDuration(value);
     const asDays = duration.asDays();
@@ -129,6 +137,8 @@ function transformSecondsToValues(
     const asMinutes = duration.asMinutes();
     const minutes = duration.minutes();
 
+    const units = getUnits(enabledUnits);
+
     if (selectDays) {
       return [asDays];
     } else if (selectHours) {
@@ -136,24 +146,28 @@ function transformSecondsToValues(
     } else if (selectMinutes) {
       return [asMinutes];
     } else if (asDays >= 1 && hours === 0 && minutes === 0) {
-      return [asDays, unitsArray.findIndex((item) => item === Unit.Days)];
+      return [asDays, units.findIndex((item) => item === Unit.Days)];
     } else if (asHours >= 1 && minutes === 0) {
-      return [asHours, unitsArray.findIndex((item) => item === Unit.Hours)];
+      return [asHours, units.findIndex((item) => item === Unit.Hours)];
     } else if (asMinutes >= 1) {
-      return [asMinutes, unitsArray.findIndex((item) => item === Unit.Minutes)];
+      return [asMinutes, units.findIndex((item) => item === Unit.Minutes)];
     }
   }
 }
 
-function transformValuesToSeconds(
-  values?: number[],
-  selectDays?: boolean,
-  selectHours?: boolean,
-  selectMinutes?: boolean,
-): number | undefined {
+function transformValuesToSeconds(options: {
+  values?: number[];
+  selectDays?: boolean;
+  selectHours?: boolean;
+  selectMinutes?: boolean;
+  enabledUnits?: Unit[];
+}): number | undefined {
+  const { values, selectDays, selectHours, selectMinutes, enabledUnits } = options;
+
   if (values) {
     const [number, unitIndex] = values;
-    const unit = unitsArray[unitIndex];
+    const units = getUnits(enabledUnits);
+    const unit = units[unitIndex];
 
     if (number != null) {
       if (selectDays) {
@@ -186,4 +200,8 @@ function transformUnitToDayjsUnit(unit: Unit) {
   }
 
   return "";
+}
+
+function getUnits(enabledUnits?: Unit[]) {
+  return enabledUnits || unitsArray;
 }

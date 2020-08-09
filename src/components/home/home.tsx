@@ -7,14 +7,19 @@ import { Reward } from "../reward/reward";
 import { Route } from "../../utils/route";
 import { Plan } from "../plan/plan";
 import { translate } from "../../utils/common";
+import { useRexContext } from "../../store/store";
+import { IStore } from "../../store";
 
 interface IProps {}
 
 const Tab = createBottomTabNavigator();
 
 export const Home: React.SFC<IProps> = () => {
+  const { lang } = useRexContext((store: IStore) => store);
+
   return (
     <Tab.Navigator
+      key={lang}
       screenOptions={({ route }) => ({
         tabBarIcon: ({ focused, color, size }) => {
           switch (route.name) {
