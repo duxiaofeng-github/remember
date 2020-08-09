@@ -55,12 +55,14 @@ export const TimePicker: React.SFC<ITimePickerProps> = (props) => {
         return "";
       }}
       onChange={(columnIndex, newValue, index, [hour, minute]) => {
-        setInnerValue(dayjs(new Date(0, 0, 0, hour, minute, 0, 0)).unix());
+        setInnerValue(dayjs().hour(hour).minute(minute).second(0).millisecond(0).unix());
       }}
       onConfirm={(newValue) => {
         if (onChange) {
           const newDate =
-            newValue != null ? dayjs(new Date(0, 0, 0, newValue[0], newValue[1], 0, 0)).unix() : undefined;
+            newValue != null
+              ? dayjs().hour(newValue[0]).minute(newValue[1]).second(0).millisecond(0).unix()
+              : undefined;
           onChange(newDate);
         }
       }}

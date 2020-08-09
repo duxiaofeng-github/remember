@@ -51,30 +51,34 @@ export const Plan: React.SFC<IProps> = () => {
 
           return data!.length !== 0 ? (
             <View>
-              {data!.map((item) => {
-                const { schedule, duration } = item;
-                return (
-                  <ListItem
-                    key={item._id}
-                    bottomDivider
-                    title={item.content}
-                    subtitle={
-                      <Text style={s.subTitle}>
-                        {isOneTimeSchedule(schedule)
-                          ? humanizeOneTimeSchedule(schedule, duration)
-                          : humanizeCron(schedule)}
-                      </Text>
-                    }
-                    onPress={async () => {
-                      await globalStore.update((store) => {
-                        store.edittingPlanId = item._id;
-                      });
+              {data!
+                .concat()
+                .sort((a, b) => b.updatedAt - a.updatedAt)
+                .map((item) => {
+                  const { schedule, duration } = item;
 
-                      navigation.navigate(Route.EditPlan);
-                    }}
-                  />
-                );
-              })}
+                  return (
+                    <ListItem
+                      key={item._id}
+                      bottomDivider
+                      title={item.content}
+                      subtitle={
+                        <Text style={s.subTitle}>
+                          {isOneTimeSchedule(schedule)
+                            ? humanizeOneTimeSchedule(schedule, duration)
+                            : humanizeCron(schedule)}
+                        </Text>
+                      }
+                      onPress={async () => {
+                        await globalStore.update((store) => {
+                          store.edittingPlanId = item._id;
+                        });
+
+                        navigation.navigate(Route.EditPlan);
+                      }}
+                    />
+                  );
+                })}
             </View>
           ) : (
             <Empty />

@@ -59,13 +59,13 @@ export const WeekTimePicker: React.SFC<IWeekTimePickerProps> = (props) => {
         return "";
       }}
       onChange={(columnIndex, newValue, index, [weekDay, hour, minute]) => {
-        setInnerValue(dayjs(new Date(0, 0, 0, hour, minute, 0, 0)).weekday(weekDay).unix());
+        setInnerValue(dayjs().weekday(weekDay).hour(hour).minute(minute).second(0).millisecond(0).unix());
       }}
       onConfirm={(newValue) => {
         if (onChange) {
           const newDate =
             newValue != null
-              ? dayjs(new Date(0, 0, 0, newValue[1], newValue[2], 0, 0)).weekday(newValue[0]).unix()
+              ? dayjs().weekday(newValue[0]).hour(newValue[1]).minute(newValue[2]).second(0).millisecond(0).unix()
               : undefined;
           onChange(newDate);
         }

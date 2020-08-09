@@ -78,6 +78,10 @@ export const EditPlan: React.SFC<IProps> = () => {
     }
 
     Toast.message(isCreating ? translate("Create successfully") : translate("Edit successfully"));
+
+    await plansData.load();
+
+    navigation.goBack();
   });
 
   useEffect(() => {
@@ -97,10 +101,6 @@ export const EditPlan: React.SFC<IProps> = () => {
           text: isCreating ? translate("Create") : translate("Save"),
           onTouchEnd: async () => {
             await triggerSubmit();
-
-            await plansData.load();
-
-            navigation.goBack();
           },
         }}
       />
@@ -108,7 +108,7 @@ export const EditPlan: React.SFC<IProps> = () => {
         <Controller
           control={control}
           name="content"
-          rules={{ required: translate("Plan content is required") }}
+          rules={{ required: translate("Content is required") }}
           render={({ onChange, onBlur, value }) => (
             <Textarea
               onBlur={onBlur}
@@ -117,7 +117,7 @@ export const EditPlan: React.SFC<IProps> = () => {
               label={translate("content")}
               error={errors.content}
               rows={1}
-              placeholder={translate("Please input plan content")}
+              placeholder={translate("Please input content")}
             />
           )}
         />
@@ -211,7 +211,7 @@ export const StartTimeAndEndTimePicker: React.SFC<IStartTimeAndEndTimePickerProp
       <Controller
         control={control}
         name="startTime"
-        rules={{ required: translate("Plan start time is required") }}
+        rules={{ required: translate("Start time is required") }}
         render={({ onChange, onBlur, value }) => {
           switch (repeatType) {
             case Period.Daily:
@@ -260,7 +260,7 @@ export const StartTimeAndEndTimePicker: React.SFC<IStartTimeAndEndTimePickerProp
       <Controller
         control={control}
         name="endTime"
-        rules={{ required: translate("Plan end time is required") }}
+        rules={{ required: translate("End time is required") }}
         render={({ onChange, onBlur, value }) => {
           switch (repeatType) {
             case Period.Daily:

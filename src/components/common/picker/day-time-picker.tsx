@@ -59,12 +59,14 @@ export const DayTimePicker: React.SFC<IDayTimePickerProps> = (props) => {
         return "";
       }}
       onChange={(columnIndex, newValue, index, [date, hour, minute]) => {
-        setInnerValue(dayjs(new Date(0, 0, date, hour, minute, 0, 0)).unix());
+        setInnerValue(dayjs().date(date).hour(hour).minute(minute).second(0).millisecond(0).unix());
       }}
       onConfirm={(newValue) => {
         if (onChange) {
           const newDate =
-            newValue != null ? dayjs(new Date(0, 0, newValue[0], newValue[1], newValue[2], 0, 0)).unix() : undefined;
+            newValue != null
+              ? dayjs().date(newValue[0]).hour(newValue[1]).minute(newValue[2]).second(0).millisecond(0).unix()
+              : undefined;
           onChange(newDate);
         }
       }}
