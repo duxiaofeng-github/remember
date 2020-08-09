@@ -24,6 +24,9 @@ import { Toast } from "../common/toast";
 import { Plan, PlanBase, createPlan, updatePlan } from "../../db/plan";
 import { useRexContext } from "../../store/store";
 import { Unit } from "../common/picker/duration-picker";
+import { TimeSelect } from "../common/time-select";
+import { WeekTimeSelect } from "../common/week-time-select";
+import { DayTimeSelect } from "../common/day-time-select";
 
 interface IProps {}
 
@@ -37,7 +40,7 @@ enum Period {
 
 interface IForm {
   content: string;
-  type: Period;
+  repeatType: Period;
   startTime: number;
   endTime: number;
   repeatEndedAt?: number;
@@ -54,13 +57,13 @@ export const EditPlan: React.SFC<IProps> = () => {
     plansData,
   ]);
   const isCreating = useMemo(() => edittingPlan == null, [edittingPlan]);
-  const { content, type, startTime, endTime, noticeDuration, pointsPerTask } = useMemo(
+  const { content, repeatType, startTime, endTime, noticeDuration, pointsPerTask } = useMemo(
     () => transformPlanToForm(edittingPlan),
     [edittingPlan],
   );
   const form = useForm<IForm>({
     mode: "onChange",
-    defaultValues: { content, type, startTime, endTime, noticeDuration, pointsPerTask },
+    defaultValues: { content, repeatType, startTime, endTime, noticeDuration, pointsPerTask },
   });
   const { control, handleSubmit, errors, watch } = form;
   const triggerSubmit = handleSubmit(async (data: IForm) => {
@@ -120,14 +123,14 @@ export const EditPlan: React.SFC<IProps> = () => {
         />
         <Controller
           control={control}
-          name="type"
-          rules={{ required: translate("Plan type is required") }}
+          name="repeatType"
+          rules={{ required: translate("Repeat type is required") }}
           render={({ onChange, onBlur, value }) => {
             const data = [
-              { label: translate("oneTime"), value: Period.OneTime },
-              { label: translate("dailyPlan"), value: Period.Daily },
-              { label: translate("weeklyPlan"), value: Period.Weekly },
-              { label: translate("monthlyPlan"), value: Period.Monthly },
+              { label: translate("No repeat"), value: Period.OneTime },
+              { label: translate("Daily plan"), value: Period.Daily },
+              { label: translate("Weekly plan"), value: Period.Weekly },
+              { label: translate("Monthly plan"), value: Period.Monthly },
               // { label: translate("customized"), value: Period.Customized },
             ];
 
@@ -136,16 +139,16 @@ export const EditPlan: React.SFC<IProps> = () => {
                 onConfirm={(value) => {
                   onChange(value ? value[0] : undefined);
                 }}
-                title={translate("Select type")}
+                title={translate("Select repeat type")}
                 value={[value]}
                 data={[data]}
-                label={translate("type")}
-                error={errors.type}
+                label={translate("Repeat type")}
+                error={errors.repeatType}
               />
             );
           }}
         />
-        <StartTimeAndEndTimePicker type={watch("type")} form={form} />
+        <StartTimeAndEndTimePicker repeatType={watch("repeatType")} form={form} />
         <Controller
           control={control}
           name="noticeDuration"
@@ -195,25 +198,25 @@ export const EditPlan: React.SFC<IProps> = () => {
 };
 
 interface IStartTimeAndEndTimePickerProps {
-  type: Period;
+  repeatType: Period;
   form: UseFormMethods<IForm>;
 }
 
 export const StartTimeAndEndTimePicker: React.SFC<IStartTimeAndEndTimePickerProps> = (props) => {
-  const { type, form } = props;
+  const { repeatType, form } = props;
   const { control, errors, watch } = form;
 
-  switch (type) {
-    case Period.OneTime:
-      return (
-        <>
-          <Controller
-            control={control}
-            name="startTime"
-            rules={{ required: translate("Plan start time is required") }}
-            render={({ onChange, onBlur, value }) => {
+  return (
+    <>
+      <Controller
+        control={control}
+        name="startTime"
+        rules={{ required: translate("Plan start time is required") }}
+        render={({ onChange, onBlur, value }) => {
+          switch (repeatType) {
+            case Period.Daily:
               return (
-                <DateTimeSelect
+                <TimeSelect
                   onChange={onChange}
                   maxTime={watch("endTime")}
                   value={value}
@@ -221,15 +224,48 @@ export const StartTimeAndEndTimePicker: React.SFC<IStartTimeAndEndTimePickerProp
                   error={errors.startTime}
                 />
               );
-            }}
-          />
-          <Controller
-            control={control}
-            name="endTime"
-            rules={{ required: translate("Plan end time is required") }}
-            render={({ onChange, onBlur, value }) => {
+            case Period.Weekly:
               return (
-                <DateTimeSelect
+                <WeekTimeSelect
+                  onChange={onChange}
+                  maxTime={watch("endTime")}
+                  value={value}
+                  label={translate("Start time")}
+                  error={errors.startTime}
+                />
+              );
+            case Period.Monthly:
+              return (
+                <DayTimeSelect
+                  onChange={onChange}
+                  maxTime={watch("endTime")}
+                  value={value}
+                  label={translate("Start time")}
+                  error={errors.startTime}
+                />
+              );
+          }
+
+          return (
+            <DateTimeSelect
+              onChange={onChange}
+              maxTime={watch("endTime")}
+              value={value}
+              label={translate("Start time")}
+              error={errors.startTime}
+            />
+          );
+        }}
+      />
+      <Controller
+        control={control}
+        name="endTime"
+        rules={{ required: translate("Plan end time is required") }}
+        render={({ onChange, onBlur, value }) => {
+          switch (repeatType) {
+            case Period.Daily:
+              return (
+                <TimeSelect
                   onChange={onChange}
                   minTime={watch("startTime")}
                   value={value}
@@ -237,13 +273,41 @@ export const StartTimeAndEndTimePicker: React.SFC<IStartTimeAndEndTimePickerProp
                   error={errors.endTime}
                 />
               );
-            }}
-          />
-        </>
-      );
-  }
+            case Period.Weekly:
+              return (
+                <WeekTimeSelect
+                  onChange={onChange}
+                  minTime={watch("startTime")}
+                  value={value}
+                  label={translate("End time")}
+                  error={errors.endTime}
+                />
+              );
+            case Period.Monthly:
+              return (
+                <DayTimeSelect
+                  onChange={onChange}
+                  minTime={watch("startTime")}
+                  value={value}
+                  label={translate("End time")}
+                  error={errors.endTime}
+                />
+              );
+          }
 
-  return null;
+          return (
+            <DateTimeSelect
+              onChange={onChange}
+              minTime={watch("startTime")}
+              value={value}
+              label={translate("End time")}
+              error={errors.endTime}
+            />
+          );
+        }}
+      />
+    </>
+  );
 };
 
 const s = StyleSheet.create({
@@ -255,7 +319,7 @@ const s = StyleSheet.create({
 
 interface IDefaultForm {
   content?: string;
-  type: Period;
+  repeatType: Period;
   startTime: number;
   endTime?: number;
   noticeDuration?: number;
@@ -264,7 +328,7 @@ interface IDefaultForm {
 
 function transformPlanToForm(plan?: Plan): IDefaultForm {
   const { content, schedule, duration, repeatEndedAt, repeatEndedCount, noticeDuration, pointsPerTask } = plan || {};
-  const type = !schedule
+  const repeatType = !schedule
     ? Period.OneTime
     : isOneTimeSchedule(schedule)
     ? Period.OneTime
@@ -280,7 +344,7 @@ function transformPlanToForm(plan?: Plan): IDefaultForm {
 
   return {
     content,
-    type,
+    repeatType,
     startTime,
     endTime,
     noticeDuration,
@@ -303,8 +367,17 @@ function transformFormToPlan(originalPlan: Plan, form: IForm): Plan {
 }
 
 function transformFormToPlanBase(form: IForm): PlanBase {
-  const { content, type, startTime, endTime, repeatEndedAt, repeatEndedCount, noticeDuration, pointsPerTask } = form;
-  const { schedule, duration } = getScheduleAndDuration(type, startTime, endTime);
+  const {
+    content,
+    repeatType,
+    startTime,
+    endTime,
+    repeatEndedAt,
+    repeatEndedCount,
+    noticeDuration,
+    pointsPerTask,
+  } = form;
+  const { schedule, duration } = getScheduleAndDuration(repeatType, startTime, endTime);
 
   return {
     content,
@@ -317,11 +390,11 @@ function transformFormToPlanBase(form: IForm): PlanBase {
   };
 }
 
-function getScheduleAndDuration(type: Period, startTime: number, endTime: number) {
+function getScheduleAndDuration(repeatType: Period, startTime: number, endTime: number) {
   const startTimeParsed = dayjs.unix(startTime);
   const endTimeParsed = dayjs.unix(endTime);
 
-  switch (type) {
+  switch (repeatType) {
     case Period.Daily:
       return { schedule: ``, duration: 0 };
   }

@@ -171,8 +171,8 @@ const s = StyleSheet.create({
   container: {
     position: "relative",
     height: itemHeight * itemCount,
-    paddingLeft: 10,
-    paddingRight: 10,
+    paddingLeft: 5,
+    paddingRight: 5,
     overflow: "hidden",
   },
   inner: {
@@ -190,10 +190,9 @@ const s = StyleSheet.create({
     right: 0,
     top: indicatorUpperBounce,
     height: itemHeight,
-    borderTopColor: "rgba(200,200,200,0.5)",
+    borderTopColor: "#2b8bda",
     borderTopWidth: 1,
-    borderBottomColor: "rgba(200,200,200,0.5)",
+    borderBottomColor: "#2b8bda",
     borderBottomWidth: 1,
-    backgroundColor: "rgba(255,255,255,0.5)",
   },
 });

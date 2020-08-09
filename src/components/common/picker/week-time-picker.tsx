@@ -2,8 +2,11 @@ import React, { useState, useEffect, useMemo } from "react";
 import dayjs from "dayjs";
 import { Picker } from "./picker";
 import { TextStyle, StyleProp } from "react-native";
+import weekday from "dayjs/plugin/weekday";
 
-export interface IDateTimePickerProps {
+dayjs.extend(weekday);
+
+export interface IWeekTimePickerProps {
   title?: string;
   titleStyle?: StyleProp<TextStyle>;
   textStyle?: StyleProp<TextStyle>;
@@ -19,7 +22,7 @@ export interface IDateTimePickerProps {
   onChange?: (value?: number) => void;
 }
 
-export const DateTimePicker: React.SFC<IDateTimePickerProps> = (props) => {
+export const WeekTimePicker: React.SFC<IWeekTimePickerProps> = (props) => {
   const { value, minTime, maxTime, title = "Select time", onChange, ...restProps } = props;
   const [innerValue, setInnerValue] = useState<number | undefined>(0);
 
@@ -27,21 +30,7 @@ export const DateTimePicker: React.SFC<IDateTimePickerProps> = (props) => {
     setInnerValue(value);
   }, [value]);
 
-  const years = useMemo(() => toDataArray(getYears({ value: innerValue, minTime, maxTime })), [
-    innerValue,
-    minTime,
-    maxTime,
-  ]);
-  const months = useMemo(() => toDataArray(getMonths({ value: innerValue, minTime, maxTime }), false, 1), [
-    innerValue,
-    minTime,
-    maxTime,
-  ]);
-  const dates = useMemo(() => toDataArray(getDates({ value: innerValue, minTime, maxTime })), [
-    innerValue,
-    minTime,
-    maxTime,
-  ]);
+  const weeks = useMemo(() => getWeeks({ value: innerValue, minTime, maxTime }), [innerValue, minTime, maxTime]);
   const hours = useMemo(() => toDataArray(getHours({ value: innerValue, minTime, maxTime }), true), [
     innerValue,
     minTime,
@@ -60,23 +49,23 @@ export const DateTimePicker: React.SFC<IDateTimePickerProps> = (props) => {
       {...restProps}
       title={title}
       value={values}
-      data={[years, months, dates, hours, minutes]}
-      insertions={[[], ["/"], ["/"], [" "], [":"]]}
+      data={[weeks, hours, minutes]}
+      insertions={[[], [" "], [":"]]}
       onFormat={(labels, values) => {
         if (innerValue) {
-          return dayjs.unix(innerValue).format("YYYY/MM/DD HH:mm");
+          return dayjs.unix(innerValue).format("dddd HH:mm");
         }
 
         return "";
       }}
-      onChange={(columnIndex, newValue, index, [year, month, date, hour, minute]) => {
-        setInnerValue(dayjs(new Date(year, month, date, hour, minute, 0, 0)).unix());
+      onChange={(columnIndex, newValue, index, [weekDay, hour, minute]) => {
+        setInnerValue(dayjs(new Date(0, 0, 0, hour, minute, 0, 0)).weekday(weekDay).unix());
       }}
       onConfirm={(newValue) => {
         if (onChange) {
           const newDate =
             newValue != null
-              ? dayjs(new Date(newValue[0], newValue[1], newValue[2], newValue[3], newValue[4], 0, 0)).unix()
+              ? dayjs(new Date(0, 0, 0, newValue[1], newValue[2], 0, 0)).weekday(newValue[0]).unix()
               : undefined;
           onChange(newDate);
         }
@@ -119,10 +108,24 @@ function parseOptions(options: IOptions) {
   };
 }
 
+function getWeeks(options: IOptions) {
+  const { minTime, maxTime } = parseOptions(options);
+  const min = minTime ? minTime.weekday() : undefined;
+  const max = maxTime ? maxTime.weekday() : undefined;
+
+  return Array(7)
+    .fill(0)
+    .map((item, index) => index)
+    .filter((value) => isInRange({ value, min, max }))
+    .map((weekday) => {
+      return { label: dayjs().weekday(weekday).format("dddd"), value: weekday };
+    });
+}
+
 function getHours(options: IOptions) {
   const { value, minTime, maxTime } = parseOptions(options);
-  const min = minTime && value.isSame(minTime, "date") ? minTime.hour() : undefined;
-  const max = maxTime && value.isSame(maxTime, "date") ? maxTime.hour() : undefined;
+  const min = minTime && value.weekday() === minTime.weekday() ? minTime.hour() : undefined;
+  const max = maxTime && value.weekday() === maxTime.weekday() ? maxTime.hour() : undefined;
 
   return Array(24)
     .fill(0)
@@ -132,49 +135,14 @@ function getHours(options: IOptions) {
 
 function getMinutes(options: IOptions) {
   const { value, minTime, maxTime } = parseOptions(options);
-  const min = minTime && value.isSame(minTime, "hour") ? minTime.minute() : undefined;
-  const max = maxTime && value.isSame(maxTime, "hour") ? maxTime.minute() : undefined;
+  const min =
+    minTime && value.weekday() === minTime.weekday() && value.hour() === minTime.hour() ? minTime.minute() : undefined;
+  const max =
+    maxTime && value.weekday() === maxTime.weekday() && value.hour() === maxTime.hour() ? maxTime.minute() : undefined;
 
   return Array(60)
     .fill(0)
     .map((item, index) => index)
-    .filter((value) => isInRange({ value, min, max }));
-}
-
-function getDates(options: IOptions) {
-  const { value, minTime, maxTime } = parseOptions(options);
-  const daysInMonth = value.endOf("month").daysInMonth();
-  const min = minTime && value.isSame(minTime, "month") ? minTime.date() : undefined;
-  const max = maxTime && value.isSame(maxTime, "month") ? maxTime.date() : undefined;
-
-  return Array(daysInMonth)
-    .fill(0)
-    .map((item, index) => index + 1)
-    .filter((value) => isInRange({ value, min, max }));
-}
-
-function getMonths(options: IOptions) {
-  const { value, minTime, maxTime } = parseOptions(options);
-  const min = minTime && value.isSame(minTime, "year") ? minTime.month() : undefined;
-  const max = maxTime && value.isSame(maxTime, "year") ? maxTime.month() : undefined;
-
-  return Array(12)
-    .fill(0)
-    .map((item, index) => index)
-    .filter((value) => isInRange({ value, min, max }));
-}
-
-const offsetYearsCount = 100;
-
-function getYears(options: IOptions) {
-  const { value, minTime, maxTime } = parseOptions(options);
-  const year = value.year();
-  const min = minTime ? minTime.year() : undefined;
-  const max = maxTime ? maxTime.year() : undefined;
-
-  return Array(offsetYearsCount * 2 + 1)
-    .fill(0)
-    .map((item, index) => year - offsetYearsCount + index)
     .filter((value) => isInRange({ value, min, max }));
 }
 
@@ -187,7 +155,5 @@ function toDataArray(values: number[], prefix = false, offset = 0) {
 function transformValueToValues(value?: number) {
   const valueParsed = value ? dayjs.unix(value) : undefined;
 
-  return valueParsed
-    ? [valueParsed.year(), valueParsed.month(), valueParsed.date(), valueParsed.hour(), valueParsed.minute()]
-    : undefined;
+  return valueParsed ? [valueParsed.weekday(), valueParsed.hour(), valueParsed.minute()] : undefined;
 }

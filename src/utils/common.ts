@@ -30,7 +30,7 @@ export function humanizeOneTimeSchedule(schedule: string, duration: number) {
   const from = formatTime(dayjs(schedule));
   const to = formatTime(dayjs(schedule).add(duration, "second"));
 
-  return translate("fromTimeToTime", { from, to });
+  return translate("%{from} to %{to}", { from, to });
 }
 
 export function isDailySchedule(schedule: string) {

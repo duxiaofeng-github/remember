@@ -1,18 +1,18 @@
 import React from "react";
 import { StyleSheet } from "react-native";
 import { colorText } from "../../utils/style";
-import { DateTimePicker, IDateTimePickerProps } from "./picker/date-time-picker";
+import { DayTimePicker, IDayTimePickerProps } from "./picker/day-time-picker";
 import { translate } from "../../utils/common";
 import { Field, IFieldProps } from "./field";
 
-interface IProps extends IDateTimePickerProps, IFieldProps {}
+interface IProps extends IDayTimePickerProps, IFieldProps {}
 
-export const DateTimeSelect: React.SFC<IProps> = (props) => {
+export const DayTimeSelect: React.SFC<IProps> = (props) => {
   const { label, error, ...restProps } = props;
 
   return (
     <Field label={label} error={error}>
-      <DateTimePicker
+      <DayTimePicker
         {...restProps}
         title={translate("Select date")}
         titleStyle={s.pickerText}

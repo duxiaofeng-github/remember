@@ -97,7 +97,7 @@ export const DurationPicker: React.SFC<IDurationPickerProps> = (props) => {
       title={title}
       value={values}
       data={data}
-      suffix={suffix}
+      insertions={[[], [suffix]]}
       onFormat={(newLabels, newValues) => {
         if (onFormat) {
           return onFormat(

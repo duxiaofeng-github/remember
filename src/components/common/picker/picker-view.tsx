@@ -1,4 +1,4 @@
-import React, { useRef, useEffect, useState } from "react";
+import React, { useRef, useEffect, useState, ReactNode } from "react";
 import {
   View,
   Dimensions,
@@ -39,8 +39,7 @@ export interface IPickerProps {
   cancelStyle?: StyleProp<TextStyle>;
   confirmText?: string;
   confirmStyle?: StyleProp<TextStyle>;
-  prefix?: string;
-  suffix?: string;
+  insertions?: (string | ReactNode)[][];
 }
 
 export interface IPickerViewProps<T> extends IPickerProps {
@@ -69,8 +68,7 @@ export const PickerView: <T>(p: IProps<T>) => React.ReactElement<IProps<T>> | nu
     cancelStyle,
     confirmText,
     confirmStyle,
-    prefix,
-    suffix,
+    insertions = [],
     selectedIndexes,
     onCancel,
     onConfirm,
@@ -125,6 +123,22 @@ export const PickerView: <T>(p: IProps<T>) => React.ReactElement<IProps<T>> | nu
     });
   }
 
+  function renderInsertions(insertions?: (string | ReactNode)[]) {
+    return insertions
+      ? insertions.map((item, index) => {
+          if (typeof item === "string") {
+            return (
+              <Text key={index} style={textStyle}>
+                {item}
+              </Text>
+            );
+          } else {
+            return item;
+          }
+        })
+      : null;
+  }
+
   useEffect(() => {
     if (visible) {
       popup();
@@ -137,6 +151,8 @@ export const PickerView: <T>(p: IProps<T>) => React.ReactElement<IProps<T>> | nu
     const defaultIndexes = data.map(() => 0);
     setInnerSelectIndexes(selectedIndexes || defaultIndexes);
   }, [selectedIndexes, data]);
+
+  const suffixElements = renderInsertions(insertions.slice(data.length));
 
   return (
     <View style={[s.container, innerVisible && s.containerVisible]} onTouchStart={cancel}>
@@ -157,38 +173,42 @@ export const PickerView: <T>(p: IProps<T>) => React.ReactElement<IProps<T>> | nu
           onConfirm={confirm}
         />
         <View style={s.pickerContainer}>
-          {prefix && <Text style={textStyle}>{prefix}</Text>}
           {data.map((columnData, columnIndex) => {
+            const prefix = insertions[columnIndex];
+            const prefixElements = renderInsertions(prefix);
+
             return (
-              <ScrollView
-                key={columnIndex}
-                style={columnIndex !== 0 ? s.scrollView : undefined}
-                textStyle={textStyle}
-                selectedIndex={innerSelectedIndexes[columnIndex]}
-                data={columnData}
-                onChange={(newIndex, record) => {
-                  const newIndexes = [...innerSelectedIndexes];
+              <View key={columnIndex} style={[s.pickerColumn, columnIndex === 0 && { marginLeft: -10 }]}>
+                {prefixElements && <View style={s.scrollView}>{prefixElements}</View>}
+                <ScrollView
+                  style={s.scrollView}
+                  textStyle={textStyle}
+                  selectedIndex={innerSelectedIndexes[columnIndex]}
+                  data={columnData}
+                  onChange={(newIndex, record) => {
+                    const newIndexes = [...innerSelectedIndexes];
 
-                  newIndexes[columnIndex] = newIndex;
+                    newIndexes[columnIndex] = newIndex;
 
-                  setInnerSelectIndexes(newIndexes);
+                    setInnerSelectIndexes(newIndexes);
 
-                  if (onChange) {
-                    onChange(
-                      columnIndex,
-                      record.value,
-                      newIndex,
-                      newIndexes.map(
-                        (index, columnIndex) => data[columnIndex][index] && data[columnIndex][index].value,
-                      ),
-                      newIndexes,
-                    );
-                  }
-                }}
-              />
+                    if (onChange) {
+                      onChange(
+                        columnIndex,
+                        record.value,
+                        newIndex,
+                        newIndexes.map(
+                          (index, columnIndex) => data[columnIndex][index] && data[columnIndex][index].value,
+                        ),
+                        newIndexes,
+                      );
+                    }
+                  }}
+                />
+              </View>
             );
           })}
-          {suffix && <Text style={textStyle}>{suffix}</Text>}
+          {suffixElements && <View style={s.scrollView}>{suffixElements}</View>}
         </View>
       </Animated.View>
     </View>
@@ -225,6 +245,11 @@ const s = StyleSheet.create({
     overflowX: "auto",
     paddingLeft: 10,
     paddingRight: 10,
+  },
+  pickerColumn: {
+    display: "flex",
+    flexDirection: "row",
+    alignItems: "center",
   },
   scrollView: {
     marginLeft: 10,
