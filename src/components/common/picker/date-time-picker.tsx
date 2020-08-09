@@ -69,13 +69,13 @@ export const DateTimePicker: React.SFC<IDateTimePickerProps> = (props) => {
         return "";
       }}
       onChange={(columnIndex, newValue, index, [year, month, date, hour, minute]) => {
-        setInnerValue(dayjs(new Date(year, month, date, hour, minute)).unix());
+        setInnerValue(dayjs(new Date(year, month, date, hour, minute, 0, 0)).unix());
       }}
       onConfirm={(newValue) => {
         if (onChange) {
           const newDate =
             newValue != null
-              ? dayjs(new Date(newValue[0], newValue[1], newValue[2], newValue[3], newValue[4])).unix()
+              ? dayjs(new Date(newValue[0], newValue[1], newValue[2], newValue[3], newValue[4], 0, 0)).unix()
               : undefined;
           onChange(newDate);
         }
