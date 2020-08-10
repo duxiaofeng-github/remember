@@ -14,11 +14,14 @@ import {
   translate,
   secondsToDuration,
 } from "../../utils/common";
-import { colorTextLight } from "../../utils/style";
+import { colorTextLight, colorError } from "../../utils/style";
 import { globalStore, IStore } from "../../store";
 import { useRexContext } from "../../store/store";
 import { Icon } from "../common/icon";
-import { Popup } from "../common/popup";
+import { PopupMenu } from "../common/popup-menu";
+import { useSubmission } from "../../utils/hooks/use-submission";
+import { deletePlan } from "../../db/plan";
+import { Toast } from "../common/toast";
 
 interface IProps {}
 
@@ -29,6 +32,14 @@ export const Plan: React.SFC<IProps> = () => {
   useEffect(() => {
     plansData.load();
   }, []);
+
+  const { triggerer: deletePlanTriggerer } = useSubmission(async (id?: string) => {
+    await deletePlan(id!);
+
+    Toast.message(translate("Delete successfully"));
+
+    await plansData.load();
+  });
 
   return (
     <View style={s.container}>
@@ -77,7 +88,15 @@ export const Plan: React.SFC<IProps> = () => {
                         onPress: (e) => {
                           e.stopPropagation();
 
-                          Popup.show({ children: <Text>ok</Text> });
+                          PopupMenu.show([
+                            {
+                              text: translate("Delete"),
+                              style: s.deleteText,
+                              onTouchStart: () => {
+                                deletePlanTriggerer(item._id);
+                              },
+                            },
+                          ]);
                         },
                       }}
                       onPress={async () => {
@@ -118,5 +137,8 @@ const s = StyleSheet.create({
   },
   subTitle: {
     color: colorTextLight,
+  },
+  deleteText: {
+    color: colorError,
   },
 });

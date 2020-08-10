@@ -57,6 +57,8 @@ const en = {
   "Repeat ended date is required": "Repeat ended date is required",
   "Select repeat ended date": "Select repeat ended date",
   "Repeat ended date": "Repeat ended date",
+  Delete: "Delete",
+  "Delete successfully": "Delete successfully",
 };
 
 const zhCN = {
@@ -118,6 +120,8 @@ const zhCN = {
   "Repeat ended date is required": "结束重复日期必填",
   "Select repeat ended date": "选择结束重复日期",
   "Repeat ended date": "结束重复日期",
+  Delete: "删除",
+  "Delete successfully": "删除成功",
 };
 
 export const translations = {

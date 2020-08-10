@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, ReactNode } from "react";
-import { StyleSheet, Animated, View } from "react-native";
+import { StyleSheet, Animated, View, StyleProp, ViewStyle } from "react-native";
 import { RexProvider, createStore, useRexContext } from "../../store/store";
 
 interface IProps {}
@@ -17,7 +17,7 @@ export const PopupProvider: React.SFC<IProps> = (props) => {
 
 const PopupImpl: React.SFC<IProps> = (props) => {
   const { options } = useRexContext((store: IPopupStore) => store);
-  const { onClose, children, closable = true } = options || {};
+  const { onClose, children, contentStyle, closable = true } = options || {};
   const opacityValue = useRef(new Animated.Value(0)).current;
 
   function close() {
@@ -63,7 +63,7 @@ const PopupImpl: React.SFC<IProps> = (props) => {
       }}
     >
       <View
-        style={s.content}
+        style={[s.content, contentStyle]}
         onTouchStart={(e) => {
           e.stopPropagation();
         }}
@@ -88,13 +88,13 @@ const s = StyleSheet.create({
   },
   content: {
     borderRadius: 3,
-    padding: 8,
     backgroundColor: "#fff",
   },
 });
 
 interface IPopupOptions {
   closable?: boolean;
+  contentStyle?: StyleProp<ViewStyle>;
   children?: ReactNode;
   onClose?: () => void;
 }
@@ -112,6 +112,6 @@ export const Popup = {
       store.options = options;
     });
 
-    return popupStore.getState().close;
+    return popupStore.getState().close!;
   },
 };
