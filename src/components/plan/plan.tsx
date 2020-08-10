@@ -44,17 +44,6 @@ export const Plan: React.SFC<IProps> = () => {
       <Loading
         options={plansData}
         render={(data) => {
-          // return (
-          //   <Tabs
-          //     tabs={[
-          //       { title: I18n.t("daily"), content: <View>daily</View> },
-          //       { title: I18n.t("weekly"), content: <View>weekly</View> },
-          //       { title: I18n.t("monthly"), content: <View>monthly</View> },
-          //       { title: I18n.t("others"), content: <View>others</View> },
-          //     ]}
-          //   />
-          // );
-
           return data!.length !== 0 ? (
             <View style={s.content}>
               {data!
