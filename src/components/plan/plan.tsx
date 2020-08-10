@@ -7,17 +7,23 @@ import { Loading } from "../common/loading";
 import { ListItem } from "react-native-elements";
 import { Text } from "../common/text";
 import { Empty } from "../common/empty";
-import { humanizeCron, isOneTimeSchedule, humanizeOneTimeSchedule } from "../../utils/common";
+import {
+  humanizeCron,
+  isOneTimeSchedule,
+  humanizeOneTimeSchedule,
+  translate,
+  secondsToDuration,
+} from "../../utils/common";
 import { colorTextLight } from "../../utils/style";
 import { globalStore, IStore } from "../../store";
 import { useRexContext } from "../../store/store";
-import { loadPlans } from "../../store/plan";
+import { Icon } from "../common/icon";
 
 interface IProps {}
 
 export const Plan: React.SFC<IProps> = () => {
   const navigation = useNavigation();
-  const { plansData } = useRexContext((store: IStore) => store);
+  const { plansData, lang } = useRexContext((store: IStore) => store);
 
   useEffect(() => {
     plansData.load();
@@ -63,11 +69,16 @@ export const Plan: React.SFC<IProps> = () => {
                       bottomDivider
                       title={item.content}
                       subtitle={
-                        <Text style={s.subTitle}>
-                          {isOneTimeSchedule(schedule)
-                            ? humanizeOneTimeSchedule(schedule, duration)
-                            : humanizeCron(schedule)}
-                        </Text>
+                        <View style={s.subTitleContainer}>
+                          <Icon style={s.subTitleIcon} name="clock" size={14} color={colorTextLight} />
+                          <Text style={s.subTitle}>
+                            {isOneTimeSchedule(schedule)
+                              ? humanizeOneTimeSchedule(schedule, duration)
+                              : `${humanizeCron(schedule)}, ${translate("duration")}: ${secondsToDuration(duration)
+                                  .locale(lang)
+                                  .humanize(false)}`}
+                          </Text>
+                        </View>
                       }
                       onPress={async () => {
                         await globalStore.update((store) => {
@@ -90,7 +101,17 @@ export const Plan: React.SFC<IProps> = () => {
 };
 
 const s = StyleSheet.create({
-  container: { flex: 1 },
+  container: {
+    flex: 1,
+  },
+  subTitleContainer: {
+    marginTop: 5,
+    flexDirection: "row",
+    alignItems: "center",
+  },
+  subTitleIcon: {
+    marginRight: 5,
+  },
   subTitle: {
     color: colorTextLight,
   },

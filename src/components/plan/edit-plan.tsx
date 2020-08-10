@@ -436,23 +436,38 @@ function getStartTimeAndEndTime(repeatType: Period, schedule?: string, duration?
 
 function getScheduleAndDuration(repeatType: Period, startTime: number, endTime: number) {
   const startTimeParsed = dayjs.unix(startTime);
-  const endTimeParsed = dayjs.unix(endTime);
-  const duration = endTimeParsed.diff(startTimeParsed, "second", false);
+  const startTimeYear = startTimeParsed.year();
+  const startTimeMonth = startTimeParsed.month();
+  const startTimeDate = startTimeParsed.date();
+  const endTimeBase = dayjs.unix(endTime);
+  const endTimeWeekDay = dayjs.unix(endTime).weekday();
 
   switch (repeatType) {
     case Period.Daily:
-      return { schedule: `${startTimeParsed.minute()} ${startTimeParsed.hour()} * * *`, duration };
+      return {
+        schedule: `${startTimeParsed.minute()} ${startTimeParsed.hour()} * * *`,
+        duration: endTimeBase
+          .year(startTimeYear)
+          .month(startTimeMonth)
+          .date(startTimeDate)
+          .diff(startTimeParsed, "second", false),
+      };
     case Period.Weekly:
       return {
         schedule: `${startTimeParsed.minute()} ${startTimeParsed.hour()} * * ${startTimeParsed.day()}`,
-        duration,
+        duration: endTimeBase
+          .year(startTimeYear)
+          .month(startTimeMonth)
+          .date(startTimeDate)
+          .weekday(endTimeWeekDay)
+          .diff(startTimeParsed, "second", false),
       };
     case Period.Monthly:
       return {
         schedule: `${startTimeParsed.minute()} ${startTimeParsed.hour()} ${startTimeParsed.date()} * *`,
-        duration,
+        duration: endTimeBase.year(startTimeYear).month(startTimeMonth).diff(startTimeParsed, "second", false),
       };
   }
 
-  return { schedule: startTimeParsed.format(), duration };
+  return { schedule: startTimeParsed.format(), duration: endTimeBase.diff(startTimeParsed, "second", false) };
 }

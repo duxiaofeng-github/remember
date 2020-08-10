@@ -1,6 +1,6 @@
 import I18n from "react-native-i18n";
 import { TranslateOptions } from "i18n-js";
-import cronstrue from "cronstrue";
+import cronstrue from "cronstrue/i18n";
 import { globalStore } from "../store";
 import dayjs, { Dayjs } from "dayjs";
 
@@ -9,7 +9,7 @@ export function translate(key: string, options?: TranslateOptions) {
 }
 
 export function humanizeCron(cron: string) {
-  return cronstrue.toString(cron, { locale: globalStore.getState().lang });
+  return cronstrue.toString(cron, { locale: globalStore.getState().lang.replace("-", "_") });
 }
 
 export function getOneTimeScheduleStartTime(schedule: string) {
