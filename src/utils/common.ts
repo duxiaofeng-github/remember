@@ -26,6 +26,12 @@ export function isOneTimeSchedule(schedule: string) {
   return scheduleArray.length !== 5;
 }
 
+export function parseSchedule(schedule: string) {
+  const [minute, hour, date, month, day] = schedule.split(" ");
+
+  return { minute, hour, date, month, day };
+}
+
 export function humanizeOneTimeSchedule(schedule: string, duration: number) {
   const from = formatTime(dayjs(schedule));
   const to = formatTime(dayjs(schedule).add(duration, "second"));
@@ -34,21 +40,21 @@ export function humanizeOneTimeSchedule(schedule: string, duration: number) {
 }
 
 export function isDailySchedule(schedule: string) {
-  const [min, hour, day, month, week] = schedule.split(" ");
+  const [min, hour, date, month, day] = schedule.split(" ");
 
-  return day === "*" && week === "*" && month === "*";
+  return date === "*" && month === "*" && day === "*";
 }
 
 export function isWeeklySchedule(schedule: string) {
-  const [min, hour, day, month, week] = schedule.split(" ");
+  const [min, hour, date, month, day] = schedule.split(" ");
 
-  return day !== "*" && week === "*" && month === "*";
+  return day !== "*" && date === "*" && month === "*";
 }
 
 export function isMonthlySchedule(schedule: string) {
-  const [min, hour, day, month, week] = schedule.split(" ");
+  const [min, hour, date, month, day] = schedule.split(" ");
 
-  return day !== "*" && week !== "*" && month === "*";
+  return date !== "*" && day === "*" && month === "*";
 }
 
 export function formatTime(time: Dayjs, layout?: string) {

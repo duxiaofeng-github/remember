@@ -13,6 +13,7 @@ import {
   getOneTimeScheduleStartTime,
   getOneTimeScheduleEndTime,
   secondsToDuration,
+  parseSchedule,
 } from "../../utils/common";
 import { Select } from "../common/select";
 import dayjs from "dayjs";
@@ -339,8 +340,7 @@ function transformPlanToForm(plan?: Plan): IDefaultForm {
     : isMonthlySchedule(schedule)
     ? Period.Monthly
     : Period.Customized;
-  const startTime = schedule != null ? getOneTimeScheduleStartTime(schedule) : dayjs().unix();
-  const endTime = schedule != null && duration != null ? getOneTimeScheduleEndTime(schedule, duration) : undefined;
+  const { startTime, endTime } = getStartTimeAndEndTime(repeatType, schedule, duration);
 
   return {
     content,
@@ -390,14 +390,69 @@ function transformFormToPlanBase(form: IForm): PlanBase {
   };
 }
 
-function getScheduleAndDuration(repeatType: Period, startTime: number, endTime: number) {
-  const startTimeParsed = dayjs.unix(startTime);
-  const endTimeParsed = dayjs.unix(endTime);
+function parseTimeString(time?: string) {
+  const parsedTime = parseInt(time || "");
+
+  return !isNaN(parsedTime) ? parsedTime : 0;
+}
+
+function getStartTimeAndEndTime(repeatType: Period, schedule?: string, duration?: number) {
+  const parsedSchedule = schedule ? parseSchedule(schedule) : undefined;
+  const { minute, hour, date, day } = parsedSchedule || {};
+  const parsedMinute = parseTimeString(minute);
+  const parsedHour = parseTimeString(hour);
+  const parsedDate = parseTimeString(date);
+  const parsedDay = parseTimeString(day);
+  const baseTime = dayjs().second(0).millisecond(0);
 
   switch (repeatType) {
     case Period.Daily:
-      return { schedule: ``, duration: 0 };
+      const startTimeDaily = parsedSchedule != null ? baseTime.hour(parsedHour).minute(parsedMinute) : baseTime;
+      const endTimeDaily =
+        parsedSchedule != null && duration != null ? startTimeDaily.add(duration, "second") : undefined;
+
+      return { startTime: startTimeDaily.unix(), endTime: endTimeDaily ? endTimeDaily.unix() : undefined };
+    case Period.Weekly:
+      const startTimeWeekly =
+        parsedSchedule != null ? baseTime.day(parsedDay).hour(parsedHour).minute(parsedMinute) : baseTime;
+      const endTimeWeekly =
+        parsedSchedule != null && duration != null ? startTimeWeekly.add(duration, "second") : undefined;
+
+      return { startTime: startTimeWeekly.unix(), endTime: endTimeWeekly ? endTimeWeekly.unix() : undefined };
+    case Period.Monthly:
+      const startTimeMonthly =
+        parsedSchedule != null ? baseTime.date(parsedDate).hour(parsedHour).minute(parsedMinute) : baseTime;
+      const endTimeMonthly =
+        parsedSchedule != null && duration != null ? startTimeMonthly.add(duration, "second") : undefined;
+
+      return { startTime: startTimeMonthly.unix(), endTime: endTimeMonthly ? endTimeMonthly.unix() : undefined };
   }
 
-  return { schedule: startTimeParsed.format(), duration: endTimeParsed.diff(startTimeParsed, "second", false) };
+  const startTime = schedule != null ? getOneTimeScheduleStartTime(schedule) : baseTime.unix();
+  const endTime = schedule != null && duration != null ? getOneTimeScheduleEndTime(schedule, duration) : undefined;
+
+  return { startTime, endTime };
+}
+
+function getScheduleAndDuration(repeatType: Period, startTime: number, endTime: number) {
+  const startTimeParsed = dayjs.unix(startTime);
+  const endTimeParsed = dayjs.unix(endTime);
+  const duration = endTimeParsed.diff(startTimeParsed, "second", false);
+
+  switch (repeatType) {
+    case Period.Daily:
+      return { schedule: `${startTimeParsed.minute()} ${startTimeParsed.hour()} * * *`, duration };
+    case Period.Weekly:
+      return {
+        schedule: `${startTimeParsed.minute()} ${startTimeParsed.hour()} * * ${startTimeParsed.day()}`,
+        duration,
+      };
+    case Period.Monthly:
+      return {
+        schedule: `${startTimeParsed.minute()} ${startTimeParsed.hour()} ${startTimeParsed.date()} * *`,
+        duration,
+      };
+  }
+
+  return { schedule: startTimeParsed.format(), duration };
 }
