@@ -14,6 +14,7 @@ import localizedFormat from "dayjs/plugin/localizedFormat";
 import relativeTime from "dayjs/plugin/relativeTime";
 import "dayjs/locale/en";
 import "dayjs/locale/zh-cn";
+import { PopupProvider } from "./src/components/common/popup";
 
 dayjs.extend(localizedFormat);
 dayjs.extend(relativeTime);
@@ -29,9 +30,11 @@ const App: React.SFC<IProps> = () => {
   return (
     <RexProvider store={globalStore} initialValue={getInitialStore()}>
       <ToastProvider>
-        <PickerProvider>
-          <Index />
-        </PickerProvider>
+        <PopupProvider>
+          <PickerProvider>
+            <Index />
+          </PickerProvider>
+        </PopupProvider>
       </ToastProvider>
     </RexProvider>
   );

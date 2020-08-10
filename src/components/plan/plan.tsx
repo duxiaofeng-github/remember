@@ -18,6 +18,7 @@ import { colorTextLight } from "../../utils/style";
 import { globalStore, IStore } from "../../store";
 import { useRexContext } from "../../store/store";
 import { Icon } from "../common/icon";
+import { Popup } from "../common/popup";
 
 interface IProps {}
 
@@ -69,6 +70,16 @@ export const Plan: React.SFC<IProps> = () => {
                           </Text>
                         </View>
                       }
+                      rightIcon={{
+                        type: "feather",
+                        name: "more-vertical",
+                        size: 20,
+                        onPress: (e) => {
+                          e.stopPropagation();
+
+                          Popup.show({ children: <Text>ok</Text> });
+                        },
+                      }}
                       onPress={async () => {
                         await globalStore.update((store) => {
                           store.edittingPlanId = item._id;
