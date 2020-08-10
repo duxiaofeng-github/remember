@@ -242,7 +242,7 @@ const s = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "center",
-    overflowX: "auto",
+    overflow: "scroll",
     paddingLeft: 10,
     paddingRight: 10,
   },

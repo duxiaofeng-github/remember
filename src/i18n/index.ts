@@ -45,6 +45,18 @@ const en = {
   "Create successfully": "Create successfully",
   "Edit successfully": "Edit successfully",
   "%{from} to %{to}": "%{from} to %{to}",
+  "Repeat ended type is required": "Repeat ended type is required",
+  Endless: "Endless",
+  "By date": "By date",
+  "By count": "By count",
+  "Select repeat ended type": "Select repeat ended type",
+  "Repeat ended type": "Repeat ended type",
+  "Repeat ended count is required": "Repeat ended count is required",
+  "Repeat ended count": "Repeat ended count",
+  "Please input repeat ended count": "Please input repeat ended count",
+  "Repeat ended date is required": "Repeat ended date is required",
+  "Select repeat ended date": "Select repeat ended date",
+  "Repeat ended date": "Repeat ended date",
 };
 
 const zhCN = {
@@ -94,6 +106,18 @@ const zhCN = {
   "Create successfully": "创建成功",
   "Edit successfully": "编辑成功",
   "%{from} to %{to}": "%{from} 至 %{to}",
+  "Repeat ended type is required": "结束重复类型必填",
+  Endless: "永不结束",
+  "By date": "按日期",
+  "By count": "按次数",
+  "Select repeat ended type": "选择结束重复类型",
+  "Repeat ended type": "结束重复类型",
+  "Repeat ended count is required": "结束重复次数必填",
+  "Repeat ended count": "结束重复次数",
+  "Please input repeat ended count": "请输入结束重复次数",
+  "Repeat ended date is required": "结束重复日期必填",
+  "Select repeat ended date": "选择结束重复日期",
+  "Repeat ended date": "结束重复日期",
 };
 
 export const translations = {

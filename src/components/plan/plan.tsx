@@ -56,7 +56,7 @@ export const Plan: React.SFC<IProps> = () => {
           // );
 
           return data!.length !== 0 ? (
-            <View>
+            <View style={s.content}>
               {data!
                 .concat()
                 .sort((a, b) => b.updatedAt - a.updatedAt)
@@ -104,12 +104,16 @@ const s = StyleSheet.create({
   container: {
     flex: 1,
   },
+  content: {
+    flex: 1,
+    overflow: "scroll",
+  },
   subTitleContainer: {
     marginTop: 5,
     flexDirection: "row",
-    alignItems: "center",
   },
   subTitleIcon: {
+    marginTop: 3,
     marginRight: 5,
   },
   subTitle: {

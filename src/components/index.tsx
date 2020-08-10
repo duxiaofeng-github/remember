@@ -45,6 +45,7 @@ export const Index: React.SFC<IProps> = () => {
               initialRouteName={Route.Home}
               screenOptions={{
                 headerShown: false,
+                cardStyle: { height: "100%" },
               }}
             >
               <Stack.Screen name={Route.Home} component={Home} />

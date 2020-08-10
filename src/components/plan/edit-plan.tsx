@@ -39,12 +39,19 @@ enum Period {
   Customized = "customized",
 }
 
+enum RepeatEndedType {
+  Endless = "endless",
+  ByCount = "byCount",
+  ByDate = "byDate",
+}
+
 interface IForm {
   content: string;
   repeatType: Period;
   startTime: number;
   endTime: number;
-  repeatEndedAt?: number;
+  repeatEndedType: RepeatEndedType;
+  repeatEndedDate?: number;
   repeatEndedCount?: number;
   noticeDuration?: number;
   pointsPerTask?: number;
@@ -58,13 +65,30 @@ export const EditPlan: React.SFC<IProps> = () => {
     plansData,
   ]);
   const isCreating = useMemo(() => edittingPlan == null, [edittingPlan]);
-  const { content, repeatType, startTime, endTime, noticeDuration, pointsPerTask } = useMemo(
-    () => transformPlanToForm(edittingPlan),
-    [edittingPlan],
-  );
+  const {
+    content,
+    repeatType,
+    startTime,
+    endTime,
+    repeatEndedType,
+    repeatEndedDate,
+    repeatEndedCount,
+    noticeDuration,
+    pointsPerTask,
+  } = useMemo(() => transformPlanToForm(edittingPlan), [edittingPlan]);
   const form = useForm<IForm>({
     mode: "onChange",
-    defaultValues: { content, repeatType, startTime, endTime, noticeDuration, pointsPerTask },
+    defaultValues: {
+      content,
+      repeatType,
+      startTime,
+      endTime,
+      repeatEndedType,
+      repeatEndedDate,
+      repeatEndedCount,
+      noticeDuration,
+      pointsPerTask,
+    },
   });
   const { control, handleSubmit, errors, watch } = form;
   const triggerSubmit = handleSubmit(async (data: IForm) => {
@@ -182,16 +206,19 @@ export const EditPlan: React.SFC<IProps> = () => {
         <Controller
           control={control}
           name="pointsPerTask"
-          render={({ onChange, onBlur, value }) => (
-            <Input
-              keyboardType="numeric"
-              onBlur={onBlur}
-              onChangeText={(value) => onChange(value)}
-              label={translate("Points")}
-              error={errors.pointsPerTask}
-              placeholder={translate("Please input points")}
-            />
-          )}
+          render={({ onChange, onBlur, value }) => {
+            return (
+              <Input
+                keyboardType="numeric"
+                defaultValue={value}
+                onBlur={onBlur}
+                onChangeText={(value) => onChange(value)}
+                label={translate("Points")}
+                error={errors.pointsPerTask}
+                placeholder={translate("Please input points")}
+              />
+            );
+          }}
         />
       </View>
     </View>
@@ -307,6 +334,72 @@ export const StartTimeAndEndTimePicker: React.SFC<IStartTimeAndEndTimePickerProp
           );
         }}
       />
+      {repeatType !== Period.OneTime && (
+        <>
+          <Controller
+            control={control}
+            name="repeatEndedType"
+            rules={{ required: translate("Repeat ended type is required") }}
+            render={({ onChange, onBlur, value }) => {
+              const data = [
+                { label: translate("Endless"), value: RepeatEndedType.Endless },
+                { label: translate("By date"), value: RepeatEndedType.ByDate },
+                { label: translate("By count"), value: RepeatEndedType.ByCount },
+              ];
+
+              return (
+                <Select
+                  onConfirm={(value) => {
+                    onChange(value ? value[0] : undefined);
+                  }}
+                  title={translate("Select repeat ended type")}
+                  value={[value]}
+                  data={[data]}
+                  label={translate("Repeat ended type")}
+                  error={errors.repeatEndedType}
+                />
+              );
+            }}
+          />
+          {watch("repeatEndedType") === RepeatEndedType.ByDate && (
+            <Controller
+              control={control}
+              name="repeatEndedDate"
+              rules={{ required: translate("Repeat ended date is required") }}
+              render={({ onChange, onBlur, value }) => {
+                return (
+                  <DateTimeSelect
+                    onChange={onChange}
+                    value={value}
+                    minTime={watch("startTime")}
+                    title={translate("Select repeat ended date")}
+                    label={translate("Repeat ended date")}
+                    error={errors.repeatEndedDate}
+                  />
+                );
+              }}
+            />
+          )}
+          {watch("repeatEndedType") === RepeatEndedType.ByCount && (
+            <Controller
+              control={control}
+              name="repeatEndedCount"
+              rules={{ required: translate("Repeat ended count is required") }}
+              render={({ onChange, onBlur, value }) => (
+                <Input
+                  keyboardType="numeric"
+                  defaultValue={value}
+                  onBlur={onBlur}
+                  onChangeText={(value) => onChange(value)}
+                  label={translate("Repeat ended count")}
+                  error={errors.repeatEndedCount}
+                  placeholder={translate("Please input repeat ended count")}
+                />
+              )}
+            />
+          )}
+        </>
+      )}
     </>
   );
 };
@@ -314,6 +407,8 @@ export const StartTimeAndEndTimePicker: React.SFC<IStartTimeAndEndTimePickerProp
 const s = StyleSheet.create({
   container: { flex: 1, backgroundColor: "#fff" },
   content: {
+    flex: 1,
+    overflow: "scroll",
     padding: 20,
   },
 });
@@ -323,12 +418,15 @@ interface IDefaultForm {
   repeatType: Period;
   startTime: number;
   endTime?: number;
+  repeatEndedType: RepeatEndedType;
+  repeatEndedDate?: number;
+  repeatEndedCount?: number;
   noticeDuration?: number;
   pointsPerTask?: number;
 }
 
 function transformPlanToForm(plan?: Plan): IDefaultForm {
-  const { content, schedule, duration, repeatEndedAt, repeatEndedCount, noticeDuration, pointsPerTask } = plan || {};
+  const { content, schedule, duration, repeatEndedDate, repeatEndedCount, noticeDuration, pointsPerTask } = plan || {};
   const repeatType = !schedule
     ? Period.OneTime
     : isOneTimeSchedule(schedule)
@@ -341,12 +439,23 @@ function transformPlanToForm(plan?: Plan): IDefaultForm {
     ? Period.Monthly
     : Period.Customized;
   const { startTime, endTime } = getStartTimeAndEndTime(repeatType, schedule, duration);
+  const repeatEndedType =
+    repeatType == Period.OneTime
+      ? RepeatEndedType.Endless
+      : repeatEndedDate != null
+      ? RepeatEndedType.ByDate
+      : repeatEndedCount != null
+      ? RepeatEndedType.ByCount
+      : RepeatEndedType.Endless;
 
   return {
     content,
     repeatType,
     startTime,
     endTime,
+    repeatEndedType,
+    repeatEndedDate,
+    repeatEndedCount,
     noticeDuration,
     pointsPerTask,
   };
@@ -355,6 +464,7 @@ function transformPlanToForm(plan?: Plan): IDefaultForm {
 function transformFormToPlan(originalPlan: Plan, form: IForm): Plan {
   const { _id, taskIds, createdAt, updatedAt } = originalPlan;
   const planBase = transformFormToPlanBase(form);
+
   const plan: Plan = {
     ...planBase,
     _id,
@@ -372,7 +482,8 @@ function transformFormToPlanBase(form: IForm): PlanBase {
     repeatType,
     startTime,
     endTime,
-    repeatEndedAt,
+    repeatEndedType,
+    repeatEndedDate,
     repeatEndedCount,
     noticeDuration,
     pointsPerTask,
@@ -383,11 +494,17 @@ function transformFormToPlanBase(form: IForm): PlanBase {
     content,
     schedule,
     duration,
-    repeatEndedAt,
-    repeatEndedCount,
+    repeatEndedDate: repeatEndedType === RepeatEndedType.ByDate ? repeatEndedDate : undefined,
+    repeatEndedCount: repeatEndedType === RepeatEndedType.ByCount ? parseNumber(repeatEndedCount) : undefined,
     noticeDuration,
-    pointsPerTask,
+    pointsPerTask: parseNumber(pointsPerTask, true),
   };
+}
+
+function parseNumber(num?: string | number, isFloat = false) {
+  const numParsed = num != null ? (typeof num === "string" ? (isFloat ? parseFloat(num) : parseInt(num)) : num) : NaN;
+
+  return !isNaN(numParsed) ? numParsed : undefined;
 }
 
 function parseTimeString(time?: string) {
