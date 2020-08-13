@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React from "react";
 import { View, StyleSheet } from "react-native";
 import { Header } from "../common/header";
 import { useNavigation } from "@react-navigation/native";
@@ -71,40 +71,26 @@ export const Plan: React.SFC<IProps> = () => {
                           </Text>
                         </View>
                       }
-                      rightIcon={{
-                        type: "feather",
-                        name: "more-vertical",
-                        size: 20,
-                        onPress: (e) => {
-                          e.stopPropagation();
-
-                          PopupMenu.show([
-                            {
-                              text: translate("Edit"),
-                              onTouchStart: async () => {
-                                await globalStore.update((store) => {
-                                  store.edittingPlanId = item._id;
-                                });
-
-                                navigation.navigate(Route.EditPlan);
-                              },
-                            },
-                            {
-                              text: translate("Delete"),
-                              style: s.deleteText,
-                              onTouchStart: () => {
-                                deletePlanTriggerer(item._id);
-                              },
-                            },
-                          ]);
-                        },
-                      }}
                       onPress={async () => {
-                        await globalStore.update((store) => {
-                          store.edittingPlanId = item._id;
-                        });
+                        PopupMenu.show([
+                          {
+                            text: translate("Edit"),
+                            onTouchStart: async () => {
+                              await globalStore.update((store) => {
+                                store.edittingPlanId = item._id;
+                              });
 
-                        navigation.navigate(Route.EditPlan);
+                              navigation.navigate(Route.EditPlan);
+                            },
+                          },
+                          {
+                            text: translate("Delete"),
+                            style: s.deleteText,
+                            onTouchStart: () => {
+                              deletePlanTriggerer(item._id);
+                            },
+                          },
+                        ]);
                       }}
                     />
                   );

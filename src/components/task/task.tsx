@@ -5,13 +5,16 @@ import { Loading } from "../common/loading";
 import { ListItem } from "react-native-elements";
 import { Text } from "../common/text";
 import { Empty } from "../common/empty";
-import { humanizeRangeTime, isTimeout } from "../../utils/common";
+import { humanizeRangeTime, isTimeout, translate } from "../../utils/common";
 import { colorTextLight, colorError } from "../../utils/style";
 import { IStore } from "../../store";
 import { useRexContext } from "../../store/store";
 import { Icon } from "../common/icon";
-import { listTasks } from "../../db/plan";
+import { listTasks, cancelTask, finishTask } from "../../db/plan";
 import flatten from "lodash/flatten";
+import { PopupMenu } from "../common/popup-menu";
+import { useSubmission } from "../../utils/hooks/use-submission";
+import { Toast } from "../common/toast";
 
 interface IProps {}
 
@@ -28,6 +31,24 @@ export const Task: React.SFC<IProps> = () => {
 
     return [];
   }, [plansData.data]);
+
+  const { triggerer: cancelTaskTriggerer } = useSubmission(async (data?: { planId: string; taskTime: number }) => {
+    const { planId, taskTime } = data!;
+
+    await cancelTask(planId, taskTime);
+
+    Toast.message(translate("Cancel successfully"));
+
+    await plansData.load();
+  });
+
+  const { triggerer: finishTaskTriggerer } = useSubmission(async (data?: { planId: string; taskTime: number }) => {
+    const { planId, taskTime } = data!;
+
+    await finishTask(planId, taskTime);
+
+    await plansData.load();
+  });
 
   useEffect(() => {
     plansData.load();
@@ -51,6 +72,14 @@ export const Task: React.SFC<IProps> = () => {
                     <ListItem
                       key={`${planId}-${startedAt}`}
                       bottomDivider
+                      leftIcon={{
+                        name: "square",
+                        type: "feather",
+                        size: 20,
+                        onPress: () => {
+                          finishTaskTriggerer({ planId: item.planId, taskTime: item.startedAt });
+                        },
+                      }}
                       title={content}
                       subtitle={
                         <View style={s.subTitleContainer}>
@@ -60,6 +89,16 @@ export const Task: React.SFC<IProps> = () => {
                           </Text>
                         </View>
                       }
+                      onPress={async () => {
+                        PopupMenu.show([
+                          {
+                            text: translate("Cancel task"),
+                            onTouchStart: () => {
+                              cancelTaskTriggerer({ planId: item.planId, taskTime: item.startedAt });
+                            },
+                          },
+                        ]);
+                      }}
                     />
                   );
                 })}

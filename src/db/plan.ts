@@ -32,8 +32,9 @@ export async function listPlans(): Promise<Plan[]> {
 
 export async function getPlan(id: string): Promise<Plan> {
   const db = await getDb(dbName, "docs");
+  const result = await db.get(id);
 
-  return db.get(id);
+  return result && result.length ? result[0] : undefined;
 }
 
 export async function createPlan(data: PlanBase): Promise<string> {
@@ -55,6 +56,24 @@ export async function deletePlan(id: string): Promise<string> {
   const db = await getDb(dbName, "docs");
 
   return db.del(id);
+}
+
+export async function finishTask(planId: string, taskTime: number): Promise<void> {
+  const plan = await getPlan(planId);
+  const finishedTaskTime = (plan.finishedTaskTime || []).filter((item) => item !== taskTime);
+
+  finishedTaskTime.push(taskTime);
+
+  await updatePlan({ ...plan, finishedTaskTime });
+}
+
+export async function cancelTask(planId: string, taskTime: number): Promise<void> {
+  const plan = await getPlan(planId);
+  const canceledTaskTime = (plan.canceledTaskTime || []).filter((item) => item !== taskTime);
+
+  canceledTaskTime.push(taskTime);
+
+  await updatePlan({ ...plan, canceledTaskTime });
 }
 
 export interface Task {

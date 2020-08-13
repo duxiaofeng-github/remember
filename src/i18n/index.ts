@@ -61,6 +61,8 @@ const en = {
   "Repeat ended date": "Repeat ended date",
   Delete: "Delete",
   "Delete successfully": "Delete successfully",
+  "Cancel task": "Cancel task",
+  "Cancel successfully": "Cancel successfully",
 };
 
 const zhCN = {
@@ -126,6 +128,8 @@ const zhCN = {
   "Repeat ended date": "结束重复日期",
   Delete: "删除",
   "Delete successfully": "删除成功",
+  "Cancel task": "取消任务",
+  "Cancel successfully": "取消成功",
 };
 
 export const translations = {
