@@ -1,5 +1,6 @@
 const en = {
   plans: "Plans",
+  tasks: "Tasks",
   settings: "Settings",
   rewards: "Rewards",
   homepage: "Home Page",
@@ -29,7 +30,7 @@ const en = {
   "Start time": "Start time",
   "End time": "End time",
   Notice: "Notice",
-  NoticeDurationInAdvance: "Notice %{duration} in advance",
+  NoticeTimeInAdvance: "Notice %{time} in advance",
   "No notice": "No notice",
   Hours: "Hours",
   Minutes: "Minutes",
@@ -42,6 +43,7 @@ const en = {
   "Please input points": "Please input points",
   Create: "Create",
   Save: "Save",
+  Edit: "Edit",
   "Create successfully": "Create successfully",
   "Edit successfully": "Edit successfully",
   "%{from} to %{to}": "%{from} to %{to}",
@@ -63,6 +65,7 @@ const en = {
 
 const zhCN = {
   plans: "计划",
+  tasks: "任务",
   settings: "设置",
   rewards: "奖励",
   homepage: "首页",
@@ -92,7 +95,7 @@ const zhCN = {
   "Start time": "开始时间",
   "End time": "结束时间",
   Notice: "通知",
-  NoticeDurationInAdvance: "提前%{duration}通知",
+  NoticeTimeInAdvance: "提前%{duration}通知",
   "No notice": "没有通知",
   Hours: "小时",
   Minutes: "分钟",
@@ -105,6 +108,7 @@ const zhCN = {
   "Please input points": "请输入积分",
   Create: "创建",
   Save: "保存",
+  Edit: "编辑",
   "Create successfully": "创建成功",
   "Edit successfully": "编辑成功",
   "%{from} to %{to}": "%{from} 至 %{to}",

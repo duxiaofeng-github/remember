@@ -32,11 +32,19 @@ export function parseSchedule(schedule: string) {
   return { minute, hour, date, month, day };
 }
 
-export function humanizeOneTimeSchedule(schedule: string, duration: number) {
-  const from = formatTime(dayjs(schedule));
-  const to = formatTime(dayjs(schedule).add(duration, "second"));
+export function humanizeRangeTime(time: string | number, duration: number) {
+  const timeParsed = typeof time === "string" ? dayjs(time) : dayjs.unix(time);
+  const from = formatTime(timeParsed);
+  const to = formatTime(timeParsed.add(duration, "second"));
 
   return translate("%{from} to %{to}", { from, to });
+}
+
+export function isTimeout(time: string | number, duration: number) {
+  const startTime = typeof time === "string" ? dayjs(time) : dayjs.unix(time);
+  const endTime = startTime.add(duration, "second");
+
+  return endTime.isBefore(dayjs());
 }
 
 export function isDailySchedule(schedule: string) {

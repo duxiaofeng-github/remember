@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { View, StyleSheet } from "react-native";
 import { Header } from "../common/header";
 import { useForm, Controller, UseFormMethods } from "react-hook-form";
@@ -53,11 +53,12 @@ interface IForm {
   repeatEndedType: RepeatEndedType;
   repeatEndedDate?: number;
   repeatEndedCount?: number;
-  noticeDuration?: number;
+  noticeTime?: number;
   pointsPerTask?: number;
 }
 
 export const EditPlan: React.SFC<IProps> = () => {
+  const [now, setNow] = useState(dayjs().unix());
   const navigation = useNavigation();
   const { plansData, edittingPlanId, lang } = useRexContext((store: IStore) => store);
   const edittingPlan = useMemo(() => plansData.data && plansData.data.find((item) => item._id === edittingPlanId), [
@@ -73,7 +74,7 @@ export const EditPlan: React.SFC<IProps> = () => {
     repeatEndedType,
     repeatEndedDate,
     repeatEndedCount,
-    noticeDuration,
+    noticeTime,
     pointsPerTask,
   } = useMemo(() => transformPlanToForm(edittingPlan), [edittingPlan]);
   const form = useForm<IForm>({
@@ -86,14 +87,14 @@ export const EditPlan: React.SFC<IProps> = () => {
       repeatEndedType,
       repeatEndedDate,
       repeatEndedCount,
-      noticeDuration,
+      noticeTime,
       pointsPerTask,
     },
   });
   const { control, handleSubmit, errors, watch } = form;
   const triggerSubmit = handleSubmit(async (data: IForm) => {
     if (edittingPlan == null) {
-      const planBase = transformFormToPlanBase(data);
+      const planBase = transformFormToPlanBase(data, now, now);
 
       await createPlan(planBase);
     } else {
@@ -176,7 +177,7 @@ export const EditPlan: React.SFC<IProps> = () => {
         <StartTimeAndEndTimePicker repeatType={watch("repeatType")} form={form} />
         <Controller
           control={control}
-          name="noticeDuration"
+          name="noticeTime"
           render={({ onChange, onBlur, value }) => {
             return (
               <DurationSelect
@@ -185,12 +186,12 @@ export const EditPlan: React.SFC<IProps> = () => {
                 enabledUnits={[Unit.Minutes, Unit.Hours]}
                 label={translate("Notice")}
                 value={value}
-                error={errors.noticeDuration}
+                error={errors.noticeTime}
                 onChange={onChange}
                 onFormat={(value) => {
                   if (value != null) {
-                    return translate("NoticeDurationInAdvance", {
-                      duration: secondsToDuration(value).locale(lang).humanize(false),
+                    return translate("NoticeTimeInAdvance", {
+                      time: secondsToDuration(value).locale(lang).humanize(false),
                     });
                   }
 
@@ -371,7 +372,6 @@ export const StartTimeAndEndTimePicker: React.SFC<IStartTimeAndEndTimePickerProp
                   <DateTimeSelect
                     onChange={onChange}
                     value={value}
-                    minTime={watch("startTime")}
                     title={translate("Select repeat ended date")}
                     label={translate("Repeat ended date")}
                     error={errors.repeatEndedDate}
@@ -421,12 +421,12 @@ interface IDefaultForm {
   repeatEndedType: RepeatEndedType;
   repeatEndedDate?: number;
   repeatEndedCount?: number;
-  noticeDuration?: number;
+  noticeTime?: number;
   pointsPerTask?: number;
 }
 
 function transformPlanToForm(plan?: Plan): IDefaultForm {
-  const { content, schedule, duration, repeatEndedDate, repeatEndedCount, noticeDuration, pointsPerTask } = plan || {};
+  const { content, schedule, duration, repeatEndedDate, repeatEndedCount, noticeTime, pointsPerTask } = plan || {};
   const repeatType = !schedule
     ? Period.OneTime
     : isOneTimeSchedule(schedule)
@@ -456,27 +456,24 @@ function transformPlanToForm(plan?: Plan): IDefaultForm {
     repeatEndedType,
     repeatEndedDate,
     repeatEndedCount,
-    noticeDuration,
+    noticeTime,
     pointsPerTask,
   };
 }
 
 function transformFormToPlan(originalPlan: Plan, form: IForm): Plan {
-  const { _id, taskIds, createdAt, updatedAt } = originalPlan;
-  const planBase = transformFormToPlanBase(form);
+  const { _id, createdAt, updatedAt } = originalPlan;
+  const planBase = transformFormToPlanBase(form, createdAt, updatedAt);
 
   const plan: Plan = {
     ...planBase,
     _id,
-    taskIds,
-    createdAt,
-    updatedAt,
   };
 
   return plan;
 }
 
-function transformFormToPlanBase(form: IForm): PlanBase {
+function transformFormToPlanBase(form: IForm, createdAt: number, updatedAt: number): PlanBase {
   const {
     content,
     repeatType,
@@ -485,7 +482,7 @@ function transformFormToPlanBase(form: IForm): PlanBase {
     repeatEndedType,
     repeatEndedDate,
     repeatEndedCount,
-    noticeDuration,
+    noticeTime,
     pointsPerTask,
   } = form;
   const { schedule, duration } = getScheduleAndDuration(repeatType, startTime, endTime);
@@ -496,8 +493,10 @@ function transformFormToPlanBase(form: IForm): PlanBase {
     duration,
     repeatEndedDate: repeatEndedType === RepeatEndedType.ByDate ? repeatEndedDate : undefined,
     repeatEndedCount: repeatEndedType === RepeatEndedType.ByCount ? parseNumber(repeatEndedCount) : undefined,
-    noticeDuration,
+    noticeTime,
     pointsPerTask: parseNumber(pointsPerTask, true),
+    createdAt,
+    updatedAt,
   };
 }
 
