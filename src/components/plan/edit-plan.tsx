@@ -28,7 +28,6 @@ import { Unit } from "../common/picker/duration-picker";
 import { TimeSelect } from "../common/time-select";
 import { WeekTimeSelect } from "../common/week-time-select";
 import { DayTimeSelect } from "../common/day-time-select";
-import { listTasks, TaskStatus } from "../../db/task";
 
 interface IProps {}
 
@@ -102,8 +101,6 @@ export const EditPlan: React.SFC<IProps> = () => {
       const plan = transformFormToPlan(edittingPlan, data, now);
 
       await updatePlan(plan);
-
-      const tasks = listTasks({ planId: plan._id, status: [TaskStatus.Inited] });
     }
 
     Toast.message(isCreating ? translate("Create successfully") : translate("Edit successfully"));

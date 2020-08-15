@@ -31,9 +31,6 @@ export const Plan: React.SFC<IProps> = () => {
     await plansData.load();
   });
 
-  // TODO: 修改计划后需要重刷任务
-  // TODO: focus后需要重刷计划和任务页面
-
   return (
     <View style={s.container}>
       <Header

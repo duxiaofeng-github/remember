@@ -10,7 +10,7 @@ import { colorTextLight, colorError } from "../../utils/style";
 import { IStore } from "../../store";
 import { useRexContext } from "../../store/store";
 import { Icon } from "../common/icon";
-import { listTasks, cancelTask, finishTask } from "../../db/task";
+import { listTasks, cancelTask, finishTask } from "../../db/plan";
 import flatten from "lodash/flatten";
 import { PopupMenu } from "../common/popup-menu";
 import { useSubmission } from "../../utils/hooks/use-submission";
@@ -19,35 +19,51 @@ import { Toast } from "../common/toast";
 interface IProps {}
 
 export const Task: React.SFC<IProps> = () => {
-  const { tasksData } = useRexContext((store: IStore) => store);
-  const { triggerer: cancelTaskTriggerer } = useSubmission(async (taskId?: string) => {
-    await cancelTask(taskId!);
+  const { plansData } = useRexContext((store: IStore) => store);
+  const taskData = useMemo(() => {
+    if (plansData && plansData.data) {
+      const taskArray = plansData.data.map((plan) => {
+        return listTasks({ plan, includeNoticeTime: true });
+      });
+
+      return flatten(taskArray);
+    }
+
+    return [];
+  }, [plansData.data]);
+
+  const { triggerer: cancelTaskTriggerer } = useSubmission(async (data?: { planId: string; taskTime: number }) => {
+    const { planId, taskTime } = data!;
+
+    await cancelTask(planId, taskTime);
 
     Toast.message(translate("Cancel successfully"));
 
-    await tasksData.load();
+    await plansData.load();
   });
 
-  const { triggerer: finishTaskTriggerer } = useSubmission(async (taskId?: string) => {
-    await finishTask(taskId!);
+  const { triggerer: finishTaskTriggerer } = useSubmission(async (data?: { planId: string; taskTime: number }) => {
+    const { planId, taskTime } = data!;
 
-    await tasksData.load();
+    await finishTask(planId, taskTime);
+
+    await plansData.load();
   });
 
   useEffect(() => {
-    tasksData.load();
+    plansData.load();
   }, []);
 
   return (
     <View style={s.container}>
       <Header title="Remember" hideBackButton />
       <Loading
-        options={tasksData}
+        options={plansData}
         render={() => {
-          return tasksData.data!.length !== 0 ? (
+          return taskData!.length !== 0 ? (
             <View style={s.content}>
-              {tasksData
-                .data!.concat()
+              {taskData!
+                .concat()
                 .sort((a, b) => b.startedAt - a.startedAt)
                 .map((item) => {
                   const { planId, content, startedAt, duration } = item;
@@ -61,7 +77,7 @@ export const Task: React.SFC<IProps> = () => {
                         type: "feather",
                         size: 20,
                         onPress: () => {
-                          finishTaskTriggerer(item._id);
+                          finishTaskTriggerer({ planId: item.planId, taskTime: item.startedAt });
                         },
                       }}
                       title={content}
@@ -78,7 +94,7 @@ export const Task: React.SFC<IProps> = () => {
                           {
                             text: translate("Cancel task"),
                             onTouchStart: () => {
-                              cancelTaskTriggerer(item._id);
+                              cancelTaskTriggerer({ planId: item.planId, taskTime: item.startedAt });
                             },
                           },
                         ]);

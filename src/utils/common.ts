@@ -3,8 +3,7 @@ import { TranslateOptions } from "i18n-js";
 import cronstrue from "cronstrue/i18n";
 import { globalStore } from "../store";
 import dayjs, { Dayjs } from "dayjs";
-import { listPlans } from "../db/plan";
-import { listNewTasks, listTasks } from "../db/task";
+import { listPlans, listUnnotifiedTasks } from "../db/plan";
 
 export function translate(key: string, options?: TranslateOptions) {
   return I18n.t(key, options);
@@ -77,8 +76,9 @@ export function secondsToDuration(seconds: number) {
 
 export async function getAllUnnotifiedTasks() {
   const plans = await listPlans();
-  const promises = plans.map(async (plan) => {
-    return { planId: plan._id, tasks: await listNewTasks({ plan }) };
+  const tasksArray = plans.map((plan) => {
+    return { planId: plan._id, tasks: listUnnotifiedTasks({ plan }) };
   });
-  return await Promise.all(promises);
+
+  return tasksArray;
 }
