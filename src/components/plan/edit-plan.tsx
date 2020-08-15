@@ -28,6 +28,7 @@ import { Unit } from "../common/picker/duration-picker";
 import { TimeSelect } from "../common/time-select";
 import { WeekTimeSelect } from "../common/week-time-select";
 import { DayTimeSelect } from "../common/day-time-select";
+import { listTasks, TaskStatus } from "../../db/task";
 
 interface IProps {}
 
@@ -98,9 +99,11 @@ export const EditPlan: React.SFC<IProps> = () => {
 
       await createPlan(planBase);
     } else {
-      const plan = transformFormToPlan(edittingPlan, data);
+      const plan = transformFormToPlan(edittingPlan, data, now);
 
       await updatePlan(plan);
+
+      const tasks = listTasks({ planId: plan._id, status: [TaskStatus.Inited] });
     }
 
     Toast.message(isCreating ? translate("Create successfully") : translate("Edit successfully"));
@@ -191,7 +194,7 @@ export const EditPlan: React.SFC<IProps> = () => {
                 onFormat={(value) => {
                   if (value != null) {
                     return translate("NoticeTimeInAdvance", {
-                      time: secondsToDuration(value).locale(lang).humanize(false),
+                      duration: secondsToDuration(value).locale(lang).humanize(false),
                     });
                   }
 
@@ -461,8 +464,8 @@ function transformPlanToForm(plan?: Plan): IDefaultForm {
   };
 }
 
-function transformFormToPlan(originalPlan: Plan, form: IForm): Plan {
-  const { _id, createdAt, updatedAt } = originalPlan;
+function transformFormToPlan(originalPlan: Plan, form: IForm, updatedAt: number): Plan {
+  const { _id, createdAt } = originalPlan;
   const planBase = transformFormToPlanBase(form, createdAt, updatedAt);
 
   const plan: Plan = {

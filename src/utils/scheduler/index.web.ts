@@ -1,14 +1,24 @@
+import { getAllUnnotifiedTasks } from "../common";
+import { notify } from "../notification";
+
 const timeInterval = 1000 * 60;
 
-export const scheduler = {};
+async function notifyTasks() {
+  setTimeout(notifyTasks, timeInterval);
 
-// var blob = new Blob([
-//   document.querySelector('#worker1').textContent
-// ], { type: "text/javascript" })
+  const tasks = await getAllUnnotifiedTasks();
 
-// // Note: window.webkitURL.createObjectURL() in Chrome 10+.
-// var worker = new Worker(window.URL.createObjectURL(blob));
-// worker.onmessage = function(e) {
-//   console.log("Received: " + e.data);
-// }
-// worker.postMessage("hello"); // Start the worker.
+  if (tasks.length !== 0) {
+    tasks.forEach((item) => {
+      item.tasks.forEach((task) => {
+        notify(task.content);
+      });
+    });
+  }
+}
+
+export const scheduler = {
+  check: () => {
+    setTimeout(notifyTasks, timeInterval);
+  },
+};

@@ -12,6 +12,7 @@ import { globalStore, IStore } from "../store";
 import I18n from "react-native-i18n";
 import dayjs from "dayjs";
 import { useRexContext } from "../store/store";
+import { scheduler } from "../utils/scheduler";
 
 interface IProps {}
 
@@ -34,6 +35,10 @@ export const Index: React.SFC<IProps> = () => {
 
     dayjs.locale(lang.toLowerCase());
   }, [lang]);
+
+  useEffect(() => {
+    scheduler.check();
+  }, []);
 
   return (
     <Loading
