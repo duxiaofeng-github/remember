@@ -1,8 +1,7 @@
 import IPFS from "ipfs";
 import OrbitDB from "orbit-db";
-import { storage } from "../utils/storage";
 
-let ipfsInstance: any;
+let ipfsInstance;
 
 async function getIpfsInstance() {
   if (ipfsInstance == null) {
@@ -33,48 +32,67 @@ async function getIpfsInstance() {
   return ipfsInstance;
 }
 
-async function getRemoteDbAddress() {
-  const addr = await storage.getItem("remember-remote-db-addr");
+let orbitDBInstance;
 
-  return addr;
-}
-
-let orbitDBInstance: any;
-
-async function getOrbitDBInstance() {
+async function getOrbitDBInstance(remoteAddr) {
   if (orbitDBInstance == null) {
     const ipfsInstance = await getIpfsInstance();
-    const remoteAddr = await getRemoteDbAddress();
-    const isLocalMode = remoteAddr == null;
+    const isRemoteMode = !!remoteAddr;
 
-    if (!isLocalMode) {
+    if (isRemoteMode) {
       await ipfsInstance.start();
     }
 
     orbitDBInstance = await OrbitDB.createInstance(ipfsInstance, {
       id: "remember",
-      offline: isLocalMode,
+      offline: !isRemoteMode,
     });
   }
 
   return orbitDBInstance;
 }
 
-const dbs: { [dbName: string]: any } = {};
+const dbs = {};
 
-export async function getDb(dbName: string, type: "docs" | "kv") {
+async function getDb(options) {
+  const { dbName, remoteAddr } = options;
   const db = dbs[dbName];
 
   if (db) {
     return db;
   }
 
-  const orbitDbInstance = await getOrbitDBInstance();
-  const newDb = type === "docs" ? await orbitDbInstance.docs(dbName) : await orbitDbInstance.keyvalue(dbName);
+  const orbitDbInstance = await getOrbitDBInstance(remoteAddr);
+  const newDb = await orbitDbInstance.docs(dbName);
 
   await newDb.load();
 
   dbs[dbName] = newDb;
 
   return newDb;
+}
+
+export async function getData(options) {
+  const { id, ...restOptions } = options;
+  const db = await getDb(restOptions);
+
+  if (id != null) {
+    return db.get(id);
+  } else {
+    return db.query(() => true);
+  }
+}
+
+export async function putData(options) {
+  const { data, ...restOptions } = options;
+  const db = await getDb(restOptions);
+
+  return db.put(data);
+}
+
+export async function delData(options) {
+  const { id, ...restOptions } = options;
+  const db = await getDb(restOptions);
+
+  return db.del(id);
 }

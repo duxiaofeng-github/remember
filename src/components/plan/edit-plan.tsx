@@ -448,13 +448,15 @@ function transformPlanToForm(plan?: Plan): IDefaultForm {
       ? RepeatEndedType.ByCount
       : RepeatEndedType.Endless;
 
+  const defaultRepeatEndedDate = repeatEndedType === RepeatEndedType.ByDate ? repeatEndedDate : dayjs().unix();
+
   return {
     content,
     repeatType,
     startTime,
     endTime,
     repeatEndedType,
-    repeatEndedDate,
+    repeatEndedDate: defaultRepeatEndedDate,
     repeatEndedCount,
     noticeTime,
     pointsPerTask,

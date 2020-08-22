@@ -23,11 +23,11 @@ export const Index: React.SFC<IProps> = () => {
   const options = useData(async () => {
     const settings = await getSettings();
 
-    globalStore.update((store) => {
-      store.lang = settings.lang;
-    });
-
-    return settings;
+    if (settings) {
+      globalStore.update((store) => {
+        store.lang = settings.lang;
+      });
+    }
   });
 
   useEffect(() => {

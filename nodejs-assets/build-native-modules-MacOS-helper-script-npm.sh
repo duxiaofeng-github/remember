@@ -1,0 +1,5 @@
+#!/bin/bash
+      # Helper script for Gradle to call npm on macOS in case it is not found
+      export PATH=$PATH:/var/folders/rt/xbv3wzn16915yrb3yvc6c5h80000gn/T/yarn--1598091257385-0.9761152036907141:/Users/duxiaofeng/code/remember/node_modules/nodejs-mobile-react-native/node_modules/.bin:/Users/duxiaofeng/.config/yarn/link/node_modules/.bin:/Users/duxiaofeng/.nvm/versions/node/v13.9.0/libexec/lib/node_modules/npm/bin/node-gyp-bin:/Users/duxiaofeng/.nvm/versions/node/v13.9.0/lib/node_modules/npm/bin/node-gyp-bin:/Users/duxiaofeng/.nvm/versions/node/v13.9.0/bin/node_modules/npm/bin/node-gyp-bin:/Users/duxiaofeng/Library/Android/sdk/emulator:/Users/duxiaofeng/Library/Android/sdk/tools:/Users/duxiaofeng/tool:/Users/duxiaofeng/Library/Python/2.7/bin:/Applications/Visual Studio Code - Insiders.app/Contents/Resources/app/bin:/usr/local/opt/openssl/bin:/Users/duxiaofeng/.nvm/versions/node/v13.9.0/bin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin:/usr/local/share/dotnet:/Library/Apple/usr/bin:/Library/Frameworks/Mono.framework/Versions/Current/Commands:/usr/local/opt/go@1.10/libexec/bin:/Users/duxiaofeng/go/bin
+      npm $@
+    

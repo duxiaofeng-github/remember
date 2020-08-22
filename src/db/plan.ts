@@ -1,8 +1,8 @@
-import { getDb } from "./db";
 import dayjs from "dayjs";
 import { nanoid } from "nanoid";
 import cronParser from "cron-parser";
-import { isOneTimeSchedule } from "../utils/common";
+import { getRemoteAddr, isOneTimeSchedule } from "../utils/common";
+import { getData, putData, delData } from "../orbit-db/orbit-db";
 
 export interface PlanBase {
   content: string;
@@ -27,9 +27,10 @@ const dbName = "plans";
 
 export async function listPlans(options?: { all?: boolean; finished?: boolean }): Promise<Plan[]> {
   const { all, finished = false } = options || {};
-  const db = await getDb(dbName, "docs");
+  const remoteAddr = await getRemoteAddr();
+  const data = await getData({ dbName, remoteAddr });
 
-  return db.query((plan: Plan) => {
+  return data.filter((plan: Plan) => {
     if (all) {
       return true;
     } else if (finished === true) {
@@ -43,30 +44,29 @@ export async function listPlans(options?: { all?: boolean; finished?: boolean })
 }
 
 export async function getPlan(id: string): Promise<Plan> {
-  const db = await getDb(dbName, "docs");
-  const result = await db.get(id);
+  const remoteAddr = await getRemoteAddr();
+  const data = await getData({ dbName, remoteAddr, id });
 
-  return result && result.length ? result[0] : undefined;
+  return data && data.length ? data[0] : undefined;
 }
 
 export async function createPlan(data: PlanBase): Promise<string> {
-  const db = await getDb(dbName, "docs");
-
+  const remoteAddr = await getRemoteAddr();
   const newPlan = { ...data, _id: nanoid() };
 
-  return db.put(newPlan);
+  return putData({ dbName, remoteAddr, data: newPlan });
 }
 
 export async function updatePlan(data: Plan): Promise<void> {
-  const db = await getDb(dbName, "docs");
+  const remoteAddr = await getRemoteAddr();
 
-  return db.put(data);
+  return putData({ dbName, remoteAddr, data });
 }
 
 export async function deletePlan(id: string): Promise<void> {
-  const db = await getDb(dbName, "docs");
+  const remoteAddr = await getRemoteAddr();
 
-  return db.del(id);
+  return delData({ dbName, remoteAddr, id });
 }
 
 export async function finishTask(planId: string, taskTime: number): Promise<void> {

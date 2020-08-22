@@ -1,4 +1,4 @@
-import { getAllUnnotifiedTasks } from "../common";
+import { getAllUnnotifiedTasks, humanizeRangeTime } from "../common";
 import { notify } from "../notification";
 import { setNotifiedTasks } from "../../db/plan";
 
@@ -12,7 +12,9 @@ async function notifyTasks() {
   if (tasks.length !== 0) {
     tasks.forEach((item) => {
       item.tasks.forEach((task) => {
-        notify(task.content);
+        const { content, startedAt, duration } = task;
+
+        notify(content, humanizeRangeTime(startedAt, duration));
       });
 
       setNotifiedTasks(

@@ -1,16 +1,16 @@
 const errorPermissionDenied = new Error("Notification permission denied");
 
-export async function notify(message: string): Promise<Notification> {
-  const notificationOptions = {};
+export async function notify(title: string, body?: string): Promise<void> {
+  const notificationOptions = body ? { body } : undefined;
   let notification: Notification | undefined;
 
   if (Notification.permission === "granted") {
-    notification = new Notification(message, notificationOptions);
+    notification = new Notification(title, notificationOptions);
   } else if (Notification.permission !== "denied") {
     notification = await new Promise((resolve, reject) => {
       Notification.requestPermission().then((permission: string) => {
         if (permission === "granted") {
-          resolve(new Notification(message, notificationOptions));
+          resolve(new Notification(title, notificationOptions));
         } else {
           reject(errorPermissionDenied);
         }
@@ -23,7 +23,7 @@ export async function notify(message: string): Promise<Notification> {
       window.focus();
     });
 
-    return notification;
+    return;
   }
 
   throw errorPermissionDenied;

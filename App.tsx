@@ -1,5 +1,6 @@
 import React from "react";
 import "react-native-gesture-handler";
+import "react-native-get-random-values";
 import { Index } from "./src/components";
 import I18n from "react-native-i18n";
 import { translations } from "./src/i18n";

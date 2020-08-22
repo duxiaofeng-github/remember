@@ -4,6 +4,7 @@ import cronstrue from "cronstrue/i18n";
 import { globalStore } from "../store";
 import dayjs, { Dayjs } from "dayjs";
 import { listPlans, listUnnotifiedTasks } from "../db/plan";
+import { storage } from "./storage";
 
 export function translate(key: string, options?: TranslateOptions) {
   return I18n.t(key, options);
@@ -81,4 +82,10 @@ export async function getAllUnnotifiedTasks() {
   });
 
   return tasksArray;
+}
+
+export async function getRemoteAddr() {
+  const addr = await storage.getItem("remember-remote-db-addr");
+
+  return addr || "";
 }
