@@ -14,7 +14,7 @@ module.exports = {
   devtool: false,
   output: {
     filename: "[name].[chunkhash:8].js",
-    path: path.resolve(__dirname, "./dist"),
+    path: path.resolve(__dirname, "./orbit-db"),
   },
   module: {
     rules: [

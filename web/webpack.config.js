@@ -64,8 +64,8 @@ module.exports = {
     new CopyPlugin({
       patterns: [
         {
-          from: path.resolve(__dirname, "../orbit-db-web/dist"),
-          to: "orbit-db-web",
+          from: path.resolve(__dirname, "../orbit-db-web/orbit-db"),
+          to: "orbit-db",
         },
       ],
     }),

@@ -1,0 +1,15 @@
+{
+  "name": "orbit-db-web",
+  "version": "1.0.0",
+  "main": "orbit-db/index.html",
+  "license": "MIT",
+  "scripts": {
+    "serve": "webpack-dev-server --config webpack.config.js --watch",
+    "build": "rm -rf orbit-db && NODE_ENV=production webpack --config webpack.config.js"
+  },
+  "dependencies": {
+    "ipfs": "~0.46",
+    "orbit-db": "^0.25.1"
+  },
+  "devDependencies": {}
+}

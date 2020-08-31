@@ -31,7 +31,7 @@ export const Bridge: React.SFC<IProps> = (props) => {
   return (
     <iframe
       style={{display: "none"}}
-      src={`/orbit-db-web/index.html#${encodeURIComponent(hash)}`}
+      src={`/orbit-db/index.html#${encodeURIComponent(hash)}`}
       ref={iframeEl}
     />
   );
