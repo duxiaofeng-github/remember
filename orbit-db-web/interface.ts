@@ -4,7 +4,7 @@ export enum OpType {
   DelData = "delData",
 }
 
-interface DBOptions {
+export interface DBOptions {
   dbName: string;
   remoteAddr: string;
 }

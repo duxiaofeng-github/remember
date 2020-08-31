@@ -1,8 +1,12 @@
 import dayjs from "dayjs";
-import { nanoid } from "nanoid";
+import {nanoid} from "nanoid";
 import cronParser from "cron-parser";
-import { getRemoteAddr, isOneTimeSchedule } from "../utils/common";
-import { getData, putData, delData } from "../orbit-db/orbit-db";
+import {getRemoteAddr, isOneTimeSchedule} from "../utils/common";
+import {
+  getData,
+  putData,
+  delData,
+} from "../components/common/orbit-db-bridge/sender";
 
 export interface PlanBase {
   content: string;
@@ -25,10 +29,13 @@ export interface Plan extends PlanBase {
 
 const dbName = "plans";
 
-export async function listPlans(options?: { all?: boolean; finished?: boolean }): Promise<Plan[]> {
-  const { all, finished = false } = options || {};
+export async function listPlans(options?: {
+  all?: boolean;
+  finished?: boolean;
+}): Promise<Plan[]> {
+  const {all, finished = false} = options || {};
   const remoteAddr = await getRemoteAddr();
-  const data = await getData({ dbName, remoteAddr });
+  const data = await getData({dbName, remoteAddr});
 
   return data.filter((plan: Plan) => {
     if (all) {
@@ -45,73 +52,98 @@ export async function listPlans(options?: { all?: boolean; finished?: boolean })
 
 export async function getPlan(id: string): Promise<Plan> {
   const remoteAddr = await getRemoteAddr();
-  const data = await getData({ dbName, remoteAddr, id });
+  const data = await getData({dbName, remoteAddr, id});
 
   return data && data.length ? data[0] : undefined;
 }
 
 export async function createPlan(data: PlanBase): Promise<string> {
   const remoteAddr = await getRemoteAddr();
-  const newPlan = { ...data, _id: nanoid() };
+  const newPlan = {...data, _id: nanoid()};
 
-  return putData({ dbName, remoteAddr, data: newPlan });
+  return putData({dbName, remoteAddr, data: newPlan});
 }
 
 export async function updatePlan(data: Plan): Promise<void> {
   const remoteAddr = await getRemoteAddr();
 
-  return putData({ dbName, remoteAddr, data });
+  return putData({dbName, remoteAddr, data});
 }
 
 export async function deletePlan(id: string): Promise<void> {
   const remoteAddr = await getRemoteAddr();
 
-  return delData({ dbName, remoteAddr, id });
+  return delData({dbName, remoteAddr, id});
 }
 
-export async function finishTask(planId: string, taskTime: number): Promise<void> {
+export async function finishTask(
+  planId: string,
+  taskTime: number,
+): Promise<void> {
   const plan = await getPlan(planId);
-  const finishedTaskTime = (plan.finishedTaskTime || []).filter((item) => item !== taskTime);
+  const finishedTaskTime = (plan.finishedTaskTime || []).filter(
+    (item) => item !== taskTime,
+  );
 
   finishedTaskTime.push(taskTime);
 
-  await updatePlan({ ...plan, finishedTaskTime });
+  await updatePlan({...plan, finishedTaskTime});
 }
 
-export async function cancelTask(planId: string, taskTime: number): Promise<void> {
+export async function cancelTask(
+  planId: string,
+  taskTime: number,
+): Promise<void> {
   const plan = await getPlan(planId);
-  const canceledTaskTime = (plan.canceledTaskTime || []).filter((item) => item !== taskTime);
+  const canceledTaskTime = (plan.canceledTaskTime || []).filter(
+    (item) => item !== taskTime,
+  );
 
   canceledTaskTime.push(taskTime);
 
-  await updatePlan({ ...plan, canceledTaskTime });
+  await updatePlan({...plan, canceledTaskTime});
 }
 
-export async function setNotifiedTasks(planId: string, taskTimes: number[]): Promise<void> {
+export async function setNotifiedTasks(
+  planId: string,
+  taskTimes: number[],
+): Promise<void> {
   const plan = await getPlan(planId);
   let notifiedTaskTime = plan.notifiedTaskTime || [];
 
   notifiedTaskTime = notifiedTaskTime.concat(taskTimes);
 
-  await updatePlan({ ...plan, notifiedTaskTime });
+  await updatePlan({...plan, notifiedTaskTime});
 }
 
 export function isPlanFinished(plan: Plan) {
-  const { schedule, repeatEndedCount, repeatEndedDate, canceledTaskTime, finishedTaskTime } = plan;
+  const {
+    schedule,
+    repeatEndedCount,
+    repeatEndedDate,
+    canceledTaskTime,
+    finishedTaskTime,
+  } = plan;
 
   if (isOneTimeSchedule(schedule)) {
     return (finishedTaskTime || []).length > 0;
   } else if (repeatEndedCount != null) {
     return (finishedTaskTime || []).length >= repeatEndedCount;
   } else if (repeatEndedDate != null) {
-    const allTaskTimes = (finishedTaskTime || []).concat(canceledTaskTime || []);
+    const allTaskTimes = (finishedTaskTime || []).concat(
+      canceledTaskTime || [],
+    );
 
     if (allTaskTimes.length > 0) {
       allTaskTimes.sort((a, b) => b - a);
 
       const latestTaskTime = allTaskTimes[0];
-      const cron = cronParser.parseExpression(schedule, { currentDate: dayjs.unix(latestTaskTime).toDate() });
-      const nextTime = cron.hasNext() ? dayjs(cron.next().toDate()).unix() : undefined;
+      const cron = cronParser.parseExpression(schedule, {
+        currentDate: dayjs.unix(latestTaskTime).toDate(),
+      });
+      const nextTime = cron.hasNext()
+        ? dayjs(cron.next().toDate()).unix()
+        : undefined;
 
       if (nextTime != null && nextTime >= repeatEndedDate) {
         return true;
@@ -152,9 +184,13 @@ function isTaskCanceled(taskTime: number, canceledTaskTime: number[]) {
   return canceledTaskTime.includes(taskTime);
 }
 
-function generateTask(options: { plan: Plan; taskTime: number; finished: boolean }) {
-  const { plan, taskTime, finished } = options;
-  const { _id, content, duration, noticeTime, pointsPerTask } = plan;
+function generateTask(options: {
+  plan: Plan;
+  taskTime: number;
+  finished: boolean;
+}) {
+  const {plan, taskTime, finished} = options;
+  const {_id, content, duration, noticeTime, pointsPerTask} = plan;
 
   return {
     planId: _id,
@@ -207,17 +243,30 @@ function getTask(options: {
     repeatEndedCount,
   } = options;
 
-  if (!isTaskTimeInRange(taskTime, startTime, endTime, noticeTime, includeNoticeTime)) {
+  if (
+    !isTaskTimeInRange(
+      taskTime,
+      startTime,
+      endTime,
+      noticeTime,
+      includeNoticeTime,
+    )
+  ) {
     return false;
   } else {
-    const repeatEnded = isTaskRepeatEnded(taskTime, finishedTaskTime, repeatEndedDate, repeatEndedCount);
+    const repeatEnded = isTaskRepeatEnded(
+      taskTime,
+      finishedTaskTime,
+      repeatEndedDate,
+      repeatEndedCount,
+    );
 
     if (!repeatEnded) {
       const finished = isTaskFinished(taskTime, finishedTaskTime);
       const canceled = isTaskCanceled(taskTime, canceledTaskTime);
 
       if (!finished && !canceled) {
-        const task = generateTask({ plan, taskTime, finished });
+        const task = generateTask({plan, taskTime, finished});
 
         return task;
       }
@@ -232,7 +281,11 @@ export function listTasks(options: {
   includeNoticeTime?: boolean;
 }): Task[] {
   const plan = options.plan;
-  const { startTime = plan.createdAt, endTime = dayjs().unix(), includeNoticeTime = false } = options;
+  const {
+    startTime = plan.createdAt,
+    endTime = dayjs().unix(),
+    includeNoticeTime = false,
+  } = options;
   const {
     schedule,
     finishedTaskTime = [],
@@ -335,9 +388,9 @@ export function listTasks(options: {
   return tasks;
 }
 
-export function listUnnotifiedTasks(options: { plan: Plan }): Task[] {
-  const { plan } = options;
-  const tasks = listTasks({ plan, includeNoticeTime: true });
+export function listUnnotifiedTasks(options: {plan: Plan}): Task[] {
+  const {plan} = options;
+  const tasks = listTasks({plan, includeNoticeTime: true});
   const unnotifiedTasks = tasks.filter((task) => {
     const notifiedTaskTime = plan.notifiedTaskTime || [];
     return !notifiedTaskTime.includes(task.startedAt);

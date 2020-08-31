@@ -1,6 +1,13 @@
-import React, { ReactNode } from "react";
-import { View, StyleSheet, Text, StyleProp, ViewStyle, TextStyle } from "react-native";
-import { Icon } from "react-native-elements";
+import React, {ReactNode} from 'react';
+import {
+  View,
+  StyleSheet,
+  Text,
+  StyleProp,
+  ViewStyle,
+  TextStyle,
+} from 'react-native';
+import {Icon} from '../icon';
 
 interface IProps {
   style?: StyleProp<ViewStyle>;
@@ -38,9 +45,12 @@ export const Input: React.SFC<IProps> = (props) => {
             if (onIconTouchStart) {
               onIconTouchStart();
             }
-          }}
-        >
-          <Icon type="feather" name={showClearIcon ? "x" : "chevron-down"} size={20} color={dropDownIconColor} />
+          }}>
+          <Icon
+            name={showClearIcon ? 'x' : 'chevron-down'}
+            size={20}
+            color={dropDownIconColor}
+          />
         </View>
       )}
     </View>
@@ -50,13 +60,13 @@ export const Input: React.SFC<IProps> = (props) => {
 const s = StyleSheet.create({
   pickerPlaceHolder: {
     height: 22,
-    display: "flex",
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-    color: "#606770",
+    display: 'flex',
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    color: '#606770',
     fontSize: 14,
     borderBottomWidth: 1,
-    borderBottomColor: "#606770",
+    borderBottomColor: '#606770',
   },
 });

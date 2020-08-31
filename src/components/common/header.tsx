@@ -1,7 +1,8 @@
 import React from "react";
-import { Header as RNEHeader } from "react-native-elements";
-import { useNavigation } from "@react-navigation/native";
-import { View, Text, StyleProp, TextStyle, StyleSheet } from "react-native";
+import {useNavigation} from "@react-navigation/native";
+import {View, Text, StyleProp, TextStyle, StyleSheet} from "react-native";
+import {Icon} from "./icon";
+import {colorPrimary} from "../../utils/style";
 
 interface IProps {
   title: string;
@@ -15,12 +16,12 @@ interface IProps {
 }
 
 export const Header: React.SFC<IProps> = (props) => {
-  const { title, hideBackButton, createButton } = props;
+  const {title, hideBackButton, createButton} = props;
   const navigation = useNavigation();
 
   function renderRightComponent() {
     if (createButton) {
-      const { visible, text, textStyle, onTouchEnd } = createButton;
+      const {visible, text, textStyle, onTouchEnd} = createButton;
 
       if (visible) {
         return text ? (
@@ -28,28 +29,49 @@ export const Header: React.SFC<IProps> = (props) => {
             <Text style={[s.text, textStyle]}>{text}</Text>
           </View>
         ) : (
-          { type: "feather", icon: "plus", color: "#fff", onPress: onTouchEnd }
+          <Icon size={22} name="plus" color="#fff" onPress={onTouchEnd} />
         );
       }
     }
   }
 
   return (
-    <RNEHeader
-      placement="left"
-      leftComponent={
-        !hideBackButton && navigation.canGoBack()
-          ? { type: "feather", icon: "chevron-left", color: "#fff", onPress: () => navigation.goBack() }
-          : undefined
-      }
-      centerComponent={{ text: title, style: { color: "#fff", fontSize: 18 } }}
-      rightComponent={renderRightComponent()}
-    />
+    <View style={s.container}>
+      {!hideBackButton && navigation.canGoBack() && (
+        <View style={s.leftComponent}>
+          <Icon
+            size={22}
+            name="chevron-left"
+            color="#fff"
+            onPress={() => navigation.goBack()}
+          />
+        </View>
+      )}
+      <Text style={s.title}>{title}</Text>
+      {renderRightComponent()}
+    </View>
   );
 };
 
 const s = StyleSheet.create({
+  container: {
+    backgroundColor: colorPrimary,
+    flexDirection: "row",
+    alignItems: "center",
+    height: 50,
+    paddingLeft: 15,
+    paddingRight: 15,
+  },
+  leftComponent: {
+    marginRight: 10,
+  },
   text: {
     color: "#fff",
+  },
+  title: {
+    color: "#fff",
+    fontSize: 18,
+    flexGrow: 1,
+    marginRight: 10,
   },
 });

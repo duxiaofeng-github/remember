@@ -1,12 +1,11 @@
-import React from "react";
-import { Icon as RNEIcon, IconProps } from "react-native-elements";
+import React from 'react';
+import RNVI from 'react-native-vector-icons/Feather';
+import {IconProps} from 'react-native-vector-icons/Icon';
 
-interface IProps extends IconProps {
-  type?: string;
-}
+RNVI.loadFont();
+
+interface IProps extends IconProps {}
 
 export const Icon: React.SFC<IProps> = (props) => {
-  const { type = "feather", ...restProps } = props;
-
-  return <RNEIcon type={type} {...restProps} />;
+  return <RNVI {...props} />;
 };
