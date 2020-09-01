@@ -1,20 +1,20 @@
-import React, {useEffect, useMemo} from 'react';
-import {View, StyleSheet} from 'react-native';
-import {Header} from '../common/header';
-import {Loading} from '../common/loading';
-import {Text} from '../common/text';
-import {Empty} from '../common/empty';
-import {humanizeRangeTime, isTimeout, translate} from '../../utils/common';
-import {colorTextLight, colorError} from '../../utils/style';
-import {IStore} from '../../store';
-import {useRexContext} from '../../store/store';
-import {Icon} from '../common/icon';
-import {listTasks, cancelTask, finishTask} from '../../db/plan';
-import flatten from 'lodash/flatten';
-import {PopupMenu} from '../common/popup-menu';
-import {useSubmission} from '../../utils/hooks/use-submission';
-import {Toast} from '../common/toast';
-import {ListItem} from '../common/list-item';
+import React, {useEffect, useMemo} from "react";
+import {View, StyleSheet} from "react-native";
+import {Header} from "../common/header";
+import {Loading} from "../common/loading";
+import {Text} from "../common/text";
+import {Empty} from "../common/empty";
+import {humanizeRangeTime, isTimeout, translate} from "../../utils/common";
+import {colorTextLight, colorError} from "../../utils/style";
+import {IStore} from "../../store";
+import {useRexContext} from "../../store/store";
+import {Icon} from "../common/icon";
+import {listTasks, cancelTask, finishTask} from "../../db/plan";
+import flatten from "lodash/flatten";
+import {PopupMenu} from "../common/popup-menu";
+import {useSubmission} from "../../utils/hooks/use-submission";
+import {Toast} from "../common/toast";
+import {ListItem} from "../common/list-item";
 
 interface IProps {}
 
@@ -38,7 +38,7 @@ export const Task: React.SFC<IProps> = () => {
 
       await cancelTask(planId, taskTime);
 
-      Toast.message(translate('Cancel successfully'));
+      Toast.message(translate("Cancel successfully"));
 
       await plansData.load();
     },
@@ -80,7 +80,9 @@ export const Task: React.SFC<IProps> = () => {
                         <Icon
                           name="square"
                           size={20}
-                          onPress={() => {
+                          onPress={(e) => {
+                            e.stopPropagation();
+
                             finishTaskTriggerer({
                               planId: item.planId,
                               taskTime: item.startedAt,
@@ -110,7 +112,7 @@ export const Task: React.SFC<IProps> = () => {
                       onTouchStart={async () => {
                         PopupMenu.show([
                           {
-                            text: translate('Cancel task'),
+                            text: translate("Cancel task"),
                             onTouchStart: () => {
                               cancelTaskTriggerer({
                                 planId: item.planId,
@@ -139,11 +141,11 @@ const s = StyleSheet.create({
   },
   content: {
     flex: 1,
-    overflow: 'scroll',
+    overflow: "scroll",
   },
   subTitleContainer: {
     marginTop: 5,
-    flexDirection: 'row',
+    flexDirection: "row",
   },
   subTitleIcon: {
     marginTop: 3,

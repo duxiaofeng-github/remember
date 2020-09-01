@@ -22,10 +22,17 @@ module.exports = {
       {
         test: /\.(tsx|ts)$/,
         exclude: /node_modules/,
-        loader: "ts-loader",
-        options: {
-          configFile: path.resolve(__dirname, "./tsconfig.json"),
-        },
+        use: [
+          {
+            loader: "babel-loader", // transform es6 to es5
+          },
+          {
+            loader: "ts-loader",
+            options: {
+              configFile: path.resolve(__dirname, "./tsconfig.json"),
+            },
+          },
+        ],
       },
       {
         test: /\.(jsx|js)$/,

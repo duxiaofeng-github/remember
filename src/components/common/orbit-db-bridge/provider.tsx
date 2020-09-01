@@ -4,7 +4,7 @@ import {RexProvider, createStore} from "../../../store/store";
 interface IProps {}
 
 export interface IStore {
-  hash: string;
+  request: string;
 }
 
 export const store = createStore<IStore>();
@@ -14,7 +14,7 @@ export const Provider: React.SFC<IProps> = (props) => {
     <RexProvider
       store={store}
       initialValue={{
-        hash: "",
+        request: "",
       }}>
       {props.children}
     </RexProvider>

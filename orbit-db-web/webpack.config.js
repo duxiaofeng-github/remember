@@ -21,18 +21,26 @@ module.exports = {
       {
         test: /\.(ts)$/,
         exclude: /node_modules/,
-        loader: "ts-loader",
-        options: {
-          configFile: path.resolve(__dirname, "./tsconfig.json"),
-        },
+        use: [
+          {
+            loader: "babel-loader", // transform es6 to es5
+          },
+          {
+            loader: "ts-loader",
+            options: {
+              configFile: path.resolve(__dirname, "./tsconfig.json"),
+            },
+          },
+        ],
+      },
+      {
+        test: /\.(js)$/,
+        loader: "babel-loader",
       },
     ],
   },
   resolve: {
     extensions: [".ts", ".js"],
-    alias: {
-      "react-native$": "react-native-web",
-    },
   },
   devServer: {
     host: "0.0.0.0",

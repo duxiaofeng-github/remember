@@ -39,7 +39,7 @@ function send<T>(options: {timestamp: number; msg: string}) {
     // }, 20 * 1000);
 
     store.update((store) => {
-      store.hash = msg;
+      store.request = msg;
     });
   });
 }

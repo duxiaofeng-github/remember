@@ -7,7 +7,7 @@ interface IProps {}
 
 export const Bridge: React.SFC<IProps> = (props) => {
   const iframeEl = useRef<HTMLIFrameElement>(null);
-  const {hash} = useRexContext((store: IStore) => store);
+  const {request} = useRexContext((store: IStore) => store);
 
   useEffect(() => {
     const iframe = iframeEl.current as any;
@@ -28,10 +28,25 @@ export const Bridge: React.SFC<IProps> = (props) => {
     };
   });
 
+  function sendRequest() {
+    const iframe = iframeEl.current as any;
+
+    if (
+      iframe != null &&
+      iframe.contentWindow.orbitdbRequest &&
+      request !== ""
+    ) {
+      iframe.contentWindow.orbitdbRequest(request);
+    }
+  }
+
+  useEffect(sendRequest, [request]);
+
   return (
     <iframe
       style={{display: "none"}}
-      src={`/orbit-db/index.html#${encodeURIComponent(hash)}`}
+      src={"/orbit-db/index.html"}
+      onLoad={sendRequest}
       ref={iframeEl}
     />
   );
