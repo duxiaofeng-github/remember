@@ -1,6 +1,5 @@
-import {getRemoteAddr} from "../utils/common";
+import {defaultLocale, getRemoteAddr} from "../utils/common";
 import {getData, putData} from "../components/common/orbit-db-bridge/sender";
-import {getDeviceLocale} from "../utils/locale";
 
 interface Setting {
   lang: string;
@@ -24,9 +23,7 @@ export async function getSettings(): Promise<Setting> {
     return data[0];
   }
 
-  const defaultLang = await getDeviceLocale();
-
-  return getDefaultSetting(defaultLang);
+  return getDefaultSetting(defaultLocale);
 }
 
 export async function updateSettings(data: Setting): Promise<void> {

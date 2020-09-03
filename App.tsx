@@ -2,8 +2,7 @@ import React from "react";
 import "react-native-gesture-handler";
 import "react-native-get-random-values";
 import {Index} from "./src/components";
-import I18n from "react-native-i18n";
-import {translations} from "./src/i18n";
+import "./src/i18n";
 import {globalStore, getInitialStore} from "./src/store";
 import {RexProvider} from "./src/store/store";
 import {PickerProvider} from "./src/components/common/picker/provider";
@@ -21,10 +20,6 @@ import {OrbitDbBridge} from "./src/components/common/orbit-db-bridge";
 dayjs.extend(localizedFormat);
 dayjs.extend(relativeTime);
 dayjs.extend(duration);
-
-I18n.fallbacks = true;
-
-I18n.translations = translations;
 
 interface IProps {}
 

@@ -1,6 +1,7 @@
-import { Plan } from "../db/plan";
-import { createStore } from "./store";
-import { loadPlans } from "./plan";
+import {Plan} from "../db/plan";
+import {createStore} from "./store";
+import {loadPlans} from "./plan";
+import {defaultLocale} from "../utils/common";
 
 interface IStoreData<T> {
   loading: boolean;
@@ -17,8 +18,8 @@ export interface IStore {
 
 export function getInitialStore(): IStore {
   return {
-    lang: "en",
-    plansData: { loading: true, load: loadPlans },
+    lang: defaultLocale,
+    plansData: {loading: true, load: loadPlans},
   };
 }
 

@@ -1,17 +1,28 @@
-import I18n from "react-native-i18n";
-import { TranslateOptions } from "i18n-js";
 import cronstrue from "cronstrue/i18n";
-import { globalStore } from "../store";
-import dayjs, { Dayjs } from "dayjs";
-import { listPlans, listUnnotifiedTasks } from "../db/plan";
-import { storage } from "./storage";
+import {useTranslation} from "react-i18next";
+import {TOptions} from "i18next";
+import dayjs, {Dayjs} from "dayjs";
+import * as Localization from "expo-localization";
 
-export function translate(key: string, options?: TranslateOptions) {
-  return I18n.t(key, options);
+import {globalStore} from "../store";
+import {listPlans, listUnnotifiedTasks} from "../db/plan";
+import {storage} from "./storage";
+
+export const defaultLocale = Localization.locale || "en";
+
+export function translate<T extends object = {[key: string]: any}>(
+  key: string,
+  options?: TOptions<T> | string,
+) {
+  const {t} = useTranslation();
+
+  return t(key, options);
 }
 
 export function humanizeCron(cron: string) {
-  return cronstrue.toString(cron, { locale: globalStore.getState().lang.replace("-", "_") });
+  return cronstrue.toString(cron, {
+    locale: globalStore.getState().lang.replace("-", "_"),
+  });
 }
 
 export function getOneTimeScheduleStartTime(schedule: string) {
@@ -19,7 +30,10 @@ export function getOneTimeScheduleStartTime(schedule: string) {
 }
 
 export function getOneTimeScheduleEndTime(schedule: string, duration: number) {
-  return dayjs.unix(getOneTimeScheduleStartTime(schedule)).add(duration, "second").unix();
+  return dayjs
+    .unix(getOneTimeScheduleStartTime(schedule))
+    .add(duration, "second")
+    .unix();
 }
 
 export function isOneTimeSchedule(schedule: string) {
@@ -31,7 +45,7 @@ export function isOneTimeSchedule(schedule: string) {
 export function parseSchedule(schedule: string) {
   const [minute, hour, date, month, day] = schedule.split(" ");
 
-  return { minute, hour, date, month, day };
+  return {minute, hour, date, month, day};
 }
 
 export function humanizeRangeTime(time: string | number, duration: number) {
@@ -39,7 +53,7 @@ export function humanizeRangeTime(time: string | number, duration: number) {
   const from = formatTime(timeParsed);
   const to = formatTime(timeParsed.add(duration, "second"));
 
-  return translate("%{from} to %{to}", { from, to });
+  return translate("%{from} to %{to}", {from, to});
 }
 
 export function isTimeout(time: string | number, duration: number) {
@@ -78,7 +92,7 @@ export function secondsToDuration(seconds: number) {
 export async function getAllUnnotifiedTasks() {
   const plans = await listPlans();
   const tasksArray = plans.map((plan) => {
-    return { planId: plan._id, tasks: listUnnotifiedTasks({ plan }) };
+    return {planId: plan._id, tasks: listUnnotifiedTasks({plan})};
   });
 
   return tasksArray;

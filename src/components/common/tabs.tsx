@@ -1,15 +1,15 @@
-import React, { useState, ReactNode } from "react";
-import { View, StyleSheet, StyleProp, ViewStyle } from "react-native";
-import { Text } from "../common/text";
-import { colorBorder, colorPrimary } from "../../utils/style";
+import React, {useState, ReactNode} from "react";
+import {View, StyleSheet, StyleProp, ViewStyle} from "react-native";
+import {Text} from "../common/text";
+import {colorBorder, colorPrimary} from "../../utils/style";
 
 interface IProps {
   style?: StyleProp<ViewStyle>;
-  tabs: { title: string; content: ReactNode }[];
+  tabs: {title: string; content: ReactNode}[];
 }
 
 export const Tabs: React.SFC<IProps> = (props) => {
-  const { style, tabs } = props;
+  const {style, tabs} = props;
   const [tabIndex, setTabIndex] = useState(0);
 
   return (
@@ -28,16 +28,14 @@ export const Tabs: React.SFC<IProps> = (props) => {
               ]}
               onTouchEnd={() => {
                 setTabIndex(index);
-              }}
-            >
+              }}>
               <Text
                 style={[
                   s.tabText,
                   index === tabs.length - 1 && {
                     borderRightWidth: 0,
                   },
-                ]}
-              >
+                ]}>
                 {item.title}
               </Text>
             </View>
@@ -55,7 +53,7 @@ const s = StyleSheet.create({
     flexShrink: 0,
     flexDirection: "row",
     backgroundColor: "#fff",
-    borderBottomWidth: 2,
+    borderBottomWidth: 1,
     borderBottomColor: colorBorder,
   },
   tab: {
@@ -76,5 +74,5 @@ const s = StyleSheet.create({
   tabSelected: {
     borderBottomColor: colorPrimary,
   },
-  viewContainer: { flex: 1 },
+  viewContainer: {flex: 1},
 });
