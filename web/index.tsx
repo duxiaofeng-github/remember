@@ -1,10 +1,7 @@
-import VConsole from "vconsole";
 import React from "react";
 import {render} from "react-dom";
 import App from "../App";
 import featherFont from "react-native-vector-icons/Fonts/Feather.ttf";
-
-new VConsole();
 
 function renderApp() {
   render(

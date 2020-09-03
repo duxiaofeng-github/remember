@@ -1,27 +1,27 @@
-import React from 'react';
-import {View, StyleSheet} from 'react-native';
-import {Header} from '../common/header';
-import {useNavigation} from '@react-navigation/native';
-import {Route} from '../../utils/route';
-import {Loading} from '../common/loading';
-import {Text} from '../common/text';
-import {Empty} from '../common/empty';
+import React from "react";
+import {View, StyleSheet} from "react-native";
+import {Header} from "../common/header";
+import {useNavigation} from "@react-navigation/native";
+import {Route} from "../../utils/route";
+import {Loading} from "../common/loading";
+import {Text} from "../common/text";
+import {Empty} from "../common/empty";
 import {
   humanizeCron,
   isOneTimeSchedule,
   humanizeRangeTime,
   translate,
   secondsToDuration,
-} from '../../utils/common';
-import {colorTextLight, colorError} from '../../utils/style';
-import {globalStore, IStore} from '../../store';
-import {useRexContext} from '../../store/store';
-import {Icon} from '../common/icon';
-import {PopupMenu} from '../common/popup-menu';
-import {useSubmission} from '../../utils/hooks/use-submission';
-import {deletePlan} from '../../db/plan';
-import {Toast} from '../common/toast';
-import {ListItem} from '../common/list-item';
+} from "../../utils/common";
+import {colorTextLight, colorError} from "../../utils/style";
+import {globalStore, IStore} from "../../store";
+import {useRexContext} from "../../store/store";
+import {Icon} from "../common/icon";
+import {PopupMenu} from "../common/popup-menu";
+import {useSubmission} from "../../utils/hooks/use-submission";
+import {deletePlan} from "../../db/plan";
+import {Toast} from "../common/toast";
+import {ListItem} from "../common/list-item";
 
 interface IProps {}
 
@@ -33,7 +33,7 @@ export const Plan: React.SFC<IProps> = () => {
     async (id?: string) => {
       await deletePlan(id!);
 
-      Toast.message(translate('Delete successfully'));
+      Toast.message(translate("Delete successfully"));
 
       await plansData.load();
     },
@@ -67,29 +67,30 @@ export const Plan: React.SFC<IProps> = () => {
                       key={item._id}
                       bottomDivider
                       title={item.content}
+                      subtitleStyle={s.subTitleContainer}
                       subtitle={
-                        <View style={s.subTitleContainer}>
+                        <>
                           <Icon
                             style={s.subTitleIcon}
                             name="clock"
-                            size={14}
+                            size={12}
                             color={colorTextLight}
                           />
                           <Text style={s.subTitle}>
                             {isOneTimeSchedule(schedule)
                               ? humanizeRangeTime(schedule, duration)
                               : `${humanizeCron(schedule)}, ${translate(
-                                  'duration',
+                                  "duration",
                                 )}: ${secondsToDuration(duration)
                                   .locale(lang)
                                   .humanize(false)}`}
                           </Text>
-                        </View>
+                        </>
                       }
                       onTouchStart={async () => {
                         PopupMenu.show([
                           {
-                            text: translate('Edit'),
+                            text: translate("Edit"),
                             onTouchStart: async () => {
                               await globalStore.update((store) => {
                                 store.edittingPlanId = item._id;
@@ -99,7 +100,7 @@ export const Plan: React.SFC<IProps> = () => {
                             },
                           },
                           {
-                            text: translate('Delete'),
+                            text: translate("Delete"),
                             style: s.deleteText,
                             onTouchStart: () => {
                               deletePlanTriggerer(item._id);
@@ -126,18 +127,21 @@ const s = StyleSheet.create({
   },
   content: {
     flex: 1,
-    overflow: 'scroll',
+    overflow: "scroll",
   },
   subTitleContainer: {
-    marginTop: 5,
-    flexDirection: 'row',
+    flexDirection: "row",
   },
   subTitleIcon: {
-    marginTop: 3,
+    marginTop: 1,
     marginRight: 5,
   },
   subTitle: {
     color: colorTextLight,
+    flex: 1,
+    flexWrap: "wrap",
+    fontSize: 12,
+    lineHeight: 14,
   },
   deleteText: {
     color: colorError,

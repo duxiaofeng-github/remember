@@ -1,5 +1,5 @@
 import React from "react";
-import { View, StyleSheet, Text, StyleProp, TextStyle } from "react-native";
+import {View, StyleSheet, Text, StyleProp, TextStyle} from "react-native";
 
 interface ITopbarProps {
   title?: string;
@@ -26,7 +26,11 @@ export const Topbar: React.SFC<ITopbarProps> = (props) => {
 
   return (
     <View style={s.container}>
-      {title && <Text style={[s.titleText, titleStyle]}>{title}</Text>}
+      {title && (
+        <View style={[s.titleText, titleStyle]}>
+          <Text>{title}</Text>
+        </View>
+      )}
       <View style={s.cancelContainer} onTouchEnd={onCancel}>
         <Text style={[s.cancelText, cancelStyle]}>{cancelText}</Text>
       </View>
@@ -48,9 +52,7 @@ const s = StyleSheet.create({
     borderBottomColor: "#ebedf0",
   },
   titleText: {
-    flex: 1,
-    display: "flex",
-    flexDirection: "row",
+    flexGrow: 1,
     alignItems: "center",
     justifyContent: "center",
   },

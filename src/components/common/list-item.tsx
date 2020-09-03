@@ -1,5 +1,5 @@
 import React, {ReactNode} from "react";
-import {StyleSheet, View} from "react-native";
+import {StyleProp, StyleSheet, View, ViewStyle} from "react-native";
 import {colorBorder, colorTextLight} from "../../utils/style";
 import {Text} from "./text";
 
@@ -8,11 +8,19 @@ interface IProps {
   bottomDivider?: boolean;
   title: ReactNode;
   subtitle: ReactNode;
+  subtitleStyle?: StyleProp<ViewStyle>;
   onTouchStart?: () => void;
 }
 
 export const ListItem: React.SFC<IProps> = (props) => {
-  const {leftComponent, title, subtitle, bottomDivider, onTouchStart} = props;
+  const {
+    leftComponent,
+    title,
+    subtitle,
+    subtitleStyle,
+    bottomDivider,
+    onTouchStart,
+  } = props;
 
   return (
     <View
@@ -21,7 +29,15 @@ export const ListItem: React.SFC<IProps> = (props) => {
       {leftComponent && <View style={s.leftContent}>{leftComponent}</View>}
       <View style={s.centerContent}>
         <Text style={s.title}>{title}</Text>
-        <Text style={s.subtitle}>{subtitle}</Text>
+        {subtitle != null && (
+          <View style={[s.subtitleContainer, subtitleStyle]}>
+            {typeof subtitle === "string" ? (
+              <Text style={s.subtitle}>{subtitle}</Text>
+            ) : (
+              subtitle
+            )}
+          </View>
+        )}
       </View>
     </View>
   );
@@ -39,17 +55,26 @@ const s = StyleSheet.create({
     marginRight: 10,
   },
   centerContent: {
-    flexDirection: "column",
     flexGrow: 1,
   },
   borderBottom: {
     borderBottomColor: colorBorder,
     borderBottomWidth: 1,
   },
+  subtitleContainer: {
+    marginTop: 5,
+    flexDirection: "row",
+  },
   subtitle: {
     color: colorTextLight,
+    fontSize: 12,
+    lineHeight: 14,
+    flex: 1,
+    flexWrap: "wrap",
   },
   title: {
-    fontSize: 18,
+    fontSize: 16,
+    lineHeight: 16,
+    fontWeight: "bold",
   },
 });

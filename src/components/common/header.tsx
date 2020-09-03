@@ -3,6 +3,7 @@ import {useNavigation} from "@react-navigation/native";
 import {View, Text, StyleProp, TextStyle, StyleSheet} from "react-native";
 import {Icon} from "./icon";
 import {colorPrimary} from "../../utils/style";
+import {useSafeAreaInsets} from "react-native-safe-area-context";
 
 interface IProps {
   title: string;
@@ -18,6 +19,7 @@ interface IProps {
 export const Header: React.SFC<IProps> = (props) => {
   const {title, hideBackButton, createButton} = props;
   const navigation = useNavigation();
+  const insets = useSafeAreaInsets();
 
   function renderRightComponent() {
     if (createButton) {
@@ -36,7 +38,8 @@ export const Header: React.SFC<IProps> = (props) => {
   }
 
   return (
-    <View style={s.container}>
+    <View
+      style={[s.container, {height: 50 + insets.top, paddingTop: insets.top}]}>
       {!hideBackButton && navigation.canGoBack() && (
         <View style={s.leftComponent}>
           <Icon
@@ -58,7 +61,6 @@ const s = StyleSheet.create({
     backgroundColor: colorPrimary,
     flexDirection: "row",
     alignItems: "center",
-    height: 50,
     paddingLeft: 15,
     paddingRight: 15,
   },
