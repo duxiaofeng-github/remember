@@ -6,7 +6,7 @@ import dayjs from "dayjs";
 import {Home} from "./home/home";
 import {Route} from "../utils/route";
 import {EditReward} from "./reward/edit-reward";
-import {EditPlan} from "./task/edit-plan";
+import {EditTask} from "./task/edit-task";
 import {useData} from "../utils/hooks/use-data";
 import {getSettings} from "../db/setting";
 import {Loading} from "./common/loading";
@@ -55,7 +55,7 @@ export const Index: React.SFC<IProps> = () => {
                 cardStyle: {height: "100%"},
               }}>
               <Stack.Screen name={Route.Home} component={Home} />
-              <Stack.Screen name={Route.EditPlan} component={EditPlan} />
+              <Stack.Screen name={Route.EditTask} component={EditTask} />
               <Stack.Screen name={Route.EditReward} component={EditReward} />
             </Stack.Navigator>
           </NavigationContainer>

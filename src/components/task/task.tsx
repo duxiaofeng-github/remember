@@ -1,17 +1,19 @@
 import React from "react";
 import {View, StyleSheet} from "react-native";
 import {Header} from "../common/header";
-import {translate} from "../../utils/common";
+import {useTranslation} from "react-i18next";
 import {colorTextLight, colorError} from "../../utils/style";
 import {Tabs} from "../common/tabs";
 import {ProcessingTask} from "./processing-task";
 import {Route} from "../../utils/route";
 import {useNavigation} from "@react-navigation/native";
+import {AllTasks} from "./all-tasks";
 
 interface IProps {}
 
 export const Task: React.SFC<IProps> = () => {
   const navigation = useNavigation();
+  const {t} = useTranslation();
 
   return (
     <View style={s.container}>
@@ -21,15 +23,15 @@ export const Task: React.SFC<IProps> = () => {
         createButton={{
           visible: true,
           onTouchEnd: () => {
-            navigation.navigate(Route.EditPlan);
+            navigation.navigate(Route.EditTask);
           },
         }}
       />
       <Tabs
         tabs={[
-          {title: translate("Processing"), content: <ProcessingTask />},
-          {title: translate("Calendar"), content: null},
-          {title: translate("All tasks"), content: <ProcessingTask />},
+          {title: t("Processing"), content: <ProcessingTask />},
+          {title: t("Calendar"), content: null},
+          {title: t("All tasks"), content: <AllTasks />},
         ]}
       />
     </View>

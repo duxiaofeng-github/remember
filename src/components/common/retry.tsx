@@ -1,9 +1,9 @@
 import React from "react";
-import { View, StyleSheet } from "react-native";
-import { Text } from "./text";
-import { translate } from "../../utils/common";
-import { colorPrimary, colorTextLight } from "../../utils/style";
-import { Icon } from "./icon";
+import {View, StyleSheet} from "react-native";
+import {useTranslation} from "react-i18next";
+import {Text} from "./text";
+import {colorPrimary, colorTextLight} from "../../utils/style";
+import {Icon} from "./icon";
 
 interface IProps {
   retry: () => void;
@@ -11,15 +11,16 @@ interface IProps {
 }
 
 export const Retry: React.SFC<IProps> = (props) => {
-  const { retry, tips } = props;
+  const {retry, tips} = props;
+  const {t} = useTranslation();
 
   return (
     <View style={s.container}>
       <Icon name="alert-circle" size={40} color={colorTextLight} />
       <View style={s.tipsContainer}>
-        <Text style={s.text}>{tips || translate("Network error, please")}</Text>
+        <Text style={s.text}>{tips || t("Network error, please")}</Text>
         <View style={s.retry} onTouchEnd={retry}>
-          <Text style={s.retryText}>{translate("retry")}</Text>
+          <Text style={s.retryText}>{t("retry")}</Text>
         </View>
       </View>
     </View>
@@ -38,7 +39,7 @@ const s = StyleSheet.create({
     justifyContent: "center",
     marginTop: 10,
   },
-  text: { color: colorTextLight },
-  retry: { marginLeft: 5 },
-  retryText: { color: colorPrimary },
+  text: {color: colorTextLight},
+  retry: {marginLeft: 5},
+  retryText: {color: colorPrimary},
 });

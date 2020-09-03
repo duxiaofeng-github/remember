@@ -9463,6 +9463,11 @@ union-value@^1.0.0:
     is-extendable "^0.1.1"
     set-value "^2.0.1"
 
+uniqolor@^1.0.1:
+  version "1.0.1"
+  resolved "https://registry.npmjs.org/uniqolor/-/uniqolor-1.0.1.tgz#4a424208d7fc983b2c30d1eee739065bc60c90ba"
+  integrity sha512-g/lITZI/O2PKXoerNZJCrq8P5WAzO2Cjl04fmrSzEy1k7WQ2DwzHVFx6wRHOd0ycQum43k5SCVgMWwYTkXenYw==
+
 unique-filename@^1.1.1:
   version "1.1.1"
   resolved "https://registry.npmjs.org/unique-filename/-/unique-filename-1.1.1.tgz#1d69769369ada0583103a1e6ae87681b56573230"

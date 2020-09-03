@@ -5,7 +5,7 @@ import {Icon} from "../common/icon";
 import {colorPrimary} from "../../utils/style";
 import {Reward} from "../reward/reward";
 import {Route} from "../../utils/route";
-import {translate} from "../../utils/common";
+import {useTranslation} from "react-i18next";
 import {useRexContext} from "../../store/store";
 import {IStore} from "../../store";
 import {Task} from "../task/task";
@@ -16,6 +16,7 @@ const Tab = createBottomTabNavigator();
 
 export const Home: React.SFC<IProps> = () => {
   const {lang} = useRexContext((store: IStore) => store);
+  const {t} = useTranslation();
 
   return (
     <Tab.Navigator
@@ -62,17 +63,17 @@ export const Home: React.SFC<IProps> = () => {
       <Tab.Screen
         name={Route.Task}
         component={Task}
-        options={{title: translate("tasks")}}
+        options={{title: t("tasks")}}
       />
       <Tab.Screen
         name={Route.Reward}
         component={Reward}
-        options={{title: translate("rewards")}}
+        options={{title: t("rewards")}}
       />
       <Tab.Screen
         name={Route.Setting}
         component={Setting}
-        options={{title: translate("settings")}}
+        options={{title: t("settings")}}
       />
     </Tab.Navigator>
   );

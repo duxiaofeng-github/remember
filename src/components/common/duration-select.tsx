@@ -1,14 +1,15 @@
 import React from "react";
-import { StyleSheet } from "react-native";
-import { colorText } from "../../utils/style";
-import { DurationPicker, IDurationPickerProps } from "./picker/duration-picker";
-import { Field, IFieldProps } from "./field";
-import { translate } from "../../utils/common";
+import {StyleSheet} from "react-native";
+import {colorText} from "../../utils/style";
+import {DurationPicker, IDurationPickerProps} from "./picker/duration-picker";
+import {Field, IFieldProps} from "./field";
+import {useTranslation} from "react-i18next";
 
 interface IProps extends IDurationPickerProps, IFieldProps {}
 
 export const DurationSelect: React.SFC<IProps> = (props) => {
-  const { label, error, ...restProps } = props;
+  const {label, error, ...restProps} = props;
+  const {t} = useTranslation();
 
   return (
     <Field label={label} error={error}>
@@ -16,8 +17,8 @@ export const DurationSelect: React.SFC<IProps> = (props) => {
         {...restProps}
         titleStyle={s.pickerText}
         textStyle={s.pickerText}
-        confirmText={translate("Confirm")}
-        cancelText={translate("Cancel")}
+        confirmText={t("Confirm")}
+        cancelText={t("Cancel")}
         dropDownIconColor={colorText}
       />
     </Field>

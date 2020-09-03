@@ -28,7 +28,11 @@ export const ListItem: React.SFC<IProps> = (props) => {
       onTouchStart={onTouchStart}>
       {leftComponent && <View style={s.leftContent}>{leftComponent}</View>}
       <View style={s.centerContent}>
-        <Text style={s.title}>{title}</Text>
+        {typeof title === "string" ? (
+          <Text style={s.title}>{title}</Text>
+        ) : (
+          title
+        )}
         {subtitle != null && (
           <View style={[s.subtitleContainer, subtitleStyle]}>
             {typeof subtitle === "string" ? (
@@ -71,6 +75,9 @@ const s = StyleSheet.create({
     lineHeight: 14,
     flex: 1,
     flexWrap: "wrap",
+  },
+  titleContainer: {
+    flexDirection: "row",
   },
   title: {
     fontSize: 16,

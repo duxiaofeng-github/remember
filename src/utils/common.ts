@@ -1,6 +1,4 @@
 import cronstrue from "cronstrue/i18n";
-import {useTranslation} from "react-i18next";
-import {TOptions} from "i18next";
 import dayjs, {Dayjs} from "dayjs";
 import * as Localization from "expo-localization";
 
@@ -9,15 +7,6 @@ import {listPlans, listUnnotifiedTasks} from "../db/plan";
 import {storage} from "./storage";
 
 export const defaultLocale = Localization.locale || "en";
-
-export function translate<T extends object = {[key: string]: any}>(
-  key: string,
-  options?: TOptions<T> | string,
-) {
-  const {t} = useTranslation();
-
-  return t(key, options);
-}
 
 export function humanizeCron(cron: string) {
   return cronstrue.toString(cron, {
@@ -48,12 +37,12 @@ export function parseSchedule(schedule: string) {
   return {minute, hour, date, month, day};
 }
 
-export function humanizeRangeTime(time: string | number, duration: number) {
+export function getRangeTime(time: string | number, duration: number) {
   const timeParsed = typeof time === "string" ? dayjs(time) : dayjs.unix(time);
   const from = formatTime(timeParsed);
   const to = formatTime(timeParsed.add(duration, "second"));
 
-  return translate("%{from} to %{to}", {from, to});
+  return {from, to};
 }
 
 export function isTimeout(time: string | number, duration: number) {

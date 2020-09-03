@@ -3,9 +3,9 @@ import {View, StyleSheet} from "react-native";
 import {Loading} from "../common/loading";
 import {Text} from "../common/text";
 import {Empty} from "../common/empty";
-import {humanizeRangeTime, isTimeout, translate} from "../../utils/common";
+import {getRangeTime, isTimeout} from "../../utils/common";
 import {colorTextLight, colorError} from "../../utils/style";
-import {IStore} from "../../store";
+import {globalStore, IStore} from "../../store";
 import {useRexContext} from "../../store/store";
 import {Icon} from "../common/icon";
 import {listTasks, cancelTask, finishTask} from "../../db/plan";
@@ -14,10 +14,16 @@ import {PopupMenu} from "../common/popup-menu";
 import {useSubmission} from "../../utils/hooks/use-submission";
 import {Toast} from "../common/toast";
 import {ListItem} from "../common/list-item";
+import {useTranslation} from "react-i18next";
+import {Route} from "../../utils/route";
+import {useNavigation} from "@react-navigation/native";
+import {ColorMark} from "../common/color-mark";
 
 interface IProps {}
 
 export const ProcessingTask: React.SFC<IProps> = () => {
+  const {t} = useTranslation();
+  const navigation = useNavigation();
   const {plansData} = useRexContext((store: IStore) => store);
   const taskData = useMemo(() => {
     if (plansData && plansData.data) {
@@ -37,7 +43,7 @@ export const ProcessingTask: React.SFC<IProps> = () => {
 
       await cancelTask(planId, taskTime);
 
-      Toast.message(translate("Cancel successfully"));
+      Toast.message(t("Cancel successfully"));
 
       await plansData.load();
     },
@@ -81,19 +87,24 @@ export const ProcessingTask: React.SFC<IProps> = () => {
                           e.stopPropagation();
 
                           finishTaskTriggerer({
-                            planId: item.planId,
-                            taskTime: item.startedAt,
+                            planId: planId,
+                            taskTime: startedAt,
                           });
                         }}
                       />
                     }
-                    title={content}
+                    title={
+                      <View style={s.titleContainer}>
+                        <ColorMark style={s.colorMark} id={planId} />
+                        <Text style={s.title}>{content}</Text>
+                      </View>
+                    }
                     subtitle={
-                      <View style={s.subTitleContainer}>
+                      <>
                         <Icon
                           style={s.subTitleIcon}
                           name="clock"
-                          size={14}
+                          size={12}
                           color={colorTextLight}
                         />
                         <Text
@@ -101,14 +112,28 @@ export const ProcessingTask: React.SFC<IProps> = () => {
                             s.subTitle,
                             isTimeout(startedAt, duration) && s.subTitleTimeout,
                           ]}>
-                          {humanizeRangeTime(startedAt, duration)}
+                          {t(
+                            "{{from}} to {{to}}",
+                            getRangeTime(startedAt, duration),
+                          )}
                         </Text>
-                      </View>
+                      </>
                     }
                     onTouchStart={async () => {
                       PopupMenu.show([
                         {
-                          text: translate("Cancel task"),
+                          text: t("Edit task"),
+                          onTouchStart: async () => {
+                            await globalStore.update((store) => {
+                              store.edittingPlanId = item.planId;
+                            });
+
+                            navigation.navigate(Route.EditTask);
+                          },
+                        },
+                        {
+                          text: t("Cancel task"),
+                          style: s.cancelText,
                           onTouchStart: () => {
                             cancelTaskTriggerer({
                               planId: item.planId,
@@ -138,21 +163,32 @@ const s = StyleSheet.create({
     flex: 1,
     overflow: "scroll",
   },
-  subTitleContainer: {
-    marginTop: 5,
-    flexDirection: "row",
-  },
   subTitleIcon: {
-    marginTop: 3,
     marginRight: 5,
   },
   subTitle: {
     color: colorTextLight,
+    flex: 1,
+    flexWrap: "wrap",
+    fontSize: 12,
+    lineHeight: 14,
   },
   subTitleTimeout: {
     color: colorError,
   },
-  deleteText: {
+  titleContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+  },
+  colorMark: {
+    marginRight: 5,
+  },
+  title: {
+    fontSize: 16,
+    lineHeight: 16,
+    fontWeight: "bold",
+  },
+  cancelText: {
     color: colorError,
   },
 });

@@ -1,7 +1,8 @@
 import BackgroundFetch from "react-native-background-fetch";
-import { getAllUnnotifiedTasks, humanizeRangeTime } from "../common";
-import { notify } from "../notification";
-import { setNotifiedTasks } from "../../db/plan";
+import {getAllUnnotifiedTasks, getRangeTime} from "../common";
+import {notify} from "../notification";
+import {setNotifiedTasks} from "../../db/plan";
+import i18n from "../../i18n";
 
 async function notifyTasks() {
   const tasks = await getAllUnnotifiedTasks();
@@ -9,9 +10,12 @@ async function notifyTasks() {
   if (tasks.length !== 0) {
     tasks.forEach((item) => {
       item.tasks.forEach((task) => {
-        const { content, startedAt, duration } = task;
+        const {content, startedAt, duration} = task;
 
-        notify(content, humanizeRangeTime(startedAt, duration));
+        notify(
+          content,
+          i18n.t("{{from}} to {{to}}", getRangeTime(startedAt, duration)),
+        );
       });
 
       setNotifiedTasks(
