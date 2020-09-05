@@ -5,12 +5,18 @@ import {setNotifiedTasks} from "../../db/plan";
 import i18n from "../../i18n";
 
 async function notifyTasks() {
+  console.log("notifyTasks");
+
   const tasks = await getAllUnnotifiedTasks();
+
+  console.log("unnotified", tasks);
 
   if (tasks.length !== 0) {
     tasks.forEach((item) => {
       item.tasks.forEach((task) => {
         const {content, startedAt, duration} = task;
+
+        console.log("notify", content);
 
         notify(content, i18n.t("from to", getRangeTime(startedAt, duration)));
       });
@@ -25,6 +31,8 @@ async function notifyTasks() {
 
 export const scheduler = {
   check: () => {
+    notifyTasks();
+
     BackgroundFetch.configure(
       {
         minimumFetchInterval: 15, // <-- minutes (15 is minimum allowed)

@@ -1,3 +1,8 @@
+export enum RequestStatus {
+  Pending,
+  Sent,
+}
+
 export enum OpType {
   GetData = "getData",
   PutData = "putData",

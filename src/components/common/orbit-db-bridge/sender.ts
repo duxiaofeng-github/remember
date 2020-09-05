@@ -1,4 +1,9 @@
-import {GetDataOptions, OpType, PutDataOptions} from "./interface";
+import {
+  GetDataOptions,
+  OpType,
+  PutDataOptions,
+  RequestStatus,
+} from "./interface";
 import {store} from "./provider";
 
 function parse(message: string) {
@@ -18,20 +23,10 @@ function format(type: OpType, payload: any) {
   };
 }
 
-type Resolver = (data: any) => void;
-
-type Rejecter = (err: any) => void;
-
-const promises: {
-  [timestamp: number]: {resolver: Resolver; rejecter: Rejecter};
-} = {};
-
 function send<T>(options: {timestamp: number; msg: string}) {
   const {timestamp, msg} = options;
 
   return new Promise<T>((resolver, rejecter) => {
-    promises[timestamp] = {resolver, rejecter};
-
     // setTimeout(() => {
     //   rejecter("time out");
 
@@ -39,19 +34,32 @@ function send<T>(options: {timestamp: number; msg: string}) {
     // }, 20 * 1000);
 
     store.update((store) => {
-      store.request = msg;
+      store.requests.push({
+        timestamp,
+        msg,
+        status: RequestStatus.Pending,
+        rejecter,
+        resolver,
+      });
     });
   });
 }
 
 export function resolve<T>(message: string) {
   const {timestamp, payload} = parse(message);
-  const promise = promises[timestamp];
+  const requests = store.getState().requests;
+  const requestIndex = requests.findIndex(
+    (item) => item.timestamp === timestamp,
+  );
 
-  if (promise) {
-    promise.resolver(payload.result);
+  if (requestIndex !== -1) {
+    const request = requests[requestIndex];
 
-    delete promises[timestamp];
+    request.resolver(payload.result);
+
+    store.update((store) => {
+      store.requests.splice(requestIndex, 1);
+    });
   }
 }
 

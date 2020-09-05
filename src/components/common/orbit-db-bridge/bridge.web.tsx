@@ -1,5 +1,5 @@
 import React, {useEffect, useRef} from "react";
-import {IStore} from "./provider";
+import {getPendingRequests, IStore, setRequestsStatusToSent} from "./provider";
 import {useRexContext} from "../../../store/store";
 import {resolve} from "./sender";
 
@@ -7,7 +7,7 @@ interface IProps {}
 
 export const Bridge: React.SFC<IProps> = (props) => {
   const iframeEl = useRef<HTMLIFrameElement>(null);
-  const {request} = useRexContext((store: IStore) => store);
+  const {requests} = useRexContext((store: IStore) => store);
 
   useEffect(() => {
     const iframe = iframeEl.current as any;
@@ -28,25 +28,31 @@ export const Bridge: React.SFC<IProps> = (props) => {
     };
   });
 
-  function sendRequest() {
+  function sendRequests() {
     const iframe = iframeEl.current as any;
 
     if (
       iframe != null &&
       iframe.contentWindow.orbitdbRequest &&
-      request !== ""
+      requests.length
     ) {
-      iframe.contentWindow.orbitdbRequest(request);
+      const pendingRequests = getPendingRequests(requests);
+
+      pendingRequests.forEach((request) => {
+        iframe.contentWindow.orbitdbRequest(request.msg);
+      });
+
+      setRequestsStatusToSent(pendingRequests);
     }
   }
 
-  useEffect(sendRequest, [request]);
+  useEffect(sendRequests, [requests]);
 
   return (
     <iframe
       style={{display: "none"}}
       src={"/orbit-db/index.html"}
-      onLoad={sendRequest}
+      onLoad={sendRequests}
       ref={iframeEl}
     />
   );
