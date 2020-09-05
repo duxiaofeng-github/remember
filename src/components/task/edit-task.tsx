@@ -4,7 +4,6 @@ import dayjs from "dayjs";
 import {useTranslation} from "react-i18next";
 import {useForm, Controller, UseFormMethods} from "react-hook-form";
 import {Header} from "../common/header";
-import {Textarea} from "../common/textarea";
 import {IStore, globalStore} from "../../store";
 import {
   isDailySchedule,
@@ -54,14 +53,14 @@ interface IForm {
   repeatEndedDate?: number;
   repeatEndedCount?: number;
   noticeTime?: number;
-  pointsPerTask?: number;
+  points?: number;
 }
 
 export const EditTask: React.SFC<IProps> = () => {
   const {t} = useTranslation();
   const [now, setNow] = useState(dayjs().startOf("minute").unix());
   const navigation = useNavigation();
-  const {plansData, edittingPlanId, lang} = useRexContext(
+  const {plansData, edittingPlanId, settingsData} = useRexContext(
     (store: IStore) => store,
   );
   const edittingPlan = useMemo(
@@ -80,7 +79,7 @@ export const EditTask: React.SFC<IProps> = () => {
     repeatEndedDate,
     repeatEndedCount,
     noticeTime,
-    pointsPerTask,
+    points,
   } = useMemo(() => transformPlanToForm(edittingPlan), [edittingPlan]);
   const form = useForm<IForm>({
     mode: "onChange",
@@ -93,7 +92,7 @@ export const EditTask: React.SFC<IProps> = () => {
       repeatEndedDate,
       repeatEndedCount,
       noticeTime,
-      pointsPerTask,
+      points,
     },
   });
   const {control, handleSubmit, errors, watch} = form;
@@ -143,13 +142,13 @@ export const EditTask: React.SFC<IProps> = () => {
           name="content"
           rules={{required: t("Content is required") as string}}
           render={({onChange, onBlur, value}) => (
-            <Textarea
+            <Input
               onBlur={onBlur}
               onChangeText={(value) => onChange(value)}
               value={value}
               label={t("content")}
               error={errors.content}
-              rows={1}
+              multiline
               placeholder={t("Please input content")}
             />
           )}
@@ -202,7 +201,7 @@ export const EditTask: React.SFC<IProps> = () => {
                   if (value != null) {
                     return t("NoticeTimeInAdvance", {
                       duration: secondsToDuration(value)
-                        .locale(lang)
+                        .locale(settingsData.data!.lang)
                         .humanize(false),
                     });
                   }
@@ -218,7 +217,7 @@ export const EditTask: React.SFC<IProps> = () => {
         />
         <Controller
           control={control}
-          name="pointsPerTask"
+          name="points"
           render={({onChange, onBlur, value}) => {
             return (
               <Input
@@ -227,7 +226,7 @@ export const EditTask: React.SFC<IProps> = () => {
                 onBlur={onBlur}
                 onChangeText={(value) => onChange(value)}
                 label={t("Points")}
-                error={errors.pointsPerTask}
+                error={errors.points}
                 placeholder={t("Please input points")}
               />
             );
@@ -424,7 +423,10 @@ const s = StyleSheet.create({
   content: {
     flex: 1,
     overflow: "scroll",
-    padding: 20,
+    paddingTop: 2,
+    paddingBottom: 2,
+    paddingLeft: 25,
+    paddingRight: 25,
   },
 });
 
@@ -437,7 +439,7 @@ interface IDefaultForm {
   repeatEndedDate?: number;
   repeatEndedCount?: number;
   noticeTime?: number;
-  pointsPerTask?: number;
+  points?: number;
 }
 
 function transformPlanToForm(plan?: Plan): IDefaultForm {
@@ -448,7 +450,7 @@ function transformPlanToForm(plan?: Plan): IDefaultForm {
     repeatEndedDate,
     repeatEndedCount,
     noticeTime,
-    pointsPerTask,
+    points,
   } = plan || {};
   const repeatType = !schedule
     ? Period.OneTime
@@ -489,7 +491,7 @@ function transformPlanToForm(plan?: Plan): IDefaultForm {
     repeatEndedDate: defaultRepeatEndedDate,
     repeatEndedCount,
     noticeTime,
-    pointsPerTask,
+    points,
   };
 }
 
@@ -523,7 +525,7 @@ function transformFormToPlanBase(
     repeatEndedDate,
     repeatEndedCount,
     noticeTime,
-    pointsPerTask,
+    points,
   } = form;
   const {schedule, duration} = getScheduleAndDuration(
     repeatType,
@@ -542,7 +544,7 @@ function transformFormToPlanBase(
         ? parseNumber(repeatEndedCount)
         : undefined,
     noticeTime,
-    pointsPerTask: parseNumber(pointsPerTask, true),
+    points: parseNumber(points, true),
     createdAt,
     updatedAt,
   };

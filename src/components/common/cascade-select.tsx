@@ -18,7 +18,6 @@ export const CascadeSelect: <T>(
       <CascadePicker
         titleStyle={s.pickerText}
         textStyle={s.pickerText}
-        dropDownIconColor={colorText}
         confirmText={t("Confirm")}
         cancelText={t("Cancel")}
         {...restProps}

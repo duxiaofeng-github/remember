@@ -1,7 +1,7 @@
-import React, { useRef, useEffect } from "react";
-import { Icon } from "../common/icon";
-import { Animated, Easing, StyleSheet } from "react-native";
-import { colorText } from "../../utils/style";
+import React, {useRef, useEffect} from "react";
+import {Icon} from "../common/icon";
+import {Animated, Easing, StyleSheet} from "react-native";
+import {colorText} from "../../utils/style";
 
 interface IProps {}
 
@@ -24,12 +24,12 @@ export const LoadingIcon: React.SFC<IProps> = (props) => {
   }, []);
 
   return (
-    <Animated.View style={[s.container, { transform: [{ rotate: spin }] }]}>
+    <Animated.View style={[s.container, {transform: [{rotate: spin}]}]}>
       <Icon name="loader" size={30} color={colorText} />
     </Animated.View>
   );
 };
 
 const s = StyleSheet.create({
-  container: { flex: 1, display: "flex", alignItems: "center", justifyContent: "center" },
+  container: {flex: 1, alignItems: "center", justifyContent: "center"},
 });

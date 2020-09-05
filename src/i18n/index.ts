@@ -8,7 +8,7 @@ i18n
   .init({
     resources: {
       en: {translation: en},
-      "zh-CN": {translation: zhCN},
+      en_US: {translation: en},
       zh_CN: {translation: zhCN},
     },
     lng: defaultLocale,

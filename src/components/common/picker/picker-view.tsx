@@ -1,4 +1,4 @@
-import React, { useRef, useEffect, useState, ReactNode, useMemo } from "react";
+import React, {useRef, useEffect, useState, ReactNode, useMemo} from "react";
 import {
   View,
   Dimensions,
@@ -10,8 +10,8 @@ import {
   GestureResponderEvent,
   Text,
 } from "react-native";
-import { Topbar } from "./top-bar";
-import { ScrollView } from "./scroll-view";
+import {Topbar} from "./top-bar";
+import {ScrollView} from "./scroll-view";
 
 const panelHeight = 220;
 
@@ -45,7 +45,13 @@ export interface IPickerProps {
 export interface IPickerViewProps<T> extends IPickerProps {
   onConfirm?: (values?: T[], indexes?: number[], records?: IData<T>[]) => void;
   onCancel?: () => void;
-  onChange?: (columnIndex: number, value: T, index: number, values: T[], indexes: number[]) => void;
+  onChange?: (
+    columnIndex: number,
+    value: T,
+    index: number,
+    values: T[],
+    indexes: number[],
+  ) => void;
 }
 
 export interface IStoreProps<T> extends IPickerViewProps<T> {
@@ -57,7 +63,9 @@ interface IProps<T> extends IStoreProps<T> {
   data: IBasicData<T>;
 }
 
-export const PickerView: <T>(p: IProps<T>) => React.ReactElement<IProps<T>> | null = (props) => {
+export const PickerView: <T>(
+  p: IProps<T>,
+) => React.ReactElement<IProps<T>> | null = (props) => {
   const {
     visible,
     data,
@@ -115,7 +123,9 @@ export const PickerView: <T>(p: IProps<T>) => React.ReactElement<IProps<T>> | nu
   function confirm() {
     hide(() => {
       if (onConfirm) {
-        const records = innerSelectedIndexes.map((index, columnIndex) => data[columnIndex][index]);
+        const records = innerSelectedIndexes.map(
+          (index, columnIndex) => data[columnIndex][index],
+        );
         const values = records.map((item) => item.value);
 
         onConfirm(values, innerSelectedIndexes, records);
@@ -152,16 +162,20 @@ export const PickerView: <T>(p: IProps<T>) => React.ReactElement<IProps<T>> | nu
     setInnerSelectIndexes(selectedIndexes || defaultIndexes);
   }, [selectedIndexes, data]);
 
-  const suffixElements = useMemo(() => renderInsertions(insertions.slice(data.length)), [insertions, data]);
+  const suffixElements = useMemo(
+    () => renderInsertions(insertions.slice(data.length)),
+    [insertions, data],
+  );
 
   return (
-    <View style={[s.container, innerVisible && s.containerVisible]} onTouchStart={cancel}>
+    <View
+      style={[s.container, innerVisible && s.containerVisible]}
+      onTouchStart={cancel}>
       <Animated.View
-        style={[s.panel, { top: topValue }]}
+        style={[s.panel, {top: topValue}]}
         onTouchStart={(e: GestureResponderEvent) => {
           e.stopPropagation();
-        }}
-      >
+        }}>
         <Topbar
           title={title}
           titleStyle={titleStyle}
@@ -178,8 +192,15 @@ export const PickerView: <T>(p: IProps<T>) => React.ReactElement<IProps<T>> | nu
             const prefixElements = renderInsertions(prefix);
 
             return (
-              <View key={columnIndex} style={[s.pickerColumn, columnIndex === 0 && { marginLeft: -10 }]}>
-                {prefixElements && <View style={s.scrollView}>{prefixElements}</View>}
+              <View
+                key={columnIndex}
+                style={[
+                  s.pickerColumn,
+                  columnIndex === 0 && {marginLeft: -10},
+                ]}>
+                {prefixElements && (
+                  <View style={s.scrollView}>{prefixElements}</View>
+                )}
                 <ScrollView
                   style={s.scrollView}
                   textStyle={textStyle}
@@ -198,7 +219,9 @@ export const PickerView: <T>(p: IProps<T>) => React.ReactElement<IProps<T>> | nu
                         record.value,
                         newIndex,
                         newIndexes.map(
-                          (index, columnIndex) => data[columnIndex][index] && data[columnIndex][index].value,
+                          (index, columnIndex) =>
+                            data[columnIndex][index] &&
+                            data[columnIndex][index].value,
                         ),
                         newIndexes,
                       );
@@ -238,7 +261,6 @@ const s = StyleSheet.create({
   },
   pickerContainer: {
     flex: 1,
-    display: "flex",
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "center",
@@ -247,7 +269,6 @@ const s = StyleSheet.create({
     paddingRight: 10,
   },
   pickerColumn: {
-    display: "flex",
     flexDirection: "row",
     alignItems: "center",
   },

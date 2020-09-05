@@ -1,4 +1,4 @@
-import React, {ReactNode} from 'react';
+import React, {ReactNode} from "react";
 import {
   View,
   StyleSheet,
@@ -6,8 +6,9 @@ import {
   StyleProp,
   ViewStyle,
   TextStyle,
-} from 'react-native';
-import {Icon} from '../icon';
+} from "react-native";
+import {colorTextLight} from "../../../utils/style";
+import {Icon} from "../icon";
 
 interface IProps {
   style?: StyleProp<ViewStyle>;
@@ -27,7 +28,7 @@ export const Input: React.SFC<IProps> = (props) => {
     textStyle,
     showClearIcon,
     dropDownIcon,
-    dropDownIconColor,
+    dropDownIconColor = colorTextLight,
     onTouchStart,
     onIconTouchStart,
   } = props;
@@ -47,8 +48,9 @@ export const Input: React.SFC<IProps> = (props) => {
             }
           }}>
           <Icon
-            name={showClearIcon ? 'x' : 'chevron-down'}
-            size={20}
+            style={s.icon}
+            name={showClearIcon ? "x" : "code"}
+            size={14}
             color={dropDownIconColor}
           />
         </View>
@@ -60,13 +62,15 @@ export const Input: React.SFC<IProps> = (props) => {
 const s = StyleSheet.create({
   pickerPlaceHolder: {
     height: 22,
-    display: 'flex',
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    color: '#606770',
-    fontSize: 14,
-    borderBottomWidth: 1,
-    borderBottomColor: '#606770',
+    display: "flex",
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    color: "#606770",
+    fontSize: 16,
+  },
+  icon: {
+    marginLeft: 3,
+    transform: [{rotate: "90deg"}],
   },
 });

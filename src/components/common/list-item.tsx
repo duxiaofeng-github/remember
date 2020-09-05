@@ -5,6 +5,7 @@ import {Text} from "./text";
 
 interface IProps {
   leftComponent?: ReactNode;
+  rightComponent?: ReactNode;
   bottomDivider?: boolean;
   title: ReactNode;
   subtitle: ReactNode;
@@ -15,6 +16,7 @@ interface IProps {
 export const ListItem: React.SFC<IProps> = (props) => {
   const {
     leftComponent,
+    rightComponent,
     title,
     subtitle,
     subtitleStyle,
@@ -43,20 +45,23 @@ export const ListItem: React.SFC<IProps> = (props) => {
           </View>
         )}
       </View>
+      {rightComponent && <View style={s.rightContent}>{rightComponent}</View>}
     </View>
   );
 };
 
 const s = StyleSheet.create({
   container: {
-    padding: 15,
+    padding: 20,
     backgroundColor: "#fff",
     flexDirection: "row",
     alignItems: "center",
   },
   leftContent: {
-    flexShrink: 0,
     marginRight: 10,
+  },
+  rightContent: {
+    marginLeft: 10,
   },
   centerContent: {
     flexGrow: 1,
@@ -66,13 +71,13 @@ const s = StyleSheet.create({
     borderBottomWidth: 1,
   },
   subtitleContainer: {
-    marginTop: 5,
+    marginTop: 6,
     flexDirection: "row",
   },
   subtitle: {
     color: colorTextLight,
     fontSize: 12,
-    lineHeight: 14,
+    lineHeight: 16,
     flex: 1,
     flexWrap: "wrap",
   },
@@ -82,6 +87,5 @@ const s = StyleSheet.create({
   title: {
     fontSize: 16,
     lineHeight: 16,
-    fontWeight: "bold",
   },
 });

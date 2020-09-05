@@ -7,6 +7,8 @@ import {
   putData,
   delData,
 } from "../components/common/orbit-db-bridge/sender";
+import {addPoints} from "./setting";
+import {isCanceled, isFinished, isPlanFinished, isRepeatEnded} from "./utils";
 
 export interface PlanBase {
   content: string;
@@ -15,10 +17,10 @@ export interface PlanBase {
   repeatEndedDate?: number;
   repeatEndedCount?: number;
   noticeTime?: number;
-  pointsPerTask?: number;
-  finishedTaskTime?: number[];
-  canceledTaskTime?: number[];
-  notifiedTaskTime?: number[];
+  points?: number;
+  finishedTime?: number[];
+  canceledTime?: number[];
+  notifiedTime?: number[];
   createdAt: number;
   updatedAt: number;
 }
@@ -38,12 +40,32 @@ export async function listPlans(options?: {
   const data = await getData({dbName, remoteAddr});
 
   return data.filter((plan: Plan) => {
+    const {
+      schedule,
+      finishedTime,
+      canceledTime,
+      repeatEndedCount,
+      repeatEndedDate,
+    } = plan;
+
     if (all) {
       return true;
     } else if (finished === true) {
-      return isPlanFinished(plan);
+      return isPlanFinished({
+        schedule,
+        finishedTime,
+        canceledTime,
+        repeatEndedDate,
+        repeatEndedCount,
+      });
     } else if (finished === false) {
-      return !isPlanFinished(plan);
+      return !isPlanFinished({
+        schedule,
+        finishedTime,
+        canceledTime,
+        repeatEndedDate,
+        repeatEndedCount,
+      });
     }
 
     return true;
@@ -81,13 +103,15 @@ export async function finishTask(
   taskTime: number,
 ): Promise<void> {
   const plan = await getPlan(planId);
-  const finishedTaskTime = (plan.finishedTaskTime || []).filter(
+  const finishedTime = (plan.finishedTime || []).filter(
     (item) => item !== taskTime,
   );
 
-  finishedTaskTime.push(taskTime);
+  finishedTime.push(taskTime);
 
-  await updatePlan({...plan, finishedTaskTime});
+  await addPoints(plan.points || 0);
+
+  await updatePlan({...plan, finishedTime});
 }
 
 export async function cancelTask(
@@ -95,13 +119,13 @@ export async function cancelTask(
   taskTime: number,
 ): Promise<void> {
   const plan = await getPlan(planId);
-  const canceledTaskTime = (plan.canceledTaskTime || []).filter(
+  const canceledTime = (plan.canceledTime || []).filter(
     (item) => item !== taskTime,
   );
 
-  canceledTaskTime.push(taskTime);
+  canceledTime.push(taskTime);
 
-  await updatePlan({...plan, canceledTaskTime});
+  await updatePlan({...plan, canceledTime});
 }
 
 export async function setNotifiedTasks(
@@ -109,49 +133,11 @@ export async function setNotifiedTasks(
   taskTimes: number[],
 ): Promise<void> {
   const plan = await getPlan(planId);
-  let notifiedTaskTime = plan.notifiedTaskTime || [];
+  let notifiedTaskTime = plan.notifiedTime || [];
 
   notifiedTaskTime = notifiedTaskTime.concat(taskTimes);
 
-  await updatePlan({...plan, notifiedTaskTime});
-}
-
-export function isPlanFinished(plan: Plan) {
-  const {
-    schedule,
-    repeatEndedCount,
-    repeatEndedDate,
-    canceledTaskTime,
-    finishedTaskTime,
-  } = plan;
-
-  if (isOneTimeSchedule(schedule)) {
-    return (finishedTaskTime || []).length > 0;
-  } else if (repeatEndedCount != null) {
-    return (finishedTaskTime || []).length >= repeatEndedCount;
-  } else if (repeatEndedDate != null) {
-    const allTaskTimes = (finishedTaskTime || []).concat(
-      canceledTaskTime || [],
-    );
-
-    if (allTaskTimes.length > 0) {
-      allTaskTimes.sort((a, b) => b - a);
-
-      const latestTaskTime = allTaskTimes[0];
-      const cron = cronParser.parseExpression(schedule, {
-        currentDate: dayjs.unix(latestTaskTime).toDate(),
-      });
-      const nextTime = cron.hasNext()
-        ? dayjs(cron.next().toDate()).unix()
-        : undefined;
-
-      if (nextTime != null && nextTime >= repeatEndedDate) {
-        return true;
-      }
-    }
-  }
-
-  return false;
+  await updatePlan({...plan, notifiedTime: notifiedTaskTime});
 }
 
 export interface Task {
@@ -161,7 +147,6 @@ export interface Task {
   duration: number;
   finished: boolean;
   noticeTime?: number;
-  points?: number;
 }
 
 function isTaskTimeInRange(
@@ -176,21 +161,13 @@ function isTaskTimeInRange(
   return taskTimeParsed >= startTime && taskTimeParsed <= endTime;
 }
 
-function isTaskFinished(taskTime: number, finishedTaskTime: number[]) {
-  return finishedTaskTime.includes(taskTime);
-}
-
-function isTaskCanceled(taskTime: number, canceledTaskTime: number[]) {
-  return canceledTaskTime.includes(taskTime);
-}
-
 function generateTask(options: {
   plan: Plan;
   taskTime: number;
   finished: boolean;
-}) {
+}): Task {
   const {plan, taskTime, finished} = options;
-  const {_id, content, duration, noticeTime, pointsPerTask} = plan;
+  const {_id, content, duration, noticeTime} = plan;
 
   return {
     planId: _id,
@@ -199,23 +176,7 @@ function generateTask(options: {
     duration: duration,
     finished,
     noticeTime,
-    points: pointsPerTask,
   };
-}
-
-function isTaskRepeatEnded(
-  taskTime: number,
-  finishedTaskTime: number[],
-  repeatEndedDate?: number,
-  repeatEndedCount?: number,
-) {
-  if (repeatEndedCount != null) {
-    return finishedTaskTime.length >= repeatEndedCount;
-  } else if (repeatEndedDate != null) {
-    return taskTime >= repeatEndedDate;
-  }
-
-  return false;
 }
 
 function getTask(options: {
@@ -225,8 +186,8 @@ function getTask(options: {
   endTime: number;
   noticeTime: number;
   includeNoticeTime: boolean;
-  finishedTaskTime: number[];
-  canceledTaskTime: number[];
+  finishedTime: number[];
+  canceledTime: number[];
   repeatEndedDate?: number;
   repeatEndedCount?: number;
 }) {
@@ -237,8 +198,8 @@ function getTask(options: {
     endTime,
     noticeTime,
     includeNoticeTime,
-    finishedTaskTime,
-    canceledTaskTime,
+    finishedTime,
+    canceledTime,
     repeatEndedDate,
     repeatEndedCount,
   } = options;
@@ -254,16 +215,16 @@ function getTask(options: {
   ) {
     return false;
   } else {
-    const repeatEnded = isTaskRepeatEnded(
+    const repeatEnded = isRepeatEnded(
       taskTime,
-      finishedTaskTime,
+      finishedTime,
       repeatEndedDate,
       repeatEndedCount,
     );
 
     if (!repeatEnded) {
-      const finished = isTaskFinished(taskTime, finishedTaskTime);
-      const canceled = isTaskCanceled(taskTime, canceledTaskTime);
+      const finished = isFinished(taskTime, finishedTime);
+      const canceled = isCanceled(taskTime, canceledTime);
 
       if (!finished && !canceled) {
         const task = generateTask({plan, taskTime, finished});
@@ -288,8 +249,8 @@ export function listTasks(options: {
   } = options;
   const {
     schedule,
-    finishedTaskTime = [],
-    canceledTaskTime = [],
+    finishedTime = [],
+    canceledTime = [],
     noticeTime = 0,
     repeatEndedDate,
     repeatEndedCount,
@@ -306,8 +267,8 @@ export function listTasks(options: {
       endTime,
       noticeTime,
       includeNoticeTime,
-      finishedTaskTime,
-      canceledTaskTime,
+      finishedTime,
+      canceledTime,
     });
 
     if (task != null && task !== false) {
@@ -328,8 +289,8 @@ export function listTasks(options: {
             endTime,
             noticeTime,
             includeNoticeTime,
-            finishedTaskTime,
-            canceledTaskTime,
+            finishedTime,
+            canceledTime,
             repeatEndedDate,
             repeatEndedCount,
           });
@@ -363,8 +324,8 @@ export function listTasks(options: {
             endTime,
             noticeTime,
             includeNoticeTime,
-            finishedTaskTime,
-            canceledTaskTime,
+            finishedTime,
+            canceledTime,
             repeatEndedDate,
             repeatEndedCount,
           });
@@ -392,7 +353,7 @@ export function listUnnotifiedTasks(options: {plan: Plan}): Task[] {
   const {plan} = options;
   const tasks = listTasks({plan, includeNoticeTime: true});
   const unnotifiedTasks = tasks.filter((task) => {
-    const notifiedTaskTime = plan.notifiedTaskTime || [];
+    const notifiedTaskTime = plan.notifiedTime || [];
     return !notifiedTaskTime.includes(task.startedAt);
   });
 

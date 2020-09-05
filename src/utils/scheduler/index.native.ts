@@ -12,10 +12,7 @@ async function notifyTasks() {
       item.tasks.forEach((task) => {
         const {content, startedAt, duration} = task;
 
-        notify(
-          content,
-          i18n.t("{{from}} to {{to}}", getRangeTime(startedAt, duration)),
-        );
+        notify(content, i18n.t("from to", getRangeTime(startedAt, duration)));
       });
 
       setNotifiedTasks(

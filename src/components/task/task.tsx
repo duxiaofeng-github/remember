@@ -2,12 +2,12 @@ import React from "react";
 import {View, StyleSheet} from "react-native";
 import {Header} from "../common/header";
 import {useTranslation} from "react-i18next";
-import {colorTextLight, colorError} from "../../utils/style";
 import {Tabs} from "../common/tabs";
-import {ProcessingTask} from "./processing-task";
+import {ProcessingTasks} from "./processing-tasks";
 import {Route} from "../../utils/route";
 import {useNavigation} from "@react-navigation/native";
 import {AllTasks} from "./all-tasks";
+import {Calendar} from "./calendar";
 
 interface IProps {}
 
@@ -29,8 +29,8 @@ export const Task: React.SFC<IProps> = () => {
       />
       <Tabs
         tabs={[
-          {title: t("Processing"), content: <ProcessingTask />},
-          {title: t("Calendar"), content: null},
+          {title: t("Processing"), content: <ProcessingTasks />},
+          {title: t("Calendar"), content: <Calendar />},
           {title: t("All tasks"), content: <AllTasks />},
         ]}
       />
@@ -41,26 +41,5 @@ export const Task: React.SFC<IProps> = () => {
 const s = StyleSheet.create({
   container: {
     flex: 1,
-  },
-  content: {
-    flex: 1,
-    overflow: "scroll",
-  },
-  subTitleContainer: {
-    marginTop: 5,
-    flexDirection: "row",
-  },
-  subTitleIcon: {
-    marginTop: 3,
-    marginRight: 5,
-  },
-  subTitle: {
-    color: colorTextLight,
-  },
-  subTitleTimeout: {
-    color: colorError,
-  },
-  deleteText: {
-    color: colorError,
   },
 });

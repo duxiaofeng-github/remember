@@ -18,7 +18,6 @@ export const Select: <T>(
       <Picker
         titleStyle={s.pickerText}
         textStyle={s.pickerText}
-        dropDownIconColor={colorText}
         confirmText={t("Confirm")}
         cancelText={t("Cancel")}
         {...restProps}

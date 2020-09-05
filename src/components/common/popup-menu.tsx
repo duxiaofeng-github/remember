@@ -1,11 +1,17 @@
 import React from "react";
-import { Popup } from "./popup";
-import { StyleProp, TextStyle, View, StyleSheet } from "react-native";
-import { Text } from "./text";
-import { colorBorder } from "../../utils/style";
+import {Popup} from "./popup";
+import {StyleProp, TextStyle, View, StyleSheet} from "react-native";
+import {Text} from "./text";
+import {colorBorder} from "../../utils/style";
 
 export const PopupMenu = {
-  show: async (items: { text: string; style?: StyleProp<TextStyle>; onTouchStart?: () => void }[]) => {
+  show: async (
+    items: {
+      text: string;
+      style?: StyleProp<TextStyle>;
+      onTouchStart?: () => void;
+    }[],
+  ) => {
     const close = await Popup.show({
       contentStyle: s.container,
       children: items.map((item, index) => {
@@ -13,14 +19,13 @@ export const PopupMenu = {
           <View
             key={item.text}
             style={[s.item, index !== items.length - 1 && s.itemBorder]}
-            onTouchStart={() => {
+            onTouchStart={async () => {
+              await close();
+
               if (item.onTouchStart) {
                 item.onTouchStart();
               }
-
-              close();
-            }}
-          >
+            }}>
             <Text style={[s.text, item.style]}>{item.text}</Text>
           </View>
         );
@@ -44,6 +49,6 @@ const s = StyleSheet.create({
   },
   text: {
     flexWrap: "nowrap",
-    fontSize: 18,
+    fontSize: 16,
   },
 });

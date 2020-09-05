@@ -11,7 +11,7 @@ import {
   ViewStyle,
 } from "react-native";
 
-type IData<T> = { key?: string; label: string; value: T };
+type IData<T> = {key?: string; label: string; value: T};
 
 interface IProps<T> {
   style?: StyleProp<ViewStyle>;
@@ -46,7 +46,7 @@ export class ScrollView<T> extends React.Component<IProps<T>, IState> {
   }
 
   componentDidMount() {
-    const { selectedIndex = 0, data } = this.props;
+    const {selectedIndex = 0, data} = this.props;
     const top = getTopByIndex(selectedIndex);
 
     this.innerHeight = data.length * itemHeight;
@@ -66,23 +66,21 @@ export class ScrollView<T> extends React.Component<IProps<T>, IState> {
   }
 
   render() {
-    const { style, textStyle } = this.props;
+    const {style, textStyle} = this.props;
 
     return (
       <View
         style={[s.container, style]}
         onLayout={(e) => {
-          const { height } = e.nativeEvent.layout;
+          const {height} = e.nativeEvent.layout;
 
           this.containerHeight = height;
-        }}
-      >
+        }}>
         <Animated.View
-          style={[s.inner, { transform: [{ translateY: this.state.topValue }] }]}
+          style={[s.inner, {transform: [{translateY: this.state.topValue}]}]}
           onTouchStart={this.touchStart}
           onTouchMove={this.touchMove}
-          onTouchEnd={this.touchEnd}
-        >
+          onTouchEnd={this.touchEnd}>
           {this.props.data.map((item) => {
             return (
               <View key={item.key || item.label} style={s.item}>
@@ -180,7 +178,6 @@ const s = StyleSheet.create({
   },
   item: {
     height: itemHeight,
-    display: "flex",
     alignItems: "center",
     justifyContent: "center",
   },

@@ -1,7 +1,7 @@
-import React, { useMemo, useEffect, useState, ReactNode } from "react";
-import { IPickerViewProps, IBasicData, IData } from "./picker-view";
-import { pickerStore, IPickerStore } from "./provider";
-import { Input } from "./input";
+import React, {useMemo, useEffect, useState, ReactNode} from "react";
+import {IPickerViewProps, IBasicData, IData} from "./picker-view";
+import {pickerStore, IPickerStore} from "./provider";
+import {Input} from "./input";
 
 export interface IPickerProps<T> extends IPickerViewProps<T> {
   data: IBasicData<T>;
@@ -12,7 +12,9 @@ export interface IPickerProps<T> extends IPickerViewProps<T> {
   onFormat?: (labels?: string[], values?: T[]) => string;
 }
 
-export const Picker: <T>(p: IPickerProps<T>) => React.ReactElement<IPickerProps<T>> | null = (props) => {
+export const Picker: <T>(
+  p: IPickerProps<T>,
+) => React.ReactElement<IPickerProps<T>> | null = (props) => {
   const {
     data,
     value,
@@ -25,10 +27,10 @@ export const Picker: <T>(p: IPickerProps<T>) => React.ReactElement<IPickerProps<
     clearable,
     ...restProps
   } = props;
-  const { selectedIndexes, labels, values } = useMemo(() => getSelectedIndexesAndLabelsByValue(data, value), [
-    data,
-    value,
-  ]);
+  const {selectedIndexes, labels, values} = useMemo(
+    () => getSelectedIndexesAndLabelsByValue(data, value),
+    [data, value],
+  );
   const [innerVisible, setInnerVisible] = useState(false);
 
   function syncStore() {
@@ -43,7 +45,11 @@ export const Picker: <T>(p: IPickerProps<T>) => React.ReactElement<IPickerProps<
           onCancel();
         }
       };
-      store.onConfirm = (value?: any[], index?: number[], records?: IData<any>[]) => {
+      store.onConfirm = (
+        value?: any[],
+        index?: number[],
+        records?: IData<any>[],
+      ) => {
         setVisible(false);
 
         if (onConfirm) {
@@ -103,10 +109,14 @@ export const Picker: <T>(p: IPickerProps<T>) => React.ReactElement<IPickerProps<
       dropDownIcon={dropDownIcon}
       dropDownIconColor={dropDownIconColor}
       showClearIcon={clearable && values != null}
-      text={onFormat ? onFormat(labels, values) : labels ? labels.join(" ") : ""}
+      text={
+        onFormat ? onFormat(labels, values) : labels ? labels.join(" ") : ""
+      }
       onIconTouchStart={() => {
         if (clearable && values && onConfirm) {
           onConfirm();
+        } else {
+          setVisible(true);
         }
       }}
       onTouchStart={() => {
@@ -116,7 +126,10 @@ export const Picker: <T>(p: IPickerProps<T>) => React.ReactElement<IPickerProps<
   );
 };
 
-export function getSelectedIndexesAndLabelsByValue<T>(data: IBasicData<T>, value?: T[]) {
+export function getSelectedIndexesAndLabelsByValue<T>(
+  data: IBasicData<T>,
+  value?: T[],
+) {
   const selectedIndexes = value
     ? value.map((v, columnIndex) => {
         return data[columnIndex].findIndex((item) => item.value === v);
@@ -130,7 +143,8 @@ export function getSelectedIndexesAndLabelsByValue<T>(data: IBasicData<T>, value
 
     data.forEach((item, columnIndex) => {
       if (newIndexes) {
-        newIndexes[columnIndex] = (selectedIndexes && selectedIndexes[columnIndex]) || 0;
+        newIndexes[columnIndex] =
+          (selectedIndexes && selectedIndexes[columnIndex]) || 0;
       }
     });
 
@@ -142,11 +156,13 @@ export function getSelectedIndexesAndLabelsByValue<T>(data: IBasicData<T>, value
   }
 
   const newItems = newIndexes
-    ? (newIndexes.map((index, columnIndex) => data[columnIndex][index]).filter((item) => item != null) as IData<T>[])
+    ? (newIndexes
+        .map((index, columnIndex) => data[columnIndex][index])
+        .filter((item) => item != null) as IData<T>[])
     : undefined;
 
   const newLabels = newItems ? newItems.map((item) => item.label) : undefined;
   const newValues = newItems ? newItems.map((item) => item.value) : undefined;
 
-  return { selectedIndexes: newIndexes, labels: newLabels, values: newValues };
+  return {selectedIndexes: newIndexes, labels: newLabels, values: newValues};
 }

@@ -1,7 +1,7 @@
-import React, { useState, useEffect, useMemo } from "react";
+import React, {useState, useEffect, useMemo} from "react";
 import dayjs from "dayjs";
-import { Picker } from "./picker";
-import { TextStyle, StyleProp } from "react-native";
+import {Picker} from "./picker";
+import {TextStyle, StyleProp} from "react-native";
 import advancedFormat from "dayjs/plugin/advancedFormat";
 
 dayjs.extend(advancedFormat);
@@ -23,26 +23,37 @@ export interface IDayTimePickerProps {
 }
 
 export const DayTimePicker: React.SFC<IDayTimePickerProps> = (props) => {
-  const { value, minTime, maxTime, title = "Select time", onChange, ...restProps } = props;
+  const {
+    value,
+    minTime,
+    maxTime,
+    title = "Select time",
+    onChange,
+    ...restProps
+  } = props;
   const [innerValue, setInnerValue] = useState<number | undefined>(0);
 
   useEffect(() => {
     setInnerValue(value);
   }, [value]);
 
-  const dates = useMemo(() => getDates({ value: innerValue, minTime, maxTime }), [innerValue, minTime, maxTime]);
-  const hours = useMemo(() => toDataArray(getHours({ value: innerValue, minTime, maxTime }), true), [
+  const dates = useMemo(() => getDates({value: innerValue, minTime, maxTime}), [
     innerValue,
     minTime,
     maxTime,
   ]);
-  const minutes = useMemo(() => toDataArray(getMinutes({ value: innerValue, minTime, maxTime }), true), [
-    innerValue,
-    minTime,
-    maxTime,
-  ]);
+  const hours = useMemo(
+    () => toDataArray(getHours({value: innerValue, minTime, maxTime}), true),
+    [innerValue, minTime, maxTime],
+  );
+  const minutes = useMemo(
+    () => toDataArray(getMinutes({value: innerValue, minTime, maxTime}), true),
+    [innerValue, minTime, maxTime],
+  );
 
-  const values = useMemo(() => transformValueToValues(innerValue), [innerValue]);
+  const values = useMemo(() => transformValueToValues(innerValue), [
+    innerValue,
+  ]);
 
   return (
     <Picker
@@ -59,13 +70,27 @@ export const DayTimePicker: React.SFC<IDayTimePickerProps> = (props) => {
         return "";
       }}
       onChange={(columnIndex, newValue, index, [date, hour, minute]) => {
-        setInnerValue(dayjs().date(date).hour(hour).minute(minute).second(0).millisecond(0).unix());
+        setInnerValue(
+          dayjs()
+            .date(date)
+            .hour(hour)
+            .minute(minute)
+            .second(0)
+            .millisecond(0)
+            .unix(),
+        );
       }}
       onConfirm={(newValue) => {
         if (onChange) {
           const newDate =
             newValue != null
-              ? dayjs().date(newValue[0]).hour(newValue[1]).minute(newValue[2]).second(0).millisecond(0).unix()
+              ? dayjs()
+                  .date(newValue[0])
+                  .hour(newValue[1])
+                  .minute(newValue[2])
+                  .second(0)
+                  .millisecond(0)
+                  .unix()
               : undefined;
           onChange(newDate);
         }
@@ -74,8 +99,8 @@ export const DayTimePicker: React.SFC<IDayTimePickerProps> = (props) => {
   );
 };
 
-function isInRange(options: { value: number; min?: number; max?: number }) {
-  const { value, min, max } = options;
+function isInRange(options: {value: number; min?: number; max?: number}) {
+  const {value, min, max} = options;
 
   if (min != null && max != null) {
     if (min > max) {
@@ -99,7 +124,7 @@ interface IOptions {
 }
 
 function parseOptions(options: IOptions) {
-  const { value, minTime, maxTime } = options;
+  const {value, minTime, maxTime} = options;
 
   return {
     value: value ? dayjs.unix(value) : dayjs(),
@@ -109,51 +134,66 @@ function parseOptions(options: IOptions) {
 }
 
 function getDates(options: IOptions) {
-  const { minTime, maxTime } = parseOptions(options);
+  const {minTime, maxTime} = parseOptions(options);
   const min = minTime ? minTime.date() : undefined;
   const max = maxTime ? maxTime.date() : undefined;
 
   return Array(31)
     .fill(0)
     .map((item, index) => index + 1)
-    .filter((value) => isInRange({ value, min, max }))
+    .filter((value) => isInRange({value, min, max}))
     .map((date) => {
-      return { label: dayjs().date(date).format("Do"), value: date };
+      return {label: dayjs().month(0).date(date).format("Do"), value: date};
     });
 }
 
 function getHours(options: IOptions) {
-  const { value, minTime, maxTime } = parseOptions(options);
-  const min = minTime && value.date() === minTime.date() ? minTime.hour() : undefined;
-  const max = maxTime && value.date() === maxTime.date() ? maxTime.hour() : undefined;
+  const {value, minTime, maxTime} = parseOptions(options);
+  const min =
+    minTime && value.date() === minTime.date() ? minTime.hour() : undefined;
+  const max =
+    maxTime && value.date() === maxTime.date() ? maxTime.hour() : undefined;
 
   return Array(24)
     .fill(0)
     .map((item, index) => index)
-    .filter((value) => isInRange({ value, min, max }));
+    .filter((value) => isInRange({value, min, max}));
 }
 
 function getMinutes(options: IOptions) {
-  const { value, minTime, maxTime } = parseOptions(options);
+  const {value, minTime, maxTime} = parseOptions(options);
   const min =
-    minTime && value.date() === minTime.date() && value.hour() === minTime.hour() ? minTime.minute() : undefined;
+    minTime &&
+    value.date() === minTime.date() &&
+    value.hour() === minTime.hour()
+      ? minTime.minute()
+      : undefined;
   const max =
-    maxTime && value.date() === maxTime.date() && value.hour() === maxTime.hour() ? maxTime.minute() : undefined;
+    maxTime &&
+    value.date() === maxTime.date() &&
+    value.hour() === maxTime.hour()
+      ? maxTime.minute()
+      : undefined;
 
   return Array(60)
     .fill(0)
     .map((item, index) => index)
-    .filter((value) => isInRange({ value, min, max }));
+    .filter((value) => isInRange({value, min, max}));
 }
 
 function toDataArray(values: number[], prefix = false, offset = 0) {
   return values.map((item) => {
-    return { label: item < 10 && prefix ? `0${item + offset}` : `${item + offset}`, value: item };
+    return {
+      label: item < 10 && prefix ? `0${item + offset}` : `${item + offset}`,
+      value: item,
+    };
   });
 }
 
 function transformValueToValues(value?: number) {
   const valueParsed = value ? dayjs.unix(value) : undefined;
 
-  return valueParsed ? [valueParsed.date(), valueParsed.hour(), valueParsed.minute()] : undefined;
+  return valueParsed
+    ? [valueParsed.date(), valueParsed.hour(), valueParsed.minute()]
+    : undefined;
 }

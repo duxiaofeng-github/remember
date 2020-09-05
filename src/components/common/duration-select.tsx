@@ -19,7 +19,6 @@ export const DurationSelect: React.SFC<IProps> = (props) => {
         textStyle={s.pickerText}
         confirmText={t("Confirm")}
         cancelText={t("Cancel")}
-        dropDownIconColor={colorText}
       />
     </Field>
   );

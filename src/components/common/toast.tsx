@@ -1,6 +1,6 @@
-import React, { useEffect, useRef } from "react";
-import { StyleSheet, Text, Animated } from "react-native";
-import { RexProvider, createStore, useRexContext } from "../../store/store";
+import React, {useEffect, useRef} from "react";
+import {StyleSheet, Text, Animated} from "react-native";
+import {RexProvider, createStore, useRexContext} from "../../store/store";
 
 interface IProps {}
 
@@ -16,7 +16,7 @@ export const ToastProvider: React.SFC<IProps> = (props) => {
 };
 
 const ToastImpl: React.SFC<IProps> = (props) => {
-  const { message } = useRexContext((store: IToastStore) => store);
+  const {message} = useRexContext((store: IToastStore) => store);
   const opacityValue = useRef(new Animated.Value(0)).current;
 
   useEffect(() => {
@@ -42,7 +42,9 @@ const ToastImpl: React.SFC<IProps> = (props) => {
   }, [message]);
 
   return (
-    <Animated.View style={[s.container, { opacity: opacityValue }]} pointerEvents="none">
+    <Animated.View
+      style={[s.container, {opacity: opacityValue}]}
+      pointerEvents="none">
       <Text style={s.text}>{message}</Text>
     </Animated.View>
   );
@@ -54,7 +56,6 @@ const s = StyleSheet.create({
     left: 0,
     right: 0,
     bottom: "10%",
-    display: "flex",
     alignItems: "center",
   },
   text: {

@@ -21,8 +21,8 @@ export const ColorMark: React.SFC<IProps> = (props) => {
 
 const s = StyleSheet.create({
   container: {
-    width: 12,
-    height: 12,
-    borderRadius: 6,
+    width: 10,
+    height: 10,
+    borderRadius: 5,
   },
 });

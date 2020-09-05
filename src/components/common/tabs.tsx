@@ -29,15 +29,15 @@ export const Tabs: React.SFC<IProps> = (props) => {
               onTouchEnd={() => {
                 setTabIndex(index);
               }}>
-              <Text
+              <View
                 style={[
-                  s.tabText,
+                  s.tabInner,
                   index === tabs.length - 1 && {
                     borderRightWidth: 0,
                   },
                 ]}>
-                {item.title}
-              </Text>
+                <Text>{item.title}</Text>
+              </View>
             </View>
           );
         })}
@@ -63,16 +63,18 @@ const s = StyleSheet.create({
     borderBottomWidth: 2,
     borderBottomColor: "transparent",
   },
-  tabText: {
-    display: "flex",
+  tabInner: {
+    flexGrow: 1,
     alignItems: "center",
     justifyContent: "center",
-    flex: 1,
     borderRightWidth: 1,
     borderRightColor: colorBorder,
   },
   tabSelected: {
     borderBottomColor: colorPrimary,
   },
-  viewContainer: {flex: 1},
+  viewContainer: {
+    flex: 1,
+    overflow: "hidden",
+  },
 });

@@ -3,24 +3,20 @@ import {createBottomTabNavigator} from "@react-navigation/bottom-tabs";
 import {Setting} from "../setting/setting";
 import {Icon} from "../common/icon";
 import {colorPrimary} from "../../utils/style";
-import {Reward} from "../reward/reward";
 import {Route} from "../../utils/route";
 import {useTranslation} from "react-i18next";
-import {useRexContext} from "../../store/store";
-import {IStore} from "../../store";
 import {Task} from "../task/task";
+import {Rewards} from "../reward/reward";
 
 interface IProps {}
 
 const Tab = createBottomTabNavigator();
 
 export const Home: React.SFC<IProps> = () => {
-  const {lang} = useRexContext((store: IStore) => store);
   const {t} = useTranslation();
 
   return (
     <Tab.Navigator
-      key={lang}
       screenOptions={({route}) => ({
         tabBarIcon: ({focused, color, size}) => {
           switch (route.name) {
@@ -67,7 +63,7 @@ export const Home: React.SFC<IProps> = () => {
       />
       <Tab.Screen
         name={Route.Reward}
-        component={Reward}
+        component={Rewards}
         options={{title: t("rewards")}}
       />
       <Tab.Screen

@@ -1,16 +1,18 @@
 import cronstrue from "cronstrue/i18n";
 import dayjs, {Dayjs} from "dayjs";
-import * as Localization from "expo-localization";
+import * as RNLocalize from "react-native-localize";
 
 import {globalStore} from "../store";
 import {listPlans, listUnnotifiedTasks} from "../db/plan";
 import {storage} from "./storage";
 
-export const defaultLocale = Localization.locale || "en";
+const locales = RNLocalize.getLocales();
+export const defaultLocale =
+  locales && locales[0] ? locales[0].languageTag.replace("-", "_") : "en";
 
 export function humanizeCron(cron: string) {
   return cronstrue.toString(cron, {
-    locale: globalStore.getState().lang.replace("-", "_"),
+    locale: globalStore.getState().settingsData.data!.lang.replace("-", "_"),
   });
 }
 
@@ -70,8 +72,15 @@ export function isMonthlySchedule(schedule: string) {
   return date !== "*" && day === "*" && month === "*";
 }
 
-export function formatTime(time: Dayjs, layout?: string) {
-  return time.format(layout || "L LT");
+export function formatTime(time: Dayjs | number | string, layout?: string) {
+  const timeParsed =
+    typeof time === "string"
+      ? dayjs(time)
+      : typeof time === "number"
+      ? dayjs.unix(time)
+      : time;
+
+  return timeParsed.format(layout || "L LT");
 }
 
 export function secondsToDuration(seconds: number) {

@@ -1,16 +1,30 @@
 import React from "react";
-import { View, Text } from "react-native";
-import { Header } from "../common/header";
-import { Route } from "../../utils/route";
-import { useNavigation } from "@react-navigation/native";
+import {View, StyleSheet} from "react-native";
+import {Header} from "../common/header";
+import {useTranslation} from "react-i18next";
+import {Tabs} from "../common/tabs";
+import {AvailableRewards} from "./available-rewards";
+import {Route} from "../../utils/route";
+import {useNavigation} from "@react-navigation/native";
+import {AllRewards} from "./all-rewards";
+import {
+  colorBackgroundGray,
+  colorBorder,
+  colorTextLight,
+} from "../../utils/style";
+import {Text} from "../common/text";
+import {useRexContext} from "../../store/store";
+import {IStore} from "../../store";
 
 interface IProps {}
 
-export const Reward: React.SFC<IProps> = () => {
+export const Rewards: React.SFC<IProps> = () => {
   const navigation = useNavigation();
+  const {t} = useTranslation();
+  const {settingsData} = useRexContext((store: IStore) => store);
 
   return (
-    <View>
+    <View style={s.container}>
       <Header
         title="Remember"
         hideBackButton
@@ -21,7 +35,35 @@ export const Reward: React.SFC<IProps> = () => {
           },
         }}
       />
-      <Text>reward</Text>
+      <Tabs
+        tabs={[
+          {title: t("Available rewards"), content: <AvailableRewards />},
+          {title: t("All rewards"), content: <AllRewards />},
+        ]}
+      />
+      <View style={s.bottomStatusBar}>
+        <Text style={s.bottomStatusBarText}>
+          {t("Available points n", {n: settingsData.data!.points})}
+        </Text>
+      </View>
     </View>
   );
 };
+
+const s = StyleSheet.create({
+  container: {
+    flex: 1,
+  },
+  bottomStatusBar: {
+    padding: 5,
+    justifyContent: "center",
+    backgroundColor: colorBackgroundGray,
+    borderTopWidth: 1,
+    borderTopColor: colorBorder,
+  },
+  bottomStatusBarText: {
+    lineHeight: 12,
+    color: colorTextLight,
+    fontSize: 12,
+  },
+});

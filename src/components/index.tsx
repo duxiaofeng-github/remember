@@ -7,10 +7,7 @@ import {Home} from "./home/home";
 import {Route} from "../utils/route";
 import {EditReward} from "./reward/edit-reward";
 import {EditTask} from "./task/edit-task";
-import {useData} from "../utils/hooks/use-data";
-import {getSettings} from "../db/setting";
-import {Loading} from "./common/loading";
-import {globalStore, IStore} from "../store";
+import {IStore} from "../store";
 import {useRexContext} from "../store/store";
 import {scheduler} from "../utils/scheduler";
 
@@ -19,48 +16,34 @@ interface IProps {}
 const Stack = createStackNavigator();
 
 export const Index: React.SFC<IProps> = () => {
-  const {lang} = useRexContext((store: IStore) => store);
+  const {settingsData} = useRexContext((store: IStore) => store);
   const {i18n} = useTranslation();
 
-  const options = useData(async () => {
-    const settings = await getSettings();
-
-    if (settings) {
-      globalStore.update((store) => {
-        store.lang = settings.lang;
-      });
-    }
-  });
-
   useEffect(() => {
+    const {lang} = settingsData.data!;
+
     i18n.changeLanguage(lang);
 
     dayjs.locale(lang.toLowerCase());
-  }, [lang]);
+  }, [settingsData]);
 
   useEffect(() => {
     scheduler.check();
+    settingsData.load();
   }, []);
 
   return (
-    <Loading
-      options={options}
-      render={() => {
-        return (
-          <NavigationContainer>
-            <Stack.Navigator
-              initialRouteName={Route.Home}
-              screenOptions={{
-                headerShown: false,
-                cardStyle: {height: "100%"},
-              }}>
-              <Stack.Screen name={Route.Home} component={Home} />
-              <Stack.Screen name={Route.EditTask} component={EditTask} />
-              <Stack.Screen name={Route.EditReward} component={EditReward} />
-            </Stack.Navigator>
-          </NavigationContainer>
-        );
-      }}
-    />
+    <NavigationContainer>
+      <Stack.Navigator
+        initialRouteName={Route.Home}
+        screenOptions={{
+          headerShown: false,
+          cardStyle: {height: "100%"},
+        }}>
+        <Stack.Screen name={Route.Home} component={Home} />
+        <Stack.Screen name={Route.EditTask} component={EditTask} />
+        <Stack.Screen name={Route.EditReward} component={EditReward} />
+      </Stack.Navigator>
+    </NavigationContainer>
   );
 };

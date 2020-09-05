@@ -11,6 +11,7 @@ import {
   isOneTimeSchedule,
   getRangeTime,
   secondsToDuration,
+  formatTime,
 } from "../../utils/common";
 import {colorTextLight, colorError} from "../../utils/style";
 import {globalStore, IStore} from "../../store";
@@ -18,32 +19,33 @@ import {useRexContext} from "../../store/store";
 import {Icon} from "../common/icon";
 import {PopupMenu} from "../common/popup-menu";
 import {useSubmission} from "../../utils/hooks/use-submission";
-import {deletePlan} from "../../db/plan";
 import {Toast} from "../common/toast";
 import {ListItem} from "../common/list-item";
-import {ColorMark} from "../common/color-mark";
+import {deleteRewardPlan} from "../../db/reward";
 import {Popup} from "../common/popup";
 
 interface IProps {}
 
-export const AllTasks: React.SFC<IProps> = () => {
+export const AllRewards: React.SFC<IProps> = () => {
   const navigation = useNavigation();
   const {t} = useTranslation();
-  const {plansData, settingsData} = useRexContext((store: IStore) => store);
+  const {rewardPlansData, settingsData} = useRexContext(
+    (store: IStore) => store,
+  );
 
   const {triggerer: deletePlanTriggerer} = useSubmission(
     async (id?: string) => {
-      await deletePlan(id!);
+      await deleteRewardPlan(id!);
 
       Toast.message(t("Delete successfully"));
 
-      await plansData.load();
+      await rewardPlansData.load();
     },
   );
 
   return (
     <Loading
-      options={plansData}
+      options={rewardPlansData}
       render={(data) => {
         return data!.length !== 0 ? (
           <View style={s.content}>
@@ -61,15 +63,24 @@ export const AllTasks: React.SFC<IProps> = () => {
                     subtitleStyle={s.subTitleContainer}
                     subtitle={
                       <>
-                        <ColorMark style={s.colorMark} id={item._id} />
+                        <Icon
+                          style={s.subTitleIcon}
+                          name="clock"
+                          size={12}
+                          color={colorTextLight}
+                        />
                         <Text style={s.subTitle}>
-                          {isOneTimeSchedule(schedule)
-                            ? t("from to", getRangeTime(schedule, duration))
-                            : `${humanizeCron(schedule)}, ${t(
-                                "duration",
-                              )}: ${secondsToDuration(duration)
-                                .locale(settingsData.data!.lang)
-                                .humanize(false)}`}
+                          {duration !== 0
+                            ? isOneTimeSchedule(schedule)
+                              ? t("from to", getRangeTime(schedule, duration))
+                              : `${humanizeCron(schedule)}, ${t(
+                                  "validity",
+                                )}: ${secondsToDuration(duration)
+                                  .locale(settingsData.data!.lang)
+                                  .humanize(false)}`
+                            : isOneTimeSchedule(schedule)
+                            ? formatTime(schedule)
+                            : humanizeCron(schedule)}
                         </Text>
                       </>
                     }
@@ -79,10 +90,10 @@ export const AllTasks: React.SFC<IProps> = () => {
                           text: t("Edit"),
                           onTouchStart: async () => {
                             await globalStore.update((store) => {
-                              store.edittingPlanId = item._id;
+                              store.edittingRewardId = item._id;
                             });
 
-                            navigation.navigate(Route.EditTask);
+                            navigation.navigate(Route.EditReward);
                           },
                         },
                         {
@@ -135,7 +146,6 @@ const s = StyleSheet.create({
     alignItems: "center",
   },
   colorMark: {
-    marginTop: 1,
     marginRight: 5,
   },
   title: {

@@ -21,10 +21,10 @@ import {ColorMark} from "../common/color-mark";
 
 interface IProps {}
 
-export const ProcessingTask: React.SFC<IProps> = () => {
+export const ProcessingTasks: React.SFC<IProps> = () => {
   const {t} = useTranslation();
   const navigation = useNavigation();
-  const {plansData} = useRexContext((store: IStore) => store);
+  const {plansData, settingsData} = useRexContext((store: IStore) => store);
   const taskData = useMemo(() => {
     if (plansData && plansData.data) {
       const taskArray = plansData.data.map((plan) => {
@@ -56,6 +56,8 @@ export const ProcessingTask: React.SFC<IProps> = () => {
       await finishTask(planId, taskTime);
 
       await plansData.load();
+
+      await settingsData.load();
     },
   );
 
@@ -79,43 +81,29 @@ export const ProcessingTask: React.SFC<IProps> = () => {
                   <ListItem
                     key={`${planId}-${startedAt}`}
                     bottomDivider
-                    leftComponent={
-                      <Icon
-                        name="square"
-                        size={20}
-                        onPress={(e) => {
+                    rightComponent={
+                      <View
+                        onTouchStart={(e) => {
                           e.stopPropagation();
 
                           finishTaskTriggerer({
-                            planId: planId,
+                            planId,
                             taskTime: startedAt,
                           });
-                        }}
-                      />
-                    }
-                    title={
-                      <View style={s.titleContainer}>
-                        <ColorMark style={s.colorMark} id={planId} />
-                        <Text style={s.title}>{content}</Text>
+                        }}>
+                        <Icon name="square" size={20} color={colorTextLight} />
                       </View>
                     }
+                    title={content}
                     subtitle={
                       <>
-                        <Icon
-                          style={s.subTitleIcon}
-                          name="clock"
-                          size={12}
-                          color={colorTextLight}
-                        />
+                        <ColorMark style={s.colorMark} id={planId} />
                         <Text
                           style={[
                             s.subTitle,
                             isTimeout(startedAt, duration) && s.subTitleTimeout,
                           ]}>
-                          {t(
-                            "{{from}} to {{to}}",
-                            getRangeTime(startedAt, duration),
-                          )}
+                          {t("from to", getRangeTime(startedAt, duration))}
                         </Text>
                       </>
                     }
@@ -156,9 +144,6 @@ export const ProcessingTask: React.SFC<IProps> = () => {
 };
 
 const s = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
   content: {
     flex: 1,
     overflow: "scroll",
@@ -181,12 +166,12 @@ const s = StyleSheet.create({
     alignItems: "center",
   },
   colorMark: {
+    marginTop: 1,
     marginRight: 5,
   },
   title: {
     fontSize: 16,
     lineHeight: 16,
-    fontWeight: "bold",
   },
   cancelText: {
     color: colorError,

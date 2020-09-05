@@ -1,26 +1,26 @@
 import {globalStore} from ".";
-import {listPlans} from "../db/plan";
+import {getSettings} from "../db/setting";
 
-export async function loadPlans() {
+export async function loadSettings() {
   globalStore.update((store) => {
-    store.plansData.loading = true;
+    store.settingsData.loading = true;
   });
 
   try {
-    const data = await listPlans();
+    const data = await getSettings();
 
     await globalStore.update((store) => {
-      store.plansData.data = data;
+      store.settingsData.data = data;
     });
   } catch (e) {
     await globalStore.update((store) => {
-      store.plansData.error = e;
+      store.settingsData.error = e;
     });
 
     throw e;
   } finally {
     await globalStore.update((store) => {
-      store.plansData.loading = false;
+      store.settingsData.loading = false;
     });
   }
 }
