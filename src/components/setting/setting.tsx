@@ -1,5 +1,5 @@
 import React from "react";
-import {View, StyleSheet} from "react-native";
+import {View, StyleSheet, ScrollView} from "react-native";
 import {globalStore, IStore} from "../../store";
 import {useRexContext} from "../../store/store";
 import {Header} from "../common/header";
@@ -26,7 +26,7 @@ export const Setting: React.SFC<IProps> = () => {
   return (
     <View style={s.container}>
       <Header title="Remember" hideBackButton />
-      <View style={s.content}>
+      <ScrollView style={s.content}>
         <Select
           title={t("Select language")}
           value={[settingsData.data!.lang]}
@@ -42,7 +42,7 @@ export const Setting: React.SFC<IProps> = () => {
             updateSettings({lang});
           }}
         />
-      </View>
+      </ScrollView>
     </View>
   );
 };
@@ -58,6 +58,5 @@ const s = StyleSheet.create({
     paddingLeft: 25,
     paddingRight: 25,
     backgroundColor: "#fff",
-    overflow: "scroll",
   },
 });

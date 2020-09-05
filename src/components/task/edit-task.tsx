@@ -1,5 +1,5 @@
 import React, {useEffect, useMemo, useState} from "react";
-import {View, StyleSheet} from "react-native";
+import {View, StyleSheet, ScrollView} from "react-native";
 import dayjs from "dayjs";
 import {useTranslation} from "react-i18next";
 import {useForm, Controller, UseFormMethods} from "react-hook-form";
@@ -136,7 +136,7 @@ export const EditTask: React.SFC<IProps> = () => {
           },
         }}
       />
-      <View style={s.content}>
+      <ScrollView style={s.content}>
         <Controller
           control={control}
           name="content"
@@ -232,7 +232,7 @@ export const EditTask: React.SFC<IProps> = () => {
             );
           }}
         />
-      </View>
+      </ScrollView>
     </View>
   );
 };
@@ -422,9 +422,8 @@ const s = StyleSheet.create({
   container: {flex: 1, backgroundColor: "#fff"},
   content: {
     flex: 1,
-    overflow: "scroll",
-    paddingTop: 2,
-    paddingBottom: 2,
+    paddingTop: 7,
+    paddingBottom: 7,
     paddingLeft: 25,
     paddingRight: 25,
   },
