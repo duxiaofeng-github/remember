@@ -34,6 +34,7 @@ export const Input: React.SFC<IProps> = (props) => {
           {...restProps}
           style={[{height}, s.input, style]}
           multiline={multiline}
+          textAlignVertical="top"
           onContentSizeChange={
             multiline
               ? (event) => {

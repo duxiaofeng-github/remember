@@ -5,18 +5,12 @@ import {setNotifiedTasks} from "../../db/plan";
 import i18n from "../../i18n";
 
 async function notifyTasks() {
-  console.log("notifyTasks");
-
   const tasks = await getAllUnnotifiedTasks();
-
-  console.log("unnotified", tasks);
 
   if (tasks.length !== 0) {
     tasks.forEach((item) => {
       item.tasks.forEach((task) => {
         const {content, startedAt, duration} = task;
-
-        console.log("notify", content);
 
         notify(content, i18n.t("from to", getRangeTime(startedAt, duration)));
       });
@@ -31,26 +25,32 @@ async function notifyTasks() {
 
 export const scheduler = {
   check: () => {
-    notifyTasks();
+    const handleTask = async (taskId: string) => {
+      console.log("job start");
+
+      await notifyTasks();
+
+      console.log("job end");
+
+      BackgroundFetch.finish(taskId);
+    };
+
+    BackgroundFetch.registerHeadlessTask((event) => {
+      let taskId = event.taskId;
+
+      handleTask(taskId);
+    });
 
     BackgroundFetch.configure(
       {
-        minimumFetchInterval: 15, // <-- minutes (15 is minimum allowed)
+        minimumFetchInterval: 1, // <-- minutes (15 is minimum allowed)
         // Android options
-        forceAlarmManager: false, // <-- Set true to bypass JobScheduler.
+        forceAlarmManager: true, // <-- Set true to bypass JobScheduler.
         stopOnTerminate: false,
         startOnBoot: true,
-        requiredNetworkType: BackgroundFetch.NETWORK_TYPE_NONE, // Default
-        requiresCharging: false, // Default
-        requiresDeviceIdle: false, // Default
-        requiresBatteryNotLow: false, // Default
-        requiresStorageNotLow: false, // Default
+        enableHeadless: true,
       },
-      async (taskId) => {
-        notifyTasks();
-
-        BackgroundFetch.finish(taskId);
-      },
+      handleTask,
       (error) => {
         console.error("[js] RNBackgroundFetch failed to start");
       },

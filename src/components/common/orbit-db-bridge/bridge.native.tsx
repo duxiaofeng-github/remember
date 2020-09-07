@@ -11,7 +11,13 @@ export const Bridge: React.SFC<IProps> = (props) => {
   const {requests} = useRexContext((store: IStore) => store);
   const webViewRef = useRef<WebView>(null);
   const baseUrl =
-    Platform.OS === "ios" ? "orbit-db" : "file:///android_asset/orbit-db";
+    Platform.OS === "ios"
+      ? "orbit-db"
+      : "https://appassets.androidplatform.net/assets/orbit-db";
+  const uri =
+    Platform.OS === "ios"
+      ? "orbit-db/index.html"
+      : "https://appassets.androidplatform.net/assets/orbit-db/index.html";
 
   function sendRequests() {
     if (webViewRef.current != null && requests.length) {
@@ -40,7 +46,10 @@ export const Bridge: React.SFC<IProps> = (props) => {
       <WebView
         ref={webViewRef}
         originWhitelist={["*"]}
-        source={{uri: `orbit-db/index.html`, baseUrl}}
+        source={{
+          uri,
+          baseUrl,
+        }}
         onLoadEnd={sendRequests}
         onMessage={(event) => {
           resolve(event.nativeEvent.data);
