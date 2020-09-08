@@ -3,9 +3,9 @@ import {notify} from "../notification";
 import {setNotifiedTasks} from "../../db/plan";
 import i18n from "../../i18n";
 
-const timeInterval = 1000 * 60;
+export const timeInterval = 1000 * 60;
 
-async function notifyTasks() {
+export async function notifyTasks() {
   setTimeout(notifyTasks, timeInterval);
 
   const tasks = await getAllUnnotifiedTasks();
@@ -25,9 +25,3 @@ async function notifyTasks() {
     });
   }
 }
-
-export const scheduler = {
-  check: () => {
-    setTimeout(notifyTasks, timeInterval);
-  },
-};

@@ -2,11 +2,7 @@ import dayjs from "dayjs";
 import {nanoid} from "nanoid";
 import cronParser from "cron-parser";
 import {getRemoteAddr, isOneTimeSchedule} from "../utils/common";
-import {
-  getData,
-  putData,
-  delData,
-} from "../components/common/orbit-db-bridge/sender";
+import {getData, putData, delData} from "./db";
 import {addPoints} from "./setting";
 import {isCanceled, isFinished, isPlanFinished, isRepeatEnded} from "./utils";
 
@@ -76,10 +72,10 @@ export async function getPlan(id: string): Promise<Plan> {
   const remoteAddr = await getRemoteAddr();
   const data = await getData({dbName, remoteAddr, id});
 
-  return data && data.length ? data[0] : undefined;
+  return data;
 }
 
-export async function createPlan(data: PlanBase): Promise<string> {
+export async function createPlan(data: PlanBase): Promise<void> {
   const remoteAddr = await getRemoteAddr();
   const newPlan = {...data, _id: nanoid()};
 
@@ -352,6 +348,7 @@ export function listTasks(options: {
 export function listUnnotifiedTasks(options: {plan: Plan}): Task[] {
   const {plan} = options;
   const tasks = listTasks({plan, includeNoticeTime: true});
+
   const unnotifiedTasks = tasks.filter((task) => {
     const notifiedTaskTime = plan.notifiedTime || [];
     return !notifiedTaskTime.includes(task.startedAt);

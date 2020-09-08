@@ -89,9 +89,11 @@ export function secondsToDuration(seconds: number) {
 
 export async function getAllUnnotifiedTasks() {
   const plans = await listPlans();
-  const tasksArray = plans.map((plan) => {
-    return {planId: plan._id, tasks: listUnnotifiedTasks({plan})};
-  });
+  const tasksArray = plans
+    .filter((item) => item.noticeTime != null)
+    .map((plan) => {
+      return {planId: plan._id, tasks: listUnnotifiedTasks({plan})};
+    });
 
   return tasksArray;
 }

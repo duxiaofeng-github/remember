@@ -8,6 +8,8 @@ PushNotification.configure({
   onNotification: function (notification) {
     // process the notification
 
+    // PushNotification.cancelLocalNotifications({id: notification.});
+
     // (required) Called when a remote is received or opened, or local notification is opened
     notification.finish(PushNotificationIOS.FetchResult.NoData);
   },

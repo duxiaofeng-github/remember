@@ -215,9 +215,13 @@ export const EditReward: React.SFC<IProps> = () => {
             return (
               <Input
                 keyboardType="numeric"
-                defaultValue={value}
+                value={value != null ? `${value}` : ""}
                 onBlur={onBlur}
-                onChangeText={(value) => onChange(value)}
+                onChangeText={(value) => {
+                  const valueParsed = parseFloat(value);
+
+                  onChange(isNaN(valueParsed) ? undefined : valueParsed);
+                }}
                 label={t("Consumption")}
                 error={errors.consumption}
                 placeholder={t("Please input points")}

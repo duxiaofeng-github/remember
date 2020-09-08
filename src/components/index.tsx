@@ -9,7 +9,6 @@ import {EditReward} from "./reward/edit-reward";
 import {EditTask} from "./task/edit-task";
 import {IStore} from "../store";
 import {useRexContext} from "../store/store";
-import {scheduler} from "../utils/scheduler";
 
 interface IProps {}
 
@@ -28,7 +27,6 @@ export const Index: React.SFC<IProps> = () => {
   }, [settingsData]);
 
   useEffect(() => {
-    scheduler.check();
     settingsData.load();
   }, []);
 

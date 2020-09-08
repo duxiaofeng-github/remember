@@ -2,11 +2,7 @@ import dayjs from "dayjs";
 import {nanoid} from "nanoid";
 import cronParser from "cron-parser";
 import {getRemoteAddr, isOneTimeSchedule, isTimeout} from "../utils/common";
-import {
-  getData,
-  putData,
-  delData,
-} from "../components/common/orbit-db-bridge/sender";
+import {getData, putData, delData} from "./db";
 import {isFinished, isPlanFinished, isRepeatEnded} from "./utils";
 import {addPoints} from "./setting";
 
@@ -65,10 +61,10 @@ export async function getRewardPlan(id: string): Promise<RewardPlan> {
   const remoteAddr = await getRemoteAddr();
   const data = await getData({dbName, remoteAddr, id});
 
-  return data && data.length ? data[0] : undefined;
+  return data;
 }
 
-export async function createRewardPlan(data: RewardPlanBase): Promise<string> {
+export async function createRewardPlan(data: RewardPlanBase): Promise<void> {
   const remoteAddr = await getRemoteAddr();
   const newData = {...data, _id: nanoid()};
 
