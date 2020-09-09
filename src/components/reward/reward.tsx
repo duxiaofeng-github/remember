@@ -62,7 +62,7 @@ const s = StyleSheet.create({
     borderTopColor: colorBorder,
   },
   bottomStatusBarText: {
-    lineHeight: 12,
+    lineHeight: 14,
     color: colorTextLight,
     fontSize: 12,
   },

@@ -18,6 +18,7 @@ export const Home: React.SFC<IProps> = () => {
   return (
     <Tab.Navigator
       screenOptions={({route}) => ({
+        unmountOnBlur: true,
         tabBarIcon: ({focused, color, size}) => {
           switch (route.name) {
             case Route.Task:

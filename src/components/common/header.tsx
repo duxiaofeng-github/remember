@@ -1,6 +1,13 @@
 import React from "react";
 import {useNavigation} from "@react-navigation/native";
-import {View, Text, StyleProp, TextStyle, StyleSheet} from "react-native";
+import {
+  View,
+  Text,
+  StyleProp,
+  TextStyle,
+  StyleSheet,
+  StatusBar,
+} from "react-native";
 import {Icon} from "./icon";
 import {colorPrimary} from "../../utils/style";
 import {useSafeAreaInsets} from "react-native-safe-area-context";
@@ -40,6 +47,7 @@ export const Header: React.SFC<IProps> = (props) => {
   return (
     <View
       style={[s.container, {height: 50 + insets.top, paddingTop: insets.top}]}>
+      <StatusBar backgroundColor={colorPrimary} />
       {!hideBackButton && navigation.canGoBack() && (
         <View style={s.leftComponent}>
           <Icon

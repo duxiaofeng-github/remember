@@ -171,7 +171,7 @@ const s = StyleSheet.create({
   },
   title: {
     fontSize: 16,
-    lineHeight: 16,
+    lineHeight: 18,
   },
   cancelText: {
     color: colorError,

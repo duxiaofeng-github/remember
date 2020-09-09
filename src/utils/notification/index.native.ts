@@ -1,6 +1,6 @@
 import PushNotificationIOS from "@react-native-community/push-notification-ios";
-import {Platform} from "react-native";
 import PushNotification from "react-native-push-notification";
+import {globalStore} from "../../store";
 
 // Must be outside of any component LifeCycle (such as `componentDidMount`).
 PushNotification.configure({
@@ -9,6 +9,10 @@ PushNotification.configure({
     // process the notification
 
     // PushNotification.cancelLocalNotifications({id: notification.});
+
+    const {plansData} = globalStore.getState();
+
+    plansData.load();
 
     // (required) Called when a remote is received or opened, or local notification is opened
     notification.finish(PushNotificationIOS.FetchResult.NoData);
@@ -28,19 +32,11 @@ PushNotification.configure({
   // Should the initial notification be popped automatically
   // default: true
   popInitialNotification: true,
-
-  /**
-   * (optional) default: true
-   * - Specified if permissions (ios) and token (android and ios) will requested or not,
-   * - if not, you must call PushNotificationsHandler.requestPermissions() later
-   * - if you are not using remote notification or do not have Firebase installed, use this:
-   *     requestPermissions: Platform.OS === 'ios'
-   */
-  requestPermissions: Platform.OS === "ios",
 });
 
 export async function notify(title: string, message: string): Promise<void> {
   PushNotification.localNotification({
+    ignoreInForeground: false,
     title,
     message,
   });

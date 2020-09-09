@@ -14,11 +14,7 @@ if (Platform.OS === "android" || Platform.OS === "ios") {
   BackgroundFetch.registerHeadlessTask(async (event) => {
     let taskId = event.taskId;
 
-    console.log("HeadlessTask start");
-
     await notifyTasks();
-
-    console.log("HeadlessTask end");
 
     BackgroundFetch.finish(taskId);
   });
@@ -33,11 +29,7 @@ if (Platform.OS === "android" || Platform.OS === "ios") {
       enableHeadless: true,
     },
     async (taskId) => {
-      console.log("normal task start");
-
       await notifyTasks();
-
-      console.log("normal task end");
 
       BackgroundFetch.finish(taskId);
     },
