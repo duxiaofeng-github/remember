@@ -12,6 +12,7 @@ import {
 } from "react-native";
 import {Topbar} from "./top-bar";
 import {ScrollView} from "./scroll-view";
+import {useBackHandler} from "@react-native-community/hooks";
 
 const panelHeight = 220;
 
@@ -85,6 +86,16 @@ export const PickerView: <T>(
   const topValue = useRef(new Animated.Value(getWindowHeight())).current;
   const [innerSelectedIndexes, setInnerSelectIndexes] = useState<number[]>([]);
   const [innerVisible, setInnerVisible] = useState(visible);
+
+  useBackHandler(() => {
+    if (visible) {
+      cancel();
+
+      return true;
+    }
+
+    return false;
+  });
 
   function popup(callback?: () => void) {
     setInnerVisible(true);

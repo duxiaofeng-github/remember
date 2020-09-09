@@ -11,6 +11,7 @@ import {RexProvider, createStore, useRexContext} from "../../store/store";
 import {Text} from "./text";
 import i18n from "../../i18n";
 import {colorBorder, colorPrimary, colorTextLight} from "../../utils/style";
+import {useBackHandler} from "@react-native-community/hooks";
 
 interface IProps {}
 
@@ -29,6 +30,16 @@ const PopupImpl: React.SFC<IProps> = (props) => {
   const {options} = useRexContext((store: IPopupStore) => store);
   const {onClose, children, contentStyle, closable = true} = options || {};
   const opacityValue = useRef(new Animated.Value(0)).current;
+
+  useBackHandler(() => {
+    if (children != null) {
+      close();
+
+      return true;
+    }
+
+    return false;
+  });
 
   function close() {
     return new Promise<void>((resolve) => {
