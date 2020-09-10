@@ -5,6 +5,9 @@ import * as RNLocalize from "react-native-localize";
 import {globalStore} from "../store";
 import {listPlans, listUnnotifiedTasks} from "../db/plan";
 import {storage} from "./storage";
+import {notify} from "./notification";
+import i18n from "../i18n";
+import {setNotifiedTasks} from "../db/plan";
 
 const locales = RNLocalize.getLocales();
 export const defaultLocale =
@@ -102,4 +105,23 @@ export async function getRemoteAddr() {
   const addr = await storage.getItem("remember-remote-db-addr");
 
   return addr || "";
+}
+
+export async function notifyTasks() {
+  const tasks = await getAllUnnotifiedTasks();
+
+  if (tasks.length !== 0) {
+    tasks.forEach((item) => {
+      item.tasks.forEach((task) => {
+        const {content, startedAt} = task;
+
+        notify(content, i18n.t("Begin at time", {time: formatTime(startedAt)}));
+      });
+
+      setNotifiedTasks(
+        item.planId,
+        item.tasks.map((task) => task.startedAt),
+      );
+    });
+  }
 }

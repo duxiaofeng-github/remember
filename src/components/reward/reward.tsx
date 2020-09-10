@@ -15,11 +15,12 @@ import {
 import {Text} from "../common/text";
 import {useRexContext} from "../../store/store";
 import {IStore} from "../../store";
+import {EditRewardNavigationProp} from "./edit-reward";
 
 interface IProps {}
 
 export const Rewards: React.SFC<IProps> = () => {
-  const navigation = useNavigation();
+  const navigation = useNavigation<EditRewardNavigationProp>();
   const {t} = useTranslation();
   const {settingsData} = useRexContext((store: IStore) => store);
 
@@ -31,7 +32,7 @@ export const Rewards: React.SFC<IProps> = () => {
         createButton={{
           visible: true,
           onTouchEnd: () => {
-            navigation.navigate(Route.EditReward);
+            navigation.navigate(Route.EditReward, {});
           },
         }}
       />

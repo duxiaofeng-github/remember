@@ -15,7 +15,6 @@ import {
 import {colorTextLight, colorError} from "../../utils/style";
 import {globalStore, IStore} from "../../store";
 import {useRexContext} from "../../store/store";
-import {Icon} from "../common/icon";
 import {PopupMenu} from "../common/popup-menu";
 import {useSubmission} from "../../utils/hooks/use-submission";
 import {deletePlan} from "../../db/plan";
@@ -23,11 +22,12 @@ import {Toast} from "../common/toast";
 import {ListItem} from "../common/list-item";
 import {ColorMark} from "../common/color-mark";
 import {Popup} from "../common/popup";
+import {EditTaskNavigationProp} from "./edit-task";
 
 interface IProps {}
 
 export const AllTasks: React.SFC<IProps> = () => {
-  const navigation = useNavigation();
+  const navigation = useNavigation<EditTaskNavigationProp>();
   const {t} = useTranslation();
   const {plansData, settingsData} = useRexContext((store: IStore) => store);
 
@@ -78,11 +78,9 @@ export const AllTasks: React.SFC<IProps> = () => {
                         {
                           text: t("Edit"),
                           onTouchStart: async () => {
-                            await globalStore.update((store) => {
-                              store.edittingPlanId = item._id;
+                            navigation.navigate(Route.EditTask, {
+                              planId: item._id,
                             });
-
-                            navigation.navigate(Route.EditTask);
                           },
                         },
                         {

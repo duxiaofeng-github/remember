@@ -18,12 +18,13 @@ import {useTranslation} from "react-i18next";
 import {Route} from "../../utils/route";
 import {useNavigation} from "@react-navigation/native";
 import {ColorMark} from "../common/color-mark";
+import {EditTaskNavigationProp} from "./edit-task";
 
 interface IProps {}
 
 export const ProcessingTasks: React.SFC<IProps> = () => {
   const {t} = useTranslation();
-  const navigation = useNavigation();
+  const navigation = useNavigation<EditTaskNavigationProp>();
   const {plansData, settingsData} = useRexContext((store: IStore) => store);
   const taskData = useMemo(() => {
     if (plansData && plansData.data) {
@@ -112,11 +113,9 @@ export const ProcessingTasks: React.SFC<IProps> = () => {
                         {
                           text: t("Edit task"),
                           onTouchStart: async () => {
-                            await globalStore.update((store) => {
-                              store.edittingPlanId = item.planId;
+                            navigation.navigate(Route.EditTask, {
+                              planId: item.planId,
                             });
-
-                            navigation.navigate(Route.EditTask);
                           },
                         },
                         {

@@ -15,8 +15,6 @@ interface IStoreData<T> {
 }
 
 export interface IStore {
-  edittingPlanId?: string;
-  edittingRewardId?: string;
   plansData: IStoreData<Plan[]>;
   rewardPlansData: IStoreData<RewardPlan[]>;
   settingsData: IStoreData<Setting>;

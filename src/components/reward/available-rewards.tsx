@@ -3,7 +3,7 @@ import {View, StyleSheet} from "react-native";
 import {Loading} from "../common/loading";
 import {Empty} from "../common/empty";
 import {getRangeTime} from "../../utils/common";
-import {globalStore, IStore} from "../../store";
+import {IStore} from "../../store";
 import {useRexContext} from "../../store/store";
 import {Icon} from "../common/icon";
 import flatten from "lodash/flatten";
@@ -17,12 +17,13 @@ import {listRewards, receiveReward} from "../../db/reward";
 import {colorTextLight} from "../../utils/style";
 import {Toast} from "../common/toast";
 import {Popup} from "../common/popup";
+import {EditRewardNavigationProp} from "./edit-reward";
 
 interface IProps {}
 
 export const AvailableRewards: React.SFC<IProps> = () => {
   const {t} = useTranslation();
-  const navigation = useNavigation();
+  const navigation = useNavigation<EditRewardNavigationProp>();
   const {rewardPlansData, settingsData} = useRexContext(
     (store: IStore) => store,
   );
@@ -116,11 +117,9 @@ export const AvailableRewards: React.SFC<IProps> = () => {
                         {
                           text: t("Edit reward"),
                           onTouchStart: async () => {
-                            await globalStore.update((store) => {
-                              store.edittingRewardId = item.planId;
+                            navigation.navigate(Route.EditReward, {
+                              planId: item.planId,
                             });
-
-                            navigation.navigate(Route.EditReward);
                           },
                         },
                       ]);

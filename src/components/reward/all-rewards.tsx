@@ -14,7 +14,7 @@ import {
   formatTime,
 } from "../../utils/common";
 import {colorTextLight, colorError} from "../../utils/style";
-import {globalStore, IStore} from "../../store";
+import {IStore} from "../../store";
 import {useRexContext} from "../../store/store";
 import {Icon} from "../common/icon";
 import {PopupMenu} from "../common/popup-menu";
@@ -23,11 +23,12 @@ import {Toast} from "../common/toast";
 import {ListItem} from "../common/list-item";
 import {deleteRewardPlan} from "../../db/reward";
 import {Popup} from "../common/popup";
+import {EditRewardNavigationProp} from "./edit-reward";
 
 interface IProps {}
 
 export const AllRewards: React.SFC<IProps> = () => {
-  const navigation = useNavigation();
+  const navigation = useNavigation<EditRewardNavigationProp>();
   const {t} = useTranslation();
   const {rewardPlansData, settingsData} = useRexContext(
     (store: IStore) => store,
@@ -89,11 +90,9 @@ export const AllRewards: React.SFC<IProps> = () => {
                         {
                           text: t("Edit"),
                           onTouchStart: async () => {
-                            await globalStore.update((store) => {
-                              store.edittingRewardId = item._id;
+                            navigation.navigate(Route.EditReward, {
+                              planId: item._id,
                             });
-
-                            navigation.navigate(Route.EditReward);
                           },
                         },
                         {

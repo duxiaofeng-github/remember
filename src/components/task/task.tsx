@@ -8,11 +8,12 @@ import {Route} from "../../utils/route";
 import {useNavigation} from "@react-navigation/native";
 import {AllTasks} from "./all-tasks";
 import {Calendar} from "./calendar";
+import {EditTaskNavigationProp} from "./edit-task";
 
 interface IProps {}
 
 export const Task: React.SFC<IProps> = () => {
-  const navigation = useNavigation();
+  const navigation = useNavigation<EditTaskNavigationProp>();
   const {t} = useTranslation();
 
   return (
@@ -23,7 +24,7 @@ export const Task: React.SFC<IProps> = () => {
         createButton={{
           visible: true,
           onTouchEnd: () => {
-            navigation.navigate(Route.EditTask);
+            navigation.navigate(Route.EditTask, {});
           },
         }}
       />

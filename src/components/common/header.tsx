@@ -33,32 +33,31 @@ export const Header: React.SFC<IProps> = (props) => {
       const {visible, text, textStyle, onTouchEnd} = createButton;
 
       if (visible) {
-        return text ? (
-          <View onTouchStart={onTouchEnd}>
-            <Text style={[s.text, textStyle]}>{text}</Text>
+        return (
+          <View style={s.rightComponent} onTouchStart={onTouchEnd}>
+            {text ? (
+              <Text style={[s.text, textStyle]}>{text}</Text>
+            ) : (
+              <Icon size={22} name="plus" color="#fff" />
+            )}
           </View>
-        ) : (
-          <Icon size={22} name="plus" color="#fff" onPress={onTouchEnd} />
         );
       }
     }
   }
 
+  const backButton = !hideBackButton && navigation.canGoBack() && (
+    <View style={s.leftComponent} onTouchStart={() => navigation.goBack()}>
+      <Icon size={22} name="chevron-left" color="#fff" />
+    </View>
+  );
+
   return (
     <View
       style={[s.container, {height: 50 + insets.top, paddingTop: insets.top}]}>
       <StatusBar backgroundColor={colorPrimary} />
-      {!hideBackButton && navigation.canGoBack() && (
-        <View style={s.leftComponent}>
-          <Icon
-            size={22}
-            name="chevron-left"
-            color="#fff"
-            onPress={() => navigation.goBack()}
-          />
-        </View>
-      )}
-      <Text style={s.title}>{title}</Text>
+      {backButton}
+      <Text style={[s.title, !backButton && s.titlePadding]}>{title}</Text>
       {renderRightComponent()}
     </View>
   );
@@ -69,11 +68,18 @@ const s = StyleSheet.create({
     backgroundColor: colorPrimary,
     flexDirection: "row",
     alignItems: "center",
-    paddingLeft: 15,
-    paddingRight: 15,
   },
   leftComponent: {
-    marginRight: 10,
+    padding: 15,
+    paddingRight: 10,
+    paddingTop: 10,
+    paddingBottom: 10,
+  },
+  rightComponent: {
+    paddingRight: 15,
+    paddingLeft: 10,
+    paddingTop: 10,
+    paddingBottom: 10,
   },
   text: {
     color: "#fff",
@@ -83,5 +89,8 @@ const s = StyleSheet.create({
     fontSize: 18,
     flexGrow: 1,
     marginRight: 10,
+  },
+  titlePadding: {
+    marginLeft: 15,
   },
 });

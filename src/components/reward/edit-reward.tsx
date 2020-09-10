@@ -1,10 +1,10 @@
-import React, {useEffect, useMemo, useState} from "react";
+import React, {useMemo, useState} from "react";
 import {View, StyleSheet, ScrollView} from "react-native";
 import dayjs from "dayjs";
 import {useTranslation} from "react-i18next";
 import {useForm, Controller, UseFormMethods} from "react-hook-form";
 import {Header} from "../common/header";
-import {IStore, globalStore} from "../../store";
+import {IStore} from "../../store";
 import {
   isDailySchedule,
   isWeeklySchedule,
@@ -16,7 +16,7 @@ import {
 import {Select} from "../common/select";
 import {DateTimeSelect} from "../common/date-time-select";
 import {Input} from "../common/input";
-import {useNavigation} from "@react-navigation/native";
+import {RouteProp, useNavigation, useRoute} from "@react-navigation/native";
 import {Toast} from "../common/toast";
 import {useRexContext} from "../../store/store";
 import {TimeSelect} from "../common/time-select";
@@ -29,6 +29,15 @@ import {
   updateRewardPlan,
 } from "../../db/reward";
 import {Radio} from "../common/radio";
+import {StackNavigationProp} from "@react-navigation/stack";
+import {RootStackParam, Route} from "../../utils/route";
+
+export type EditRewardNavigationProp = StackNavigationProp<
+  RootStackParam,
+  Route.EditReward
+>;
+
+type RouteProps = RouteProp<RootStackParam, Route.EditReward>;
 
 interface IProps {}
 
@@ -61,14 +70,13 @@ export const EditReward: React.SFC<IProps> = () => {
   const {t} = useTranslation();
   const [now, setNow] = useState(dayjs().startOf("minute").unix());
   const navigation = useNavigation();
-  const {rewardPlansData, edittingRewardId} = useRexContext(
-    (store: IStore) => store,
-  );
+  const route = useRoute<RouteProps>();
+  const {rewardPlansData} = useRexContext((store: IStore) => store);
   const edittingPlan = useMemo(
     () =>
       rewardPlansData.data &&
-      rewardPlansData.data.find((item) => item._id === edittingRewardId),
-    [edittingRewardId, rewardPlansData],
+      rewardPlansData.data.find((item) => item._id === route.params.planId),
+    [route.params.planId, rewardPlansData],
   );
   const isCreating = useMemo(() => edittingPlan == null, [edittingPlan]);
   const {
@@ -114,14 +122,6 @@ export const EditReward: React.SFC<IProps> = () => {
 
     navigation.goBack();
   });
-
-  useEffect(() => {
-    return () => {
-      globalStore.update((store) => {
-        store.edittingRewardId = undefined;
-      });
-    };
-  }, []);
 
   return (
     <View style={s.container}>

@@ -19,7 +19,7 @@ import {Select} from "../common/select";
 import {DateTimeSelect} from "../common/date-time-select";
 import {DurationSelect} from "../common/duration-select";
 import {Input} from "../common/input";
-import {useNavigation} from "@react-navigation/native";
+import {RouteProp, useNavigation, useRoute} from "@react-navigation/native";
 import {Toast} from "../common/toast";
 import {Plan, PlanBase, createPlan, updatePlan} from "../../db/plan";
 import {useRexContext} from "../../store/store";
@@ -27,6 +27,15 @@ import {Unit} from "../common/picker/duration-picker";
 import {TimeSelect} from "../common/time-select";
 import {WeekTimeSelect} from "../common/week-time-select";
 import {DayTimeSelect} from "../common/day-time-select";
+import {StackNavigationProp} from "@react-navigation/stack";
+import {RootStackParam, Route} from "../../utils/route";
+
+export type EditTaskNavigationProp = StackNavigationProp<
+  RootStackParam,
+  Route.EditTask
+>;
+
+type RouteProps = RouteProp<RootStackParam, Route.EditTask>;
 
 interface IProps {}
 
@@ -60,14 +69,13 @@ export const EditTask: React.SFC<IProps> = () => {
   const {t} = useTranslation();
   const [now, setNow] = useState(dayjs().startOf("minute").unix());
   const navigation = useNavigation();
-  const {plansData, edittingPlanId, settingsData} = useRexContext(
-    (store: IStore) => store,
-  );
+  const route = useRoute<RouteProps>();
+  const {plansData, settingsData} = useRexContext((store: IStore) => store);
   const edittingPlan = useMemo(
     () =>
       plansData.data &&
-      plansData.data.find((item) => item._id === edittingPlanId),
-    [edittingPlanId, plansData],
+      plansData.data.find((item) => item._id === route.params.planId),
+    [route.params.planId, plansData],
   );
   const isCreating = useMemo(() => edittingPlan == null, [edittingPlan]);
   const {
@@ -115,14 +123,6 @@ export const EditTask: React.SFC<IProps> = () => {
 
     navigation.goBack();
   });
-
-  useEffect(() => {
-    return () => {
-      globalStore.update((store) => {
-        store.edittingPlanId = undefined;
-      });
-    };
-  }, []);
 
   return (
     <View style={s.container}>
@@ -200,9 +200,7 @@ export const EditTask: React.SFC<IProps> = () => {
                 onFormat={(value) => {
                   if (value != null) {
                     return t("NoticeTimeInAdvance", {
-                      duration: secondsToDuration(value)
-                        .locale(settingsData.data!.lang)
-                        .humanize(false),
+                      duration: secondsToDuration(value).humanize(false),
                     });
                   }
 

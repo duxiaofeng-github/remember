@@ -83,6 +83,7 @@ export const en = {
   Language: "Language",
   en_US: "English",
   zh_CN: "Simplified Chinese",
+  "Begin at time": "Begin at {{time}}",
 };
 
 export const zhCN = {
@@ -170,4 +171,5 @@ export const zhCN = {
   Language: "语言",
   en_US: "英语",
   zh_CN: "简体中文",
+  "Begin at time": "{{time}}开始",
 };
