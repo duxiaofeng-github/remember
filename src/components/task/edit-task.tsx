@@ -1,5 +1,5 @@
 import React, {useMemo, useState} from "react";
-import {View, StyleSheet, ScrollView} from "react-native";
+import {View, StyleSheet, ScrollView, Platform} from "react-native";
 import dayjs from "dayjs";
 import {useTranslation} from "react-i18next";
 import {useForm, Controller, UseFormMethods} from "react-hook-form";
@@ -230,6 +230,7 @@ export const EditTask: React.SFC<IProps> = () => {
                 enabledUnits={[Unit.Minutes, Unit.Hours]}
                 label={t("Notice")}
                 value={value}
+                min={Platform.OS === "ios" ? {[Unit.Minutes]: 30} : undefined}
                 error={errors.noticeTime}
                 onChange={onChange}
                 onFormat={(value) => {

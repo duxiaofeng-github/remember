@@ -1,4 +1,4 @@
-import React, {useMemo} from "react";
+import React, {useEffect, useMemo, useState} from "react";
 import {Picker} from "./picker";
 import {TextStyle, StyleProp} from "react-native";
 import dayjs from "dayjs";
@@ -16,8 +16,12 @@ export interface IDurationPickerProps {
   dropDownIconColor?: string;
   clearable?: boolean;
   prefix?: string;
-  min?: number;
-  max?: number;
+  min?: {
+    [unit: string]: number;
+  };
+  max?: {
+    [unit: string]: number;
+  };
   selectDays?: boolean;
   selectHours?: boolean;
   selectMinutes?: boolean;
@@ -67,9 +71,29 @@ export const DurationPicker: React.SFC<IDurationPickerProps> = (props) => {
 
     return _suffix;
   }, [selectDays, selectHours, selectMinutes]);
-
+  const [innerValues, setInnerValues] = useState(
+    transformSecondsToValues({
+      value,
+      selectDays,
+      selectHours,
+      selectMinutes,
+      enabledUnits,
+    }),
+  );
   const data = useMemo(() => {
-    const numbers = getNumbers(min || 1, max || 100);
+    const selectedUnitIndex =
+      innerValues != null && innerValues.length === 2
+        ? innerValues[1]
+        : !selectDays && !selectHours && !selectMinutes
+        ? 0
+        : undefined;
+    const selectUnit =
+      selectedUnitIndex != null ? unitsArray[selectedUnitIndex] : undefined;
+    const minNumber =
+      min != null && selectUnit && min[selectUnit] ? min[selectUnit] : 1;
+    const maxNumber =
+      max != null && selectUnit && max[selectUnit] ? max[selectUnit] : 100;
+    const numbers = getNumbers(minNumber, maxNumber);
     const numbersData = numbers.map((item) => {
       return {label: `${item}`, value: item};
     });
@@ -86,10 +110,18 @@ export const DurationPicker: React.SFC<IDurationPickerProps> = (props) => {
     } else {
       return [numbersData, unitsData];
     }
-  }, [min, max, selectDays, selectHours, selectMinutes, enabledUnits]);
+  }, [
+    min,
+    max,
+    selectDays,
+    selectHours,
+    selectMinutes,
+    enabledUnits,
+    innerValues,
+  ]);
 
-  const values = useMemo(
-    () =>
+  useEffect(() => {
+    setInnerValues(
       transformSecondsToValues({
         value,
         selectDays,
@@ -97,14 +129,14 @@ export const DurationPicker: React.SFC<IDurationPickerProps> = (props) => {
         selectMinutes,
         enabledUnits,
       }),
-    [value, selectDays, selectHours, selectMinutes, enabledUnits],
-  );
+    );
+  }, [value, selectDays, selectHours, selectMinutes, enabledUnits]);
 
   return (
     <Picker
       {...restProps}
       title={title}
-      value={values}
+      value={innerValues}
       data={data}
       insertions={[[], [suffix]]}
       onFormat={(newLabels, newValues) => {
@@ -125,6 +157,9 @@ export const DurationPicker: React.SFC<IDurationPickerProps> = (props) => {
         }
 
         return "";
+      }}
+      onChange={(columnIndex, value, index, values) => {
+        setInnerValues(values);
       }}
       onConfirm={(newValues) => {
         if (onChange) {
