@@ -66,7 +66,7 @@ export const AllTasks: React.SFC<IProps> = () => {
                           {isOneTimeSchedule(schedule)
                             ? t("from to", getRangeTime(schedule, duration))
                             : `${humanizeCron(schedule)}, ${t(
-                                "duration",
+                                "Duration",
                               )}: ${secondsToDuration(duration)
                                 .locale(settingsData.data!.lang)
                                 .humanize(false)}`}

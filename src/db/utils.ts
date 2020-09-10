@@ -32,6 +32,7 @@ export function isRepeatEnded(
 
 export function isPlanFinished(options: {
   schedule: string;
+  count: number;
   repeatEndedDate?: number;
   repeatEndedCount?: number;
   finishedTime?: number[];
@@ -41,6 +42,7 @@ export function isPlanFinished(options: {
     schedule,
     repeatEndedCount,
     repeatEndedDate,
+    count,
     finishedTime,
     canceledTime,
   } = options;
@@ -48,23 +50,28 @@ export function isPlanFinished(options: {
   const allTaskTimes = (finishedTime || []).concat(canceledTime || []);
 
   if (isOneTimeSchedule(schedule)) {
-    return allTaskTimes.length > 0;
+    return allTaskTimes.length >= count;
   } else if (repeatEndedCount != null) {
-    return (finishedTime || []).length >= repeatEndedCount;
+    return (finishedTime || []).length >= repeatEndedCount * count;
   } else if (repeatEndedDate != null) {
     if (allTaskTimes.length > 0) {
       allTaskTimes.sort((a, b) => b - a);
 
       const latestTaskTime = allTaskTimes[0];
-      const cron = cronParser.parseExpression(schedule, {
-        currentDate: dayjs.unix(latestTaskTime).toDate(),
-      });
-      const nextTime = cron.hasNext()
-        ? dayjs(cron.next().toDate()).unix()
-        : undefined;
 
-      if (nextTime != null && nextTime >= repeatEndedDate) {
-        return true;
+      if (
+        allTaskTimes.filter((time) => time === latestTaskTime).length >= count
+      ) {
+        const cron = cronParser.parseExpression(schedule, {
+          currentDate: dayjs.unix(latestTaskTime).toDate(),
+        });
+        const nextTime = cron.hasNext()
+          ? dayjs(cron.next().toDate()).unix()
+          : undefined;
+
+        if (nextTime != null && nextTime >= repeatEndedDate) {
+          return true;
+        }
       }
     }
   }

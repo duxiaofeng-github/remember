@@ -3,9 +3,9 @@ import {View, StyleSheet} from "react-native";
 import {Loading} from "../common/loading";
 import {Text} from "../common/text";
 import {Empty} from "../common/empty";
-import {getRangeTime, isTimeout} from "../../utils/common";
+import {getRangeTime, humanizeCount, isTimeout} from "../../utils/common";
 import {colorTextLight, colorError} from "../../utils/style";
-import {globalStore, IStore} from "../../store";
+import {IStore} from "../../store";
 import {useRexContext} from "../../store/store";
 import {Icon} from "../common/icon";
 import {listTasks, cancelTask, finishTask} from "../../db/plan";
@@ -76,7 +76,8 @@ export const ProcessingTasks: React.SFC<IProps> = () => {
               .concat()
               .sort((a, b) => b.startedAt - a.startedAt)
               .map((item) => {
-                const {planId, content, startedAt, duration} = item;
+                const {planId, content, startedAt, duration, plan} = item;
+                const {count, finishedTime} = plan;
 
                 return (
                   <ListItem
@@ -104,6 +105,12 @@ export const ProcessingTasks: React.SFC<IProps> = () => {
                             s.subTitle,
                             isTimeout(startedAt, duration) && s.subTitleTimeout,
                           ]}>
+                          {count !== 1 &&
+                            `${humanizeCount({
+                              count,
+                              time: startedAt,
+                              finishedTime,
+                            })} `}
                           {t("from to", getRangeTime(startedAt, duration))}
                         </Text>
                       </>

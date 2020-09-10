@@ -41,6 +41,7 @@ export async function listPlans(options?: {
       schedule,
       finishedTime,
       canceledTime,
+      count,
       repeatEndedCount,
       repeatEndedDate,
     } = plan;
@@ -52,6 +53,7 @@ export async function listPlans(options?: {
         schedule,
         finishedTime,
         canceledTime,
+        count,
         repeatEndedDate,
         repeatEndedCount,
       });
@@ -60,6 +62,7 @@ export async function listPlans(options?: {
         schedule,
         finishedTime,
         canceledTime,
+        count,
         repeatEndedDate,
         repeatEndedCount,
       });
@@ -100,9 +103,7 @@ export async function finishTask(
   taskTime: number,
 ): Promise<void> {
   const plan = await getPlan(planId);
-  const finishedTime = (plan.finishedTime || []).filter(
-    (item) => item !== taskTime,
-  );
+  const finishedTime = plan.finishedTime || [];
 
   finishedTime.push(taskTime);
 
@@ -144,6 +145,7 @@ export interface Task {
   duration: number;
   finished: boolean;
   noticeTime?: number;
+  plan: Plan;
 }
 
 function isTaskTimeInRange(
@@ -173,6 +175,7 @@ function generateTask(options: {
     duration: duration,
     finished,
     noticeTime,
+    plan,
   };
 }
 

@@ -34,21 +34,29 @@ export async function listRewardPlans(options?: {
   const data = await getData({dbName, remoteAddr});
 
   return data.filter((plan: RewardPlan) => {
-    const {schedule, finishedTime, repeatEndedCount, repeatEndedDate} = plan;
+    const {
+      schedule,
+      count,
+      finishedTime,
+      repeatEndedCount,
+      repeatEndedDate,
+    } = plan;
 
     if (all) {
       return true;
     } else if (finished === true) {
       return isPlanFinished({
         schedule,
-        finishedTime: finishedTime,
+        finishedTime,
+        count,
         repeatEndedDate,
         repeatEndedCount,
       });
     } else if (finished === false) {
       return !isPlanFinished({
         schedule,
-        finishedTime: finishedTime,
+        finishedTime,
+        count,
         repeatEndedDate,
         repeatEndedCount,
       });
@@ -89,9 +97,7 @@ export async function receiveReward(
   rewardTime: number,
 ): Promise<void> {
   const plan = await getRewardPlan(planId);
-  const finishedTime = (plan.finishedTime || []).filter(
-    (item) => item !== rewardTime,
-  );
+  const finishedTime = plan.finishedTime || [];
 
   finishedTime.push(rewardTime);
 
@@ -107,6 +113,7 @@ export interface Reward {
   duration: number;
   consumption: number;
   finished: boolean;
+  plan: RewardPlan;
 }
 
 function isRewardTimeInRange(
@@ -132,6 +139,7 @@ function generateReward(options: {
     duration,
     consumption,
     finished,
+    plan,
   };
 }
 

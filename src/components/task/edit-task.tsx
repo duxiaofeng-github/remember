@@ -148,6 +148,7 @@ export const EditTask: React.SFC<IProps> = () => {
       />
       <ScrollView style={s.content}>
         <Controller
+          key="content"
           control={control}
           name="content"
           rules={{required: t("Content is required") as string}}
@@ -164,6 +165,7 @@ export const EditTask: React.SFC<IProps> = () => {
           )}
         />
         <Controller
+          key="repeatType"
           control={control}
           name="repeatType"
           rules={{required: t("Repeat type is required") as string}}
@@ -191,10 +193,12 @@ export const EditTask: React.SFC<IProps> = () => {
           }}
         />
         <StartTimeAndEndTimePicker
+          key={watch("repeatType")}
           repeatType={watch("repeatType")}
           form={form}
         />
         <Controller
+          key="count"
           control={control}
           name="count"
           rules={{required: t("Count is required") as string}}
@@ -215,6 +219,7 @@ export const EditTask: React.SFC<IProps> = () => {
           )}
         />
         <Controller
+          key="noticeTime"
           control={control}
           name="noticeTime"
           render={({onChange, onBlur, value}) => {
@@ -244,6 +249,7 @@ export const EditTask: React.SFC<IProps> = () => {
           }}
         />
         <Controller
+          key="points"
           control={control}
           name="points"
           render={({onChange, onBlur, value}) => {
@@ -290,7 +296,7 @@ export const StartTimeAndEndTimePicker: React.SFC<IStartTimeAndEndTimePickerProp
             control={control}
             name="schedule"
             rules={{
-              required: t("Schedule is required") as string,
+              required: t("Schedule expression is required") as string,
               validate: (data: string) => {
                 if (isValidCronExpression(data)) {
                   return true;
@@ -299,18 +305,16 @@ export const StartTimeAndEndTimePicker: React.SFC<IStartTimeAndEndTimePickerProp
                 return t("Schedule expression is invalid") as string;
               },
             }}
-            render={({onChange, onBlur, value}) => {
-              return (
-                <Input
-                  value={value}
-                  onBlur={onBlur}
-                  onChangeText={(value) => onChange(value)}
-                  label={t("Schedule expression")}
-                  error={errors.schedule}
-                  placeholder={t("Please input schedule expression")}
-                />
-              );
-            }}
+            render={({onChange, onBlur, value}) => (
+              <Input
+                value={value}
+                onBlur={onBlur}
+                onChangeText={(value) => onChange(value)}
+                label={t("Schedule expression")}
+                error={errors.schedule}
+                placeholder={t("Please input schedule expression")}
+              />
+            )}
           />
           <Controller
             key="duration"
@@ -441,6 +445,7 @@ export const StartTimeAndEndTimePicker: React.SFC<IStartTimeAndEndTimePickerProp
       {repeatType !== Period.OneTime && (
         <>
           <Controller
+            key="repeatEndedType"
             control={control}
             name="repeatEndedType"
             rules={{required: t("Repeat ended type is required") as string}}
@@ -467,6 +472,7 @@ export const StartTimeAndEndTimePicker: React.SFC<IStartTimeAndEndTimePickerProp
           />
           {watch("repeatEndedType") === RepeatEndedType.ByDate && (
             <Controller
+              key="repeatEndedDate"
               control={control}
               name="repeatEndedDate"
               rules={{required: t("Repeat ended date is required") as string}}
@@ -485,6 +491,7 @@ export const StartTimeAndEndTimePicker: React.SFC<IStartTimeAndEndTimePickerProp
           )}
           {watch("repeatEndedType") === RepeatEndedType.ByCount && (
             <Controller
+              key="repeatEndedCount"
               control={control}
               name="repeatEndedCount"
               rules={{required: t("Repeat ended count is required") as string}}
@@ -583,8 +590,7 @@ function transformPlanToForm(plan?: Plan): IDefaultForm {
     repeatType,
     startTime,
     endTime,
-    schedule:
-      schedule && isValidCronExpression(schedule) ? schedule : undefined,
+    schedule: schedule && isValidCronExpression(schedule) ? schedule : "",
     duration,
     count,
     repeatEndedType,

@@ -66,22 +66,44 @@ export function isTimeout(time: string | number, duration: number) {
   return endTime.isBefore(dayjs());
 }
 
+function isIntegerString(str: string) {
+  return /^[0-9]+$/.test(str);
+}
+
 export function isDailySchedule(schedule: string) {
   const [min, hour, date, month, day] = schedule.split(" ");
 
-  return date === "*" && month === "*" && day === "*";
+  return (
+    isIntegerString(min) &&
+    isIntegerString(hour) &&
+    date === "*" &&
+    month === "*" &&
+    day === "*"
+  );
 }
 
 export function isWeeklySchedule(schedule: string) {
   const [min, hour, date, month, day] = schedule.split(" ");
 
-  return day !== "*" && date === "*" && month === "*";
+  return (
+    isIntegerString(min) &&
+    isIntegerString(hour) &&
+    day !== "*" &&
+    date === "*" &&
+    month === "*"
+  );
 }
 
 export function isMonthlySchedule(schedule: string) {
   const [min, hour, date, month, day] = schedule.split(" ");
 
-  return date !== "*" && day === "*" && month === "*";
+  return (
+    isIntegerString(min) &&
+    isIntegerString(hour) &&
+    date !== "*" &&
+    day === "*" &&
+    month === "*"
+  );
 }
 
 export function formatTime(time: Dayjs | number | string, layout?: string) {
@@ -117,9 +139,8 @@ export async function getRemoteAddr() {
 }
 
 export async function notifyTasks() {
-  console.log("notifyTasks");
   await initI18n();
-  console.log("initI18n");
+
   const tasks = await getAllUnnotifiedTasks();
 
   if (tasks.length !== 0) {
@@ -146,4 +167,15 @@ export function isValidCronExpression(expression: string) {
   } catch (e) {
     return false;
   }
+}
+
+export function humanizeCount(options: {
+  time: number;
+  finishedTime?: number[];
+  count: number;
+}) {
+  const {time, finishedTime = [], count} = options;
+  const finishedCount = finishedTime.filter((item) => item === time).length;
+
+  return `(${finishedCount}/${count})`;
 }

@@ -2,7 +2,7 @@ import React, {useEffect, useMemo} from "react";
 import {View, StyleSheet} from "react-native";
 import {Loading} from "../common/loading";
 import {Empty} from "../common/empty";
-import {getRangeTime} from "../../utils/common";
+import {getRangeTime, humanizeCount} from "../../utils/common";
 import {IStore} from "../../store";
 import {useRexContext} from "../../store/store";
 import {Icon} from "../common/icon";
@@ -71,7 +71,9 @@ export const AvailableRewards: React.SFC<IProps> = () => {
                   startedAt,
                   duration,
                   consumption,
+                  plan,
                 } = item;
+                const {count, finishedTime} = plan;
 
                 return (
                   <ListItem
@@ -101,6 +103,13 @@ export const AvailableRewards: React.SFC<IProps> = () => {
                     }
                     title={content}
                     subtitle={`${
+                      count !== 1 &&
+                      `${humanizeCount({
+                        count,
+                        time: startedAt,
+                        finishedTime,
+                      })} `
+                    }${
                       duration !== 0
                         ? t(
                             "Validity from to",

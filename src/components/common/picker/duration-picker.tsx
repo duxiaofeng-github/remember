@@ -1,8 +1,8 @@
-import React, { useMemo } from "react";
-import { Picker } from "./picker";
-import { TextStyle, StyleProp } from "react-native";
+import React, {useMemo} from "react";
+import {Picker} from "./picker";
+import {TextStyle, StyleProp} from "react-native";
 import dayjs from "dayjs";
-import { secondsToDuration } from "../../../utils/common";
+import {secondsToDuration} from "../../../utils/common";
 
 export interface IDurationPickerProps {
   title?: string;
@@ -71,12 +71,14 @@ export const DurationPicker: React.SFC<IDurationPickerProps> = (props) => {
   const data = useMemo(() => {
     const numbers = getNumbers(min || 1, max || 100);
     const numbersData = numbers.map((item) => {
-      return { label: `${item}`, value: item };
+      return {label: `${item}`, value: item};
     });
     const units = getUnits(enabledUnits);
-    const unitsFormatted = onFormatUnit ? units.map((unit) => onFormatUnit(unit)) : units;
+    const unitsFormatted = onFormatUnit
+      ? units.map((unit) => onFormatUnit(unit))
+      : units;
     const unitsData = unitsFormatted.map((item, index) => {
-      return { label: item, value: index };
+      return {label: item, value: index};
     });
 
     if (selectDays || selectHours || selectMinutes) {
@@ -87,7 +89,14 @@ export const DurationPicker: React.SFC<IDurationPickerProps> = (props) => {
   }, [min, max, selectDays, selectHours, selectMinutes, enabledUnits]);
 
   const values = useMemo(
-    () => transformSecondsToValues({ value, selectDays, selectHours, selectMinutes, enabledUnits }),
+    () =>
+      transformSecondsToValues({
+        value,
+        selectDays,
+        selectHours,
+        selectMinutes,
+        enabledUnits,
+      }),
     [value, selectDays, selectHours, selectMinutes, enabledUnits],
   );
 
@@ -99,10 +108,20 @@ export const DurationPicker: React.SFC<IDurationPickerProps> = (props) => {
       data={data}
       insertions={[[], [suffix]]}
       onFormat={(newLabels, newValues) => {
+        const value = transformValuesToSeconds({
+          values: newValues,
+          selectDays,
+          selectHours,
+          selectMinutes,
+          enabledUnits,
+        });
+
         if (onFormat) {
-          return onFormat(
-            transformValuesToSeconds({ values: newValues, selectDays, selectHours, selectMinutes, enabledUnits }),
-          );
+          return onFormat(value);
+        } else {
+          if (value != null) {
+            return secondsToDuration(value).humanize(false);
+          }
         }
 
         return "";
@@ -110,7 +129,13 @@ export const DurationPicker: React.SFC<IDurationPickerProps> = (props) => {
       onConfirm={(newValues) => {
         if (onChange) {
           onChange(
-            transformValuesToSeconds({ values: newValues, selectDays, selectHours, selectMinutes, enabledUnits }),
+            transformValuesToSeconds({
+              values: newValues,
+              selectDays,
+              selectHours,
+              selectMinutes,
+              enabledUnits,
+            }),
           );
         }
       }}
@@ -125,7 +150,7 @@ function transformSecondsToValues(options: {
   selectMinutes?: boolean;
   enabledUnits?: Unit[];
 }): number[] | undefined {
-  const { value, selectDays, selectHours, selectMinutes, enabledUnits } = options;
+  const {value, selectDays, selectHours, selectMinutes, enabledUnits} = options;
 
   if (value) {
     const duration = secondsToDuration(value);
@@ -162,7 +187,13 @@ function transformValuesToSeconds(options: {
   selectMinutes?: boolean;
   enabledUnits?: Unit[];
 }): number | undefined {
-  const { values, selectDays, selectHours, selectMinutes, enabledUnits } = options;
+  const {
+    values,
+    selectDays,
+    selectHours,
+    selectMinutes,
+    enabledUnits,
+  } = options;
 
   if (values) {
     const [number, unitIndex] = values;
@@ -177,7 +208,9 @@ function transformValuesToSeconds(options: {
       } else if (selectMinutes) {
         return dayjs.duration(number, "minute").asSeconds();
       } else if (unit) {
-        return dayjs.duration(number, transformUnitToDayjsUnit(unit)).asSeconds();
+        return dayjs
+          .duration(number, transformUnitToDayjsUnit(unit))
+          .asSeconds();
       }
     }
   }
