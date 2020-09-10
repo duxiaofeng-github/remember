@@ -10,6 +10,7 @@ import {EditTask} from "./task/edit-task";
 import {IStore} from "../store";
 import {useRexContext} from "../store/store";
 import kebabCase from "lodash/kebabCase";
+import SplashScreen from "react-native-splash-screen";
 
 interface IProps {}
 
@@ -28,6 +29,8 @@ export const Index: React.SFC<IProps> = () => {
   }, [settingsData]);
 
   useEffect(() => {
+    SplashScreen.hide();
+
     settingsData.load();
   }, []);
 

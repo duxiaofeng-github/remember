@@ -14,6 +14,7 @@
 
 #import <UserNotifications/UserNotifications.h>
 #import <RNCPushNotificationIOS.h>
+#import "RNSplashScreen.h"
 
 static void InitializeFlipper(UIApplication *application) {
   FlipperClient *client = [FlipperClient sharedClient];
@@ -78,6 +79,8 @@ didReceiveNotificationResponse:(UNNotificationResponse *)response
   // Define UNUserNotificationCenter
   UNUserNotificationCenter *center = [UNUserNotificationCenter currentNotificationCenter];
   center.delegate = self;
+  
+  [RNSplashScreen show];
   
   return YES;
 }
