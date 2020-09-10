@@ -1,4 +1,5 @@
 import {globalStore} from "../../store";
+import {navigate, Route} from "../route";
 
 const errorPermissionDenied = new Error("Notification permission denied");
 
@@ -31,6 +32,8 @@ export async function notify(title: string, body?: string): Promise<void> {
       globalStore.update((store) => {
         store.activedTaskTabIndex = 0;
       });
+
+      navigate(Route.Task);
     });
 
     return;

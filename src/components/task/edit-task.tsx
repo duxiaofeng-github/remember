@@ -1,10 +1,10 @@
-import React, {useEffect, useMemo, useState} from "react";
+import React, {useMemo, useState} from "react";
 import {View, StyleSheet, ScrollView} from "react-native";
 import dayjs from "dayjs";
 import {useTranslation} from "react-i18next";
 import {useForm, Controller, UseFormMethods} from "react-hook-form";
 import {Header} from "../common/header";
-import {IStore, globalStore} from "../../store";
+import {IStore} from "../../store";
 import {
   isDailySchedule,
   isWeeklySchedule,

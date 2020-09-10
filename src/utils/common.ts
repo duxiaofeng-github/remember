@@ -9,6 +9,14 @@ import {notify} from "./notification";
 import i18n from "../i18n";
 import {setNotifiedTasks} from "../db/plan";
 
+async function initI18n() {
+  const {settingsData} = globalStore.getState();
+
+  await settingsData.load();
+
+  i18n.changeLanguage(settingsData.data!.lang);
+}
+
 const locales = RNLocalize.getLocales();
 export const defaultLocale =
   locales && locales[0] ? locales[0].languageTag.replace("-", "_") : "en";
@@ -108,6 +116,7 @@ export async function getRemoteAddr() {
 }
 
 export async function notifyTasks() {
+  await initI18n();
   const tasks = await getAllUnnotifiedTasks();
 
   if (tasks.length !== 0) {

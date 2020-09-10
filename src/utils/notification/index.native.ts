@@ -2,6 +2,7 @@ import PushNotificationIOS from "@react-native-community/push-notification-ios";
 import {Platform} from "react-native";
 import PushNotification from "react-native-push-notification";
 import {globalStore} from "../../store";
+import {navigate, Route} from "../route";
 
 // Must be outside of any component LifeCycle (such as `componentDidMount`).
 PushNotification.configure({
@@ -18,6 +19,8 @@ PushNotification.configure({
     globalStore.update((store) => {
       store.activedTaskTabIndex = 0;
     });
+
+    navigate(Route.Task);
 
     // (required) Called when a remote is received or opened, or local notification is opened
     notification.finish(PushNotificationIOS.FetchResult.NoData);
