@@ -8,6 +8,7 @@ import {storage} from "./storage";
 import {notify} from "./notification";
 import i18n from "../i18n";
 import {setNotifiedTasks} from "../db/plan";
+import CronParser from "cron-parser";
 
 async function initI18n() {
   const {settingsData} = globalStore.getState();
@@ -116,7 +117,9 @@ export async function getRemoteAddr() {
 }
 
 export async function notifyTasks() {
+  console.log("notifyTasks");
   await initI18n();
+  console.log("initI18n");
   const tasks = await getAllUnnotifiedTasks();
 
   if (tasks.length !== 0) {
@@ -132,5 +135,15 @@ export async function notifyTasks() {
         item.tasks.map((task) => task.startedAt),
       );
     });
+  }
+}
+
+export function isValidCronExpression(expression: string) {
+  try {
+    CronParser.parseExpression(expression);
+
+    return true;
+  } catch (e) {
+    return false;
   }
 }

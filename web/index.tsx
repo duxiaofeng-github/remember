@@ -2,6 +2,7 @@ import React from "react";
 import {render} from "react-dom";
 import App from "../App";
 import featherFont from "react-native-vector-icons/Fonts/Feather.ttf";
+import {notifyTasks} from "../src/utils/common";
 
 function renderApp() {
   render(
@@ -23,6 +24,10 @@ function renderApp() {
 }
 
 async function init() {
+  const timeInterval = 1000 * 60;
+
+  setInterval(notifyTasks, timeInterval);
+
   renderApp();
 }
 

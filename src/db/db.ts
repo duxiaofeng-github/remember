@@ -11,7 +11,7 @@ function getDBName(dbName: string) {
 export async function getData<R = any>(options: GetDataOptions): Promise<R> {
   const {dbName, id} = options;
   const results = await storage.getItem(getDBName(dbName));
-  const resultsParsed = JSON.parse(results);
+  const resultsParsed = results != null ? JSON.parse(results) : undefined;
 
   if (id != null) {
     return resultsParsed != null

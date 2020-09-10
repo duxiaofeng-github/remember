@@ -10,10 +10,8 @@ import {notifyTasks} from "./src/utils/common";
 
 AppRegistry.registerComponent(appName, () => App);
 
-const timeInterval =
-  Platform.OS === "web" ? 1000 * 60 : Platform.OS === "android" ? 1 : 15;
+const timeInterval = Platform.OS === "ios" ? 15 : 1;
 
-if (Platform.OS === "android" || Platform.OS === "ios") {
   BackgroundFetch.registerHeadlessTask(async (event) => {
     let taskId = event.taskId;
 
@@ -40,6 +38,4 @@ if (Platform.OS === "android" || Platform.OS === "ios") {
       console.error("[js] RNBackgroundFetch failed to start");
     },
   );
-} else if (Platform.OS === "web") {
-  setInterval(notifyTasks, timeInterval);
 }

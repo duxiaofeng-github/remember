@@ -60,6 +60,7 @@ interface IForm {
   repeatType: Period;
   startTime: number;
   disableEndTime: boolean;
+  count: number;
   repeatEndedType: RepeatEndedType;
   repeatEndedDate?: number;
   repeatEndedCount?: number;
@@ -84,6 +85,7 @@ export const EditReward: React.SFC<IProps> = () => {
     repeatType,
     startTime,
     disableEndTime,
+    count,
     repeatEndedType,
     repeatEndedDate,
     repeatEndedCount,
@@ -96,6 +98,7 @@ export const EditReward: React.SFC<IProps> = () => {
       repeatType,
       startTime,
       disableEndTime,
+      count,
       repeatEndedType,
       repeatEndedDate,
       repeatEndedCount,
@@ -144,7 +147,7 @@ export const EditReward: React.SFC<IProps> = () => {
             <Input
               multiline
               value={value}
-              label={t("content")}
+              label={t("Content")}
               error={errors.content}
               placeholder={t("Please input content")}
               onChangeText={(value) => onChange(value)}
@@ -207,6 +210,26 @@ export const EditReward: React.SFC<IProps> = () => {
         <StartTimeAndEndTimePicker
           repeatType={watch("repeatType")}
           form={form}
+        />
+        <Controller
+          control={control}
+          name="count"
+          rules={{required: t("Count is required") as string}}
+          render={({onChange, onBlur, value}) => (
+            <Input
+              keyboardType="numeric"
+              value={value != null ? `${value}` : ""}
+              onBlur={onBlur}
+              onChangeText={(value) => {
+                const valueParsed = parseFloat(value);
+
+                onChange(isNaN(valueParsed) ? undefined : valueParsed);
+              }}
+              label={t("Count")}
+              error={errors.count}
+              placeholder={t("Please input count")}
+            />
+          )}
         />
         <Controller
           control={control}
@@ -363,9 +386,13 @@ export const StartTimeAndEndTimePicker: React.SFC<IStartTimeAndEndTimePickerProp
               render={({onChange, onBlur, value}) => (
                 <Input
                   keyboardType="numeric"
-                  defaultValue={value}
+                  value={value != null ? `${value}` : ""}
+                  onChangeText={(value) => {
+                    const valueParsed = parseFloat(value);
+
+                    onChange(isNaN(valueParsed) ? undefined : valueParsed);
+                  }}
                   onBlur={onBlur}
-                  onChangeText={(value) => onChange(value)}
                   label={t("Repeat ended count")}
                   error={errors.repeatEndedCount}
                   placeholder={t("Please input repeat ended count")}
@@ -395,6 +422,7 @@ interface IDefaultForm {
   repeatType: Period;
   startTime: number;
   disableEndTime: boolean;
+  count: number;
   repeatEndedType: RepeatEndedType;
   repeatEndedDate?: number;
   repeatEndedCount?: number;
@@ -406,6 +434,7 @@ function transformPlanToForm(plan?: RewardPlan): IDefaultForm {
     content,
     schedule,
     duration,
+    count = 1,
     repeatEndedDate,
     repeatEndedCount,
     consumption,
@@ -442,6 +471,7 @@ function transformPlanToForm(plan?: RewardPlan): IDefaultForm {
     repeatType,
     startTime,
     disableEndTime,
+    count,
     repeatEndedType,
     repeatEndedDate: defaultRepeatEndedDate,
     repeatEndedCount,
@@ -475,6 +505,7 @@ function transformFormToPlanBase(
     repeatType,
     startTime,
     disableEndTime,
+    count,
     repeatEndedType,
     repeatEndedDate,
     repeatEndedCount,
@@ -490,6 +521,7 @@ function transformFormToPlanBase(
     content,
     schedule,
     duration,
+    count,
     repeatEndedDate:
       repeatEndedType === RepeatEndedType.ByDate ? repeatEndedDate : undefined,
     repeatEndedCount:

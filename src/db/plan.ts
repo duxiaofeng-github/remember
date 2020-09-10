@@ -10,6 +10,7 @@ export interface PlanBase {
   content: string;
   schedule: string;
   duration: number;
+  count: number;
   repeatEndedDate?: number;
   repeatEndedCount?: number;
   noticeTime?: number;
@@ -180,6 +181,7 @@ function getTask(options: {
   taskTime: number;
   startTime: number;
   endTime: number;
+  count: number;
   noticeTime: number;
   includeNoticeTime: boolean;
   finishedTime: number[];
@@ -192,6 +194,7 @@ function getTask(options: {
     taskTime,
     startTime,
     endTime,
+    count,
     noticeTime,
     includeNoticeTime,
     finishedTime,
@@ -219,7 +222,7 @@ function getTask(options: {
     );
 
     if (!repeatEnded) {
-      const finished = isFinished(taskTime, finishedTime);
+      const finished = isFinished(taskTime, count, finishedTime);
       const canceled = isCanceled(taskTime, canceledTime);
 
       if (!finished && !canceled) {
@@ -245,6 +248,7 @@ export function listTasks(options: {
   } = options;
   const {
     schedule,
+    count,
     finishedTime = [],
     canceledTime = [],
     noticeTime = 0,
@@ -261,6 +265,7 @@ export function listTasks(options: {
       taskTime,
       startTime,
       endTime,
+      count,
       noticeTime,
       includeNoticeTime,
       finishedTime,
@@ -283,6 +288,7 @@ export function listTasks(options: {
             taskTime,
             startTime,
             endTime,
+            count,
             noticeTime,
             includeNoticeTime,
             finishedTime,
@@ -318,6 +324,7 @@ export function listTasks(options: {
             taskTime,
             startTime,
             endTime,
+            count,
             noticeTime,
             includeNoticeTime,
             finishedTime,

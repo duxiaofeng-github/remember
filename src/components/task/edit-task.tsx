@@ -14,6 +14,7 @@ import {
   getOneTimeScheduleEndTime,
   secondsToDuration,
   parseSchedule,
+  isValidCronExpression,
 } from "../../utils/common";
 import {Select} from "../common/select";
 import {DateTimeSelect} from "../common/date-time-select";
@@ -58,6 +59,9 @@ interface IForm {
   repeatType: Period;
   startTime: number;
   endTime: number;
+  schedule: string;
+  duration: number;
+  count: number;
   repeatEndedType: RepeatEndedType;
   repeatEndedDate?: number;
   repeatEndedCount?: number;
@@ -70,7 +74,7 @@ export const EditTask: React.SFC<IProps> = () => {
   const [now, setNow] = useState(dayjs().startOf("minute").unix());
   const navigation = useNavigation();
   const route = useRoute<RouteProps>();
-  const {plansData, settingsData} = useRexContext((store: IStore) => store);
+  const {plansData} = useRexContext((store: IStore) => store);
   const edittingPlan = useMemo(
     () =>
       plansData.data &&
@@ -83,6 +87,9 @@ export const EditTask: React.SFC<IProps> = () => {
     repeatType,
     startTime,
     endTime,
+    schedule,
+    duration,
+    count,
     repeatEndedType,
     repeatEndedDate,
     repeatEndedCount,
@@ -96,6 +103,9 @@ export const EditTask: React.SFC<IProps> = () => {
       repeatType,
       startTime,
       endTime,
+      schedule,
+      duration,
+      count,
       repeatEndedType,
       repeatEndedDate,
       repeatEndedCount,
@@ -146,7 +156,7 @@ export const EditTask: React.SFC<IProps> = () => {
               onBlur={onBlur}
               onChangeText={(value) => onChange(value)}
               value={value}
-              label={t("content")}
+              label={t("Content")}
               error={errors.content}
               multiline
               placeholder={t("Please input content")}
@@ -163,7 +173,7 @@ export const EditTask: React.SFC<IProps> = () => {
               {label: t("Daily task"), value: Period.Daily},
               {label: t("Weekly task"), value: Period.Weekly},
               {label: t("Monthly task"), value: Period.Monthly},
-              // { label: t("customized"), value: Period.Customized },
+              {label: t("Customized"), value: Period.Customized},
             ];
 
             return (
@@ -183,6 +193,26 @@ export const EditTask: React.SFC<IProps> = () => {
         <StartTimeAndEndTimePicker
           repeatType={watch("repeatType")}
           form={form}
+        />
+        <Controller
+          control={control}
+          name="count"
+          rules={{required: t("Count is required") as string}}
+          render={({onChange, onBlur, value}) => (
+            <Input
+              keyboardType="numeric"
+              value={value != null ? `${value}` : ""}
+              onChangeText={(value) => {
+                const valueParsed = parseFloat(value);
+
+                onChange(isNaN(valueParsed) ? undefined : valueParsed);
+              }}
+              onBlur={onBlur}
+              label={t("Count")}
+              error={errors.count}
+              placeholder={t("Please input count")}
+            />
+          )}
         />
         <Controller
           control={control}
@@ -221,12 +251,12 @@ export const EditTask: React.SFC<IProps> = () => {
               <Input
                 keyboardType="numeric"
                 value={value != null ? `${value}` : ""}
-                onBlur={onBlur}
                 onChangeText={(value) => {
                   const valueParsed = parseFloat(value);
 
                   onChange(isNaN(valueParsed) ? undefined : valueParsed);
                 }}
+                onBlur={onBlur}
                 label={t("Points")}
                 error={errors.points}
                 placeholder={t("Please input points")}
@@ -253,104 +283,161 @@ export const StartTimeAndEndTimePicker: React.SFC<IStartTimeAndEndTimePickerProp
 
   return (
     <>
-      <Controller
-        control={control}
-        name="startTime"
-        rules={{required: t("Start time is required") as string}}
-        render={({onChange, onBlur, value}) => {
-          switch (repeatType) {
-            case Period.Daily:
-              return (
-                <TimeSelect
-                  onChange={onChange}
-                  maxTime={watch("endTime")}
-                  value={value}
-                  label={t("Start time")}
-                  error={errors.startTime}
-                />
-              );
-            case Period.Weekly:
-              return (
-                <WeekTimeSelect
-                  onChange={onChange}
-                  maxTime={watch("endTime")}
-                  value={value}
-                  label={t("Start time")}
-                  error={errors.startTime}
-                />
-              );
-            case Period.Monthly:
-              return (
-                <DayTimeSelect
-                  onChange={onChange}
-                  maxTime={watch("endTime")}
-                  value={value}
-                  label={t("Start time")}
-                  error={errors.startTime}
-                />
-              );
-          }
+      {repeatType === Period.Customized ? (
+        <>
+          <Controller
+            key="schedule"
+            control={control}
+            name="schedule"
+            rules={{
+              required: t("Schedule is required") as string,
+              validate: (data: string) => {
+                if (isValidCronExpression(data)) {
+                  return true;
+                }
 
-          return (
-            <DateTimeSelect
-              onChange={onChange}
-              maxTime={watch("endTime")}
-              value={value}
-              label={t("Start time")}
-              error={errors.startTime}
-            />
-          );
-        }}
-      />
-      <Controller
-        control={control}
-        name="endTime"
-        rules={{required: t("End time is required") as string}}
-        render={({onChange, onBlur, value}) => {
-          switch (repeatType) {
-            case Period.Daily:
+                return t("Schedule expression is invalid") as string;
+              },
+            }}
+            render={({onChange, onBlur, value}) => {
               return (
-                <TimeSelect
-                  onChange={onChange}
-                  minTime={watch("startTime")}
+                <Input
                   value={value}
-                  label={t("End time")}
-                  error={errors.endTime}
+                  onBlur={onBlur}
+                  onChangeText={(value) => onChange(value)}
+                  label={t("Schedule expression")}
+                  error={errors.schedule}
+                  placeholder={t("Please input schedule expression")}
                 />
               );
-            case Period.Weekly:
+            }}
+          />
+          <Controller
+            key="duration"
+            control={control}
+            name="duration"
+            rules={{required: t("Duration is required") as string}}
+            render={({onChange, onBlur, value}) => {
               return (
-                <WeekTimeSelect
-                  onChange={onChange}
-                  minTime={watch("startTime")}
+                <DurationSelect
+                  title={t("Select duration")}
+                  enabledUnits={[Unit.Minutes, Unit.Hours]}
+                  label={t("Duration")}
                   value={value}
-                  label={t("End time")}
-                  error={errors.endTime}
+                  error={errors.duration}
+                  onChange={onChange}
+                  onFormatUnit={(unit) => {
+                    return t(`${unit}`);
+                  }}
                 />
               );
-            case Period.Monthly:
-              return (
-                <DayTimeSelect
-                  onChange={onChange}
-                  minTime={watch("startTime")}
-                  value={value}
-                  label={t("End time")}
-                  error={errors.endTime}
-                />
-              );
-          }
+            }}
+          />
+        </>
+      ) : (
+        <>
+          <Controller
+            key="startTime"
+            control={control}
+            name="startTime"
+            rules={{required: t("Start time is required") as string}}
+            render={({onChange, onBlur, value}) => {
+              switch (repeatType) {
+                case Period.Daily:
+                  return (
+                    <TimeSelect
+                      onChange={onChange}
+                      maxTime={watch("endTime")}
+                      value={value}
+                      label={t("Start time")}
+                      error={errors.startTime}
+                    />
+                  );
+                case Period.Weekly:
+                  return (
+                    <WeekTimeSelect
+                      onChange={onChange}
+                      maxTime={watch("endTime")}
+                      value={value}
+                      label={t("Start time")}
+                      error={errors.startTime}
+                    />
+                  );
+                case Period.Monthly:
+                  return (
+                    <DayTimeSelect
+                      onChange={onChange}
+                      maxTime={watch("endTime")}
+                      value={value}
+                      label={t("Start time")}
+                      error={errors.startTime}
+                    />
+                  );
+              }
 
-          return (
-            <DateTimeSelect
-              onChange={onChange}
-              minTime={watch("startTime")}
-              value={value}
-              label={t("End time")}
-              error={errors.endTime}
-            />
-          );
-        }}
-      />
+              return (
+                <DateTimeSelect
+                  onChange={onChange}
+                  maxTime={watch("endTime")}
+                  value={value}
+                  label={t("Start time")}
+                  error={errors.startTime}
+                />
+              );
+            }}
+          />
+          <Controller
+            key="endTime"
+            control={control}
+            name="endTime"
+            rules={{required: t("End time is required") as string}}
+            render={({onChange, onBlur, value}) => {
+              switch (repeatType) {
+                case Period.Daily:
+                  return (
+                    <TimeSelect
+                      onChange={onChange}
+                      minTime={watch("startTime")}
+                      value={value}
+                      label={t("End time")}
+                      error={errors.endTime}
+                    />
+                  );
+                case Period.Weekly:
+                  return (
+                    <WeekTimeSelect
+                      onChange={onChange}
+                      minTime={watch("startTime")}
+                      value={value}
+                      label={t("End time")}
+                      error={errors.endTime}
+                    />
+                  );
+                case Period.Monthly:
+                  return (
+                    <DayTimeSelect
+                      onChange={onChange}
+                      minTime={watch("startTime")}
+                      value={value}
+                      label={t("End time")}
+                      error={errors.endTime}
+                    />
+                  );
+              }
+
+              return (
+                <DateTimeSelect
+                  onChange={onChange}
+                  minTime={watch("startTime")}
+                  value={value}
+                  label={t("End time")}
+                  error={errors.endTime}
+                />
+              );
+            }}
+          />
+        </>
+      )}
       {repeatType !== Period.OneTime && (
         <>
           <Controller
@@ -404,9 +491,13 @@ export const StartTimeAndEndTimePicker: React.SFC<IStartTimeAndEndTimePickerProp
               render={({onChange, onBlur, value}) => (
                 <Input
                   keyboardType="numeric"
-                  defaultValue={value}
+                  value={value != null ? `${value}` : ""}
+                  onChangeText={(value) => {
+                    const valueParsed = parseFloat(value);
+
+                    onChange(isNaN(valueParsed) ? undefined : valueParsed);
+                  }}
                   onBlur={onBlur}
-                  onChangeText={(value) => onChange(value)}
                   label={t("Repeat ended count")}
                   error={errors.repeatEndedCount}
                   placeholder={t("Please input repeat ended count")}
@@ -436,6 +527,9 @@ interface IDefaultForm {
   repeatType: Period;
   startTime: number;
   endTime?: number;
+  schedule?: string;
+  duration?: number;
+  count: number;
   repeatEndedType: RepeatEndedType;
   repeatEndedDate?: number;
   repeatEndedCount?: number;
@@ -448,6 +542,7 @@ function transformPlanToForm(plan?: Plan): IDefaultForm {
     content,
     schedule,
     duration,
+    count = 1,
     repeatEndedDate,
     repeatEndedCount,
     noticeTime,
@@ -488,6 +583,10 @@ function transformPlanToForm(plan?: Plan): IDefaultForm {
     repeatType,
     startTime,
     endTime,
+    schedule:
+      schedule && isValidCronExpression(schedule) ? schedule : undefined,
+    duration,
+    count,
     repeatEndedType,
     repeatEndedDate: defaultRepeatEndedDate,
     repeatEndedCount,
@@ -522,22 +621,31 @@ function transformFormToPlanBase(
     repeatType,
     startTime,
     endTime,
+    schedule,
+    duration,
+    count,
     repeatEndedType,
     repeatEndedDate,
     repeatEndedCount,
     noticeTime,
     points,
   } = form;
-  const {schedule, duration} = getScheduleAndDuration(
+  const {
+    schedule: scheduleParsed,
+    duration: durationParsed,
+  } = getScheduleAndDuration(
     repeatType,
     startTime,
     endTime,
+    schedule,
+    duration,
   );
 
   return {
     content,
-    schedule,
-    duration,
+    schedule: scheduleParsed,
+    duration: durationParsed,
+    count,
     repeatEndedDate:
       repeatEndedType === RepeatEndedType.ByDate ? repeatEndedDate : undefined,
     repeatEndedCount:
@@ -584,6 +692,24 @@ function getStartTimeAndEndTime(
   const baseTime = dayjs().second(0).millisecond(0);
 
   switch (repeatType) {
+    case Period.Customized:
+      const startTimeCustomized =
+        parsedSchedule != null
+          ? baseTime
+              .day(parsedDay)
+              .date(parsedDate)
+              .hour(parsedHour)
+              .minute(parsedMinute)
+          : baseTime;
+      const endTimeCustomized =
+        parsedSchedule != null && duration != null
+          ? startTimeCustomized.add(duration, "second")
+          : undefined;
+
+      return {
+        startTime: startTimeCustomized.unix(),
+        endTime: endTimeCustomized ? endTimeCustomized.unix() : undefined,
+      };
     case Period.Daily:
       const startTimeDaily =
         parsedSchedule != null
@@ -642,6 +768,8 @@ function getScheduleAndDuration(
   repeatType: Period,
   startTime: number,
   endTime: number,
+  schedule: string,
+  duration: number,
 ) {
   const startTimeParsed = dayjs.unix(startTime);
   const startTimeYear = startTimeParsed.year();
@@ -651,6 +779,11 @@ function getScheduleAndDuration(
   const endTimeWeekDay = dayjs.unix(endTime).weekday();
 
   switch (repeatType) {
+    case Period.Customized:
+      return {
+        schedule,
+        duration,
+      };
     case Period.Daily:
       return {
         schedule: `${startTimeParsed.minute()} ${startTimeParsed.hour()} * * *`,

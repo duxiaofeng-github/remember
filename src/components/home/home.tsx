@@ -60,17 +60,17 @@ export const Home: React.SFC<IProps> = () => {
       <Tab.Screen
         name={Route.Task}
         component={Task}
-        options={{title: t("tasks")}}
+        options={{title: t("Tasks")}}
       />
       <Tab.Screen
         name={Route.Reward}
         component={Rewards}
-        options={{title: t("rewards")}}
+        options={{title: t("Rewards")}}
       />
       <Tab.Screen
         name={Route.Setting}
         component={Setting}
-        options={{title: t("settings")}}
+        options={{title: t("Settings")}}
       />
     </Tab.Navigator>
   );

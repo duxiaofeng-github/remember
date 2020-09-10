@@ -3,8 +3,12 @@ import {isOneTimeSchedule} from "../utils/common";
 import cronParser from "cron-parser";
 import dayjs from "dayjs";
 
-export function isFinished(time: number, finishedTime: number[]) {
-  return finishedTime.includes(time);
+export function isFinished(
+  time: number,
+  count: number,
+  finishedTime: number[],
+) {
+  return finishedTime.filter((item) => item === time).length >= count;
 }
 
 export function isCanceled(time: number, canceledTime: number[]) {
@@ -41,13 +45,13 @@ export function isPlanFinished(options: {
     canceledTime,
   } = options;
 
+  const allTaskTimes = (finishedTime || []).concat(canceledTime || []);
+
   if (isOneTimeSchedule(schedule)) {
-    return (finishedTime || []).length > 0;
+    return allTaskTimes.length > 0;
   } else if (repeatEndedCount != null) {
     return (finishedTime || []).length >= repeatEndedCount;
   } else if (repeatEndedDate != null) {
-    const allTaskTimes = (finishedTime || []).concat(canceledTime || []);
-
     if (allTaskTimes.length > 0) {
       allTaskTimes.sort((a, b) => b - a);
 

@@ -15,7 +15,7 @@ import relativeTime from "dayjs/plugin/relativeTime";
 import "dayjs/locale/en";
 import "dayjs/locale/zh-cn";
 import {PopupProvider} from "./src/components/common/popup";
-import {OrbitDbBridge} from "./src/components/common/orbit-db-bridge";
+// import {OrbitDbBridge} from "./src/components/common/orbit-db-bridge";
 
 dayjs.extend(localizedFormat);
 dayjs.extend(relativeTime);
@@ -29,7 +29,7 @@ const App: React.SFC<IProps> = () => {
       <ToastProvider>
         <PopupProvider>
           <PickerProvider>
-            <OrbitDbBridge />
+            {/* <OrbitDbBridge /> */}
             <Index />
           </PickerProvider>
         </PopupProvider>

@@ -10,6 +10,7 @@ export interface RewardPlanBase {
   content: string;
   schedule: string;
   duration: number;
+  count: number;
   repeatEndedDate?: number;
   repeatEndedCount?: number;
   consumption?: number;
@@ -139,6 +140,7 @@ function getReward(options: {
   rewardTime: number;
   startTime: number;
   endTime: number;
+  count: number;
   finishedTime: number[];
   repeatEndedDate?: number;
   repeatEndedCount?: number;
@@ -148,6 +150,7 @@ function getReward(options: {
     rewardTime,
     startTime,
     endTime,
+    count,
     finishedTime,
     repeatEndedDate,
     repeatEndedCount,
@@ -164,7 +167,7 @@ function getReward(options: {
     );
 
     if (!repeatEnded) {
-      const finished = isFinished(rewardTime, finishedTime);
+      const finished = isFinished(rewardTime, count, finishedTime);
 
       if (!finished) {
         const reward = generateReward({plan, rewardTime, finished});
@@ -187,7 +190,13 @@ export function listRewards(options: {
   endTime?: number;
 }): Reward[] {
   const {plan, startTime = plan.createdAt, endTime = dayjs().unix()} = options;
-  const {schedule, finishedTime = [], repeatEndedDate, repeatEndedCount} = plan;
+  const {
+    schedule,
+    finishedTime = [],
+    count,
+    repeatEndedDate,
+    repeatEndedCount,
+  } = plan;
 
   const rewards: Reward[] = [];
 
@@ -198,6 +207,7 @@ export function listRewards(options: {
       rewardTime,
       startTime,
       endTime,
+      count,
       finishedTime,
     });
 
@@ -217,6 +227,7 @@ export function listRewards(options: {
             rewardTime,
             startTime,
             endTime,
+            count,
             finishedTime,
             repeatEndedDate,
             repeatEndedCount,
@@ -249,6 +260,7 @@ export function listRewards(options: {
             rewardTime,
             startTime,
             endTime,
+            count,
             finishedTime,
             repeatEndedDate,
             repeatEndedCount,
