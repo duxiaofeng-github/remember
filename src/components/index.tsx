@@ -9,7 +9,7 @@ import {EditReward} from "./reward/edit-reward";
 import {EditTask} from "./task/edit-task";
 import {IStore} from "../store";
 import {useRexContext} from "../store/store";
-import {kebabCase} from "lodash";
+import kebabCase from "lodash/kebabCase";
 
 interface IProps {}
 

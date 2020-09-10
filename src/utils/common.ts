@@ -10,6 +10,7 @@ import i18n from "../i18n";
 import {setNotifiedTasks} from "../db/plan";
 import CronParser from "cron-parser";
 import {getSettings} from "../db/setting";
+import kebabCase from "lodash/kebabCase";
 
 const locales = RNLocalize.getLocales();
 export const defaultLocale =
@@ -132,9 +133,11 @@ export async function getRemoteAddr() {
 }
 
 export async function notifyTasks() {
-  const settings = await getSettings();
+  const {lang} = await getSettings();
 
-  i18n.changeLanguage(settings.lang);
+  i18n.changeLanguage(lang);
+
+  dayjs.locale(kebabCase(lang.toLowerCase()));
 
   const tasks = await getAllUnnotifiedTasks();
 
