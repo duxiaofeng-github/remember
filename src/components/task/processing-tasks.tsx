@@ -1,5 +1,11 @@
-import React, {useEffect, useMemo} from "react";
-import {View, StyleSheet} from "react-native";
+import React, {useEffect, useMemo, useState} from "react";
+import {
+  View,
+  StyleSheet,
+  ScrollView,
+  AppStateStatus,
+  AppState,
+} from "react-native";
 import {Loading} from "../common/loading";
 import {Text} from "../common/text";
 import {Empty} from "../common/empty";
@@ -66,12 +72,30 @@ export const ProcessingTasks: React.SFC<IProps> = () => {
     plansData.load();
   }, []);
 
+  useEffect(() => {
+    let appState = "active";
+
+    function handleStateChange(nextAppState: AppStateStatus) {
+      if (appState === "background" && nextAppState === "active") {
+        plansData.load();
+      }
+
+      appState = nextAppState;
+    }
+
+    AppState.addEventListener("change", handleStateChange);
+
+    return () => {
+      AppState.removeEventListener("change", handleStateChange);
+    };
+  }, []);
+
   return (
     <Loading
       options={plansData}
       render={() => {
         return taskData!.length !== 0 ? (
-          <View style={s.content}>
+          <ScrollView style={s.content}>
             {taskData!
               .concat()
               .sort((a, b) => b.startedAt - a.startedAt)
@@ -140,7 +164,7 @@ export const ProcessingTasks: React.SFC<IProps> = () => {
                   />
                 );
               })}
-          </View>
+          </ScrollView>
         ) : (
           <Empty />
         );
@@ -152,7 +176,6 @@ export const ProcessingTasks: React.SFC<IProps> = () => {
 const s = StyleSheet.create({
   content: {
     flex: 1,
-    overflow: "scroll",
   },
   subTitleIcon: {
     marginRight: 5,

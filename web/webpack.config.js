@@ -74,6 +74,10 @@ module.exports = {
           from: path.resolve(__dirname, "../orbit-db-web/orbit-db"),
           to: "orbit-db",
         },
+        {
+          from: path.resolve(__dirname, "./assets"),
+          to: "assets",
+        },
       ],
     }),
     new HtmlWebpackPlugin({

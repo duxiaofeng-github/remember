@@ -12,10 +12,6 @@ PushNotification.configure({
 
     // PushNotification.cancelLocalNotifications({id: notification.});
 
-    const {plansData} = globalStore.getState();
-
-    plansData.load();
-
     globalStore.update((store) => {
       store.activedTaskTabIndex = 0;
     });

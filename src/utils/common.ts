@@ -115,8 +115,15 @@ export function secondsToDuration(seconds: number) {
   return dayjs.duration(seconds, "second");
 }
 
-export async function getAllUnnotifiedTasks() {
-  const plans = await listPlans();
+export async function getAllUnnotifiedTasks(foreground: boolean) {
+  if (foreground) {
+    await globalStore.getState().plansData.load();
+  }
+
+  const plans = foreground
+    ? globalStore.getState().plansData.data!
+    : await listPlans();
+
   const tasksArray = plans
     .filter((item) => item.noticeTime != null)
     .map((plan) => {
@@ -132,14 +139,16 @@ export async function getRemoteAddr() {
   return addr || "";
 }
 
-export async function notifyTasks() {
-  const {lang} = await getSettings();
+export async function notifyTasks(foreground: boolean) {
+  if (!foreground) {
+    const {lang} = await getSettings();
 
-  i18n.changeLanguage(lang);
+    i18n.changeLanguage(lang);
 
-  dayjs.locale(kebabCase(lang.toLowerCase()));
+    dayjs.locale(kebabCase(lang.toLowerCase()));
+  }
 
-  const tasks = await getAllUnnotifiedTasks();
+  const tasks = await getAllUnnotifiedTasks(foreground);
 
   if (tasks.length !== 0) {
     tasks.forEach((item) => {

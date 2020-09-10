@@ -2,7 +2,7 @@
  * @format
  */
 
-import {AppRegistry, Platform} from "react-native";
+import {AppRegistry, AppState, Platform} from "react-native";
 import App from "./App";
 import {name as appName} from "./app.json";
 import BackgroundFetch from "react-native-background-fetch";
@@ -17,7 +17,7 @@ BackgroundFetch.registerHeadlessTask(async (event) => {
 
   console.log("headless task start");
 
-  await notifyTasks();
+  await notifyTasks(false);
 
   console.log("headless task end");
 
@@ -36,9 +36,9 @@ BackgroundFetch.configure(
   async (taskId) => {
     console.log("normal task start");
 
-    await notifyTasks();
+    await notifyTasks(AppState.currentState === "active");
 
-    console.log("normal task start");
+    console.log("normal task end");
 
     BackgroundFetch.finish(taskId);
   },

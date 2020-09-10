@@ -1,4 +1,4 @@
-import React, {useState, ReactNode} from "react";
+import React, {ReactNode} from "react";
 import {View, StyleSheet, StyleProp, ViewStyle} from "react-native";
 import {Text} from "../common/text";
 import {colorBorder, colorPrimary} from "../../utils/style";
@@ -51,7 +51,6 @@ export const Tabs: React.SFC<IProps> = (props) => {
 const s = StyleSheet.create({
   tabContainer: {
     height: 40,
-    flexShrink: 0,
     flexDirection: "row",
     backgroundColor: "#fff",
     borderBottomWidth: 1,

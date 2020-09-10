@@ -1,5 +1,5 @@
 import React, {useEffect, useMemo} from "react";
-import {View, StyleSheet} from "react-native";
+import {View, StyleSheet, ScrollView} from "react-native";
 import {Loading} from "../common/loading";
 import {Empty} from "../common/empty";
 import {getRangeTime, humanizeCount} from "../../utils/common";
@@ -60,7 +60,7 @@ export const AvailableRewards: React.SFC<IProps> = () => {
       options={rewardPlansData}
       render={() => {
         return rewardsData!.length !== 0 ? (
-          <View style={s.content}>
+          <ScrollView style={s.content}>
             {rewardsData!
               .concat()
               .sort((a, b) => b.startedAt - a.startedAt)
@@ -103,12 +103,13 @@ export const AvailableRewards: React.SFC<IProps> = () => {
                     }
                     title={content}
                     subtitle={`${
-                      count !== 1 &&
-                      `${humanizeCount({
-                        count,
-                        time: startedAt,
-                        finishedTime,
-                      })} `
+                      count !== 1
+                        ? `${humanizeCount({
+                            count,
+                            time: startedAt,
+                            finishedTime,
+                          })} `
+                        : ""
                     }${
                       duration !== 0
                         ? t(
@@ -136,7 +137,7 @@ export const AvailableRewards: React.SFC<IProps> = () => {
                   />
                 );
               })}
-          </View>
+          </ScrollView>
         ) : (
           <Empty />
         );
@@ -148,6 +149,5 @@ export const AvailableRewards: React.SFC<IProps> = () => {
 const s = StyleSheet.create({
   content: {
     flex: 1,
-    overflow: "scroll",
   },
 });

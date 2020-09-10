@@ -5,6 +5,7 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
     <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+    <link rel="icon" href="assets/favicon.png" sizes="120x120" type="image/png">
   </head>
   <body style="height: 100%; width: 100%;">
     <div id="container" style="position: relative; height: 100%; width: 100%; overflow: hidden; display: flex;"></div>

@@ -25,10 +25,6 @@ export async function notify(title: string, body?: string): Promise<void> {
     notification.addEventListener("click", () => {
       window.focus();
 
-      const {plansData} = globalStore.getState();
-
-      plansData.load();
-
       globalStore.update((store) => {
         store.activedTaskTabIndex = 0;
       });

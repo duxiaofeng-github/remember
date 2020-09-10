@@ -26,7 +26,9 @@ function renderApp() {
 async function init() {
   const timeInterval = 1000 * 60;
 
-  setInterval(notifyTasks, timeInterval);
+  setInterval(() => {
+    notifyTasks(true);
+  }, timeInterval);
 
   renderApp();
 }

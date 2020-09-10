@@ -275,7 +275,6 @@ const s = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "center",
-    overflow: "scroll",
     paddingLeft: 10,
     paddingRight: 10,
   },

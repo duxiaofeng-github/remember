@@ -1,5 +1,5 @@
 import React from "react";
-import {View, StyleSheet} from "react-native";
+import {StyleSheet, ScrollView} from "react-native";
 import {useTranslation} from "react-i18next";
 import {useNavigation} from "@react-navigation/native";
 import {Route} from "../../utils/route";
@@ -49,7 +49,7 @@ export const AllRewards: React.SFC<IProps> = () => {
       options={rewardPlansData}
       render={(data) => {
         return data!.length !== 0 ? (
-          <View style={s.content}>
+          <ScrollView style={s.content}>
             {data!
               .concat()
               .sort((a, b) => b.updatedAt - a.updatedAt)
@@ -113,7 +113,7 @@ export const AllRewards: React.SFC<IProps> = () => {
                   />
                 );
               })}
-          </View>
+          </ScrollView>
         ) : (
           <Empty />
         );
@@ -125,7 +125,6 @@ export const AllRewards: React.SFC<IProps> = () => {
 const s = StyleSheet.create({
   content: {
     flex: 1,
-    overflow: "scroll",
   },
   subTitleContainer: {
     flexDirection: "row",

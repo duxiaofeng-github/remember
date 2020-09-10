@@ -44,7 +44,6 @@ export const Topbar: React.SFC<ITopbarProps> = (props) => {
 const s = StyleSheet.create({
   container: {
     position: "relative",
-    flexShrink: 0,
     height: 40,
     fontSize: 16,
     borderBottomWidth: 1,

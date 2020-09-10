@@ -1,5 +1,5 @@
 import React from "react";
-import {View, StyleSheet} from "react-native";
+import {StyleSheet, ScrollView} from "react-native";
 import {useTranslation} from "react-i18next";
 import {useNavigation} from "@react-navigation/native";
 import {Route} from "../../utils/route";
@@ -13,7 +13,7 @@ import {
   secondsToDuration,
 } from "../../utils/common";
 import {colorTextLight, colorError} from "../../utils/style";
-import {globalStore, IStore} from "../../store";
+import {IStore} from "../../store";
 import {useRexContext} from "../../store/store";
 import {PopupMenu} from "../common/popup-menu";
 import {useSubmission} from "../../utils/hooks/use-submission";
@@ -46,7 +46,7 @@ export const AllTasks: React.SFC<IProps> = () => {
       options={plansData}
       render={(data) => {
         return data!.length !== 0 ? (
-          <View style={s.content}>
+          <ScrollView style={s.content}>
             {data!
               .concat()
               .sort((a, b) => b.updatedAt - a.updatedAt)
@@ -101,7 +101,7 @@ export const AllTasks: React.SFC<IProps> = () => {
                   />
                 );
               })}
-          </View>
+          </ScrollView>
         ) : (
           <Empty />
         );
@@ -113,7 +113,6 @@ export const AllTasks: React.SFC<IProps> = () => {
 const s = StyleSheet.create({
   content: {
     flex: 1,
-    overflow: "scroll",
   },
   subTitleContainer: {
     flexDirection: "row",
