@@ -15,16 +15,24 @@ export function isCanceled(time: number, canceledTime: number[]) {
   return canceledTime.includes(time);
 }
 
-export function isRepeatEnded(
-  time: number,
-  finishedTime: number[],
-  repeatEndedDate?: number,
-  repeatEndedCount?: number,
-) {
+export function isRepeatEnded(options: {
+  time: number;
+  count: number;
+  finishedTime: number[];
+  repeatEndedDate?: number;
+  repeatEndedCount?: number;
+}) {
+  const {
+    time,
+    count,
+    finishedTime,
+    repeatEndedCount,
+    repeatEndedDate,
+  } = options;
   if (repeatEndedCount != null) {
-    return finishedTime.length >= repeatEndedCount;
+    return finishedTime.length >= repeatEndedCount * count;
   } else if (repeatEndedDate != null) {
-    return time >= repeatEndedDate;
+    return time > repeatEndedDate;
   }
 
   return false;
@@ -69,7 +77,7 @@ export function isPlanFinished(options: {
           ? dayjs(cron.next().toDate()).unix()
           : undefined;
 
-        if (nextTime != null && nextTime >= repeatEndedDate) {
+        if (nextTime != null && nextTime > repeatEndedDate) {
           return true;
         }
       }

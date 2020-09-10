@@ -167,12 +167,13 @@ function getReward(options: {
   if (!isRewardTimeInRange(rewardTime, startTime, endTime)) {
     return false;
   } else {
-    const repeatEnded = isRepeatEnded(
-      rewardTime,
+    const repeatEnded = isRepeatEnded({
+      time: rewardTime,
+      count,
       finishedTime,
       repeatEndedDate,
       repeatEndedCount,
-    );
+    });
 
     if (!repeatEnded) {
       const finished = isFinished(rewardTime, count, finishedTime);

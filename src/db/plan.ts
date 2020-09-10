@@ -217,12 +217,13 @@ function getTask(options: {
   ) {
     return false;
   } else {
-    const repeatEnded = isRepeatEnded(
-      taskTime,
+    const repeatEnded = isRepeatEnded({
+      time: taskTime,
+      count,
       finishedTime,
       repeatEndedDate,
       repeatEndedCount,
-    );
+    });
 
     if (!repeatEnded) {
       const finished = isFinished(taskTime, count, finishedTime);
