@@ -82,5 +82,6 @@ const s = StyleSheet.create({
     paddingBottom: 0,
     fontSize: 14,
     lineHeight: 18,
+    minWidth: 80,
   },
 });
