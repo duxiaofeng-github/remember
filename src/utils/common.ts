@@ -9,14 +9,7 @@ import {notify} from "./notification";
 import i18n from "../i18n";
 import {setNotifiedTasks} from "../db/plan";
 import CronParser from "cron-parser";
-
-async function initI18n() {
-  const {settingsData} = globalStore.getState();
-
-  await settingsData.load();
-
-  i18n.changeLanguage(settingsData.data!.lang);
-}
+import {getSettings} from "../db/setting";
 
 const locales = RNLocalize.getLocales();
 export const defaultLocale =
@@ -139,7 +132,9 @@ export async function getRemoteAddr() {
 }
 
 export async function notifyTasks() {
-  await initI18n();
+  const settings = await getSettings();
+
+  i18n.changeLanguage(settings.lang);
 
   const tasks = await getAllUnnotifiedTasks();
 
