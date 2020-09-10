@@ -85,11 +85,11 @@ export const AllRewards: React.SFC<IProps> = () => {
                         </Text>
                       </>
                     }
-                    onTouchStart={async () => {
+                    onPress={async () => {
                       PopupMenu.show([
                         {
                           text: t("Edit"),
-                          onTouchStart: async () => {
+                          onPress: async () => {
                             navigation.navigate(Route.EditReward, {
                               planId: item._id,
                             });
@@ -98,7 +98,7 @@ export const AllRewards: React.SFC<IProps> = () => {
                         {
                           text: t("Delete"),
                           style: s.deleteText,
-                          onTouchStart: () => {
+                          onPress: () => {
                             Popup.confirm({
                               content: t("Confirm deleting"),
                               confirmTextStyle: s.deleteText,

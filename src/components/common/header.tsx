@@ -34,7 +34,7 @@ export const Header: React.SFC<IProps> = (props) => {
 
       if (visible) {
         return (
-          <View style={s.rightComponent} onTouchStart={onTouchEnd}>
+          <View style={s.rightComponent} onTouchEnd={onTouchEnd}>
             {text ? (
               <Text style={[s.text, textStyle]}>{text}</Text>
             ) : (
@@ -47,7 +47,7 @@ export const Header: React.SFC<IProps> = (props) => {
   }
 
   const backButton = !hideBackButton && navigation.canGoBack() && (
-    <View style={s.leftComponent} onTouchStart={() => navigation.goBack()}>
+    <View style={s.leftComponent} onTouchEnd={() => navigation.goBack()}>
       <Icon size={22} name="chevron-left" color="#fff" />
     </View>
   );

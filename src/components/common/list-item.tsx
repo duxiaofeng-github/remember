@@ -10,7 +10,7 @@ interface IProps {
   title: ReactNode;
   subtitle: ReactNode;
   subtitleStyle?: StyleProp<ViewStyle>;
-  onTouchStart?: () => void;
+  onPress?: () => void;
 }
 
 export const ListItem: React.SFC<IProps> = (props) => {
@@ -21,13 +21,13 @@ export const ListItem: React.SFC<IProps> = (props) => {
     subtitle,
     subtitleStyle,
     bottomDivider,
-    onTouchStart,
+    onPress,
   } = props;
 
   return (
     <View
       style={[s.container, bottomDivider && s.borderBottom]}
-      onTouchStart={onTouchStart}>
+      onTouchEnd={onPress}>
       {leftComponent && <View style={s.leftContent}>{leftComponent}</View>}
       <View style={s.centerContent}>
         {typeof title === "string" ? (

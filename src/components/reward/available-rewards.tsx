@@ -81,7 +81,7 @@ export const AvailableRewards: React.SFC<IProps> = () => {
                     bottomDivider
                     rightComponent={
                       <View
-                        onTouchStart={(e) => {
+                        onTouchEnd={(e) => {
                           e.stopPropagation();
 
                           if (settingsData.data!.points < consumption) {
@@ -121,11 +121,11 @@ export const AvailableRewards: React.SFC<IProps> = () => {
                         ? t("Points Required n", {n: consumption})
                         : ""
                     }`}
-                    onTouchStart={async () => {
+                    onPress={async () => {
                       PopupMenu.show([
                         {
                           text: t("Edit reward"),
-                          onTouchStart: async () => {
+                          onPress: async () => {
                             navigation.navigate(Route.EditReward, {
                               planId: item.planId,
                             });

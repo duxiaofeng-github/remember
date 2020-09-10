@@ -27,7 +27,7 @@ export const Tabs: React.SFC<IProps> = (props) => {
                   width: `${100 / tabs.length}%`,
                 },
               ]}
-              onTouchStart={() => {
+              onTouchEnd={() => {
                 onIndexChange(index);
               }}>
               <View

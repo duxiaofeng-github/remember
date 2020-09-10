@@ -81,14 +81,14 @@ const PopupImpl: React.SFC<IProps> = (props) => {
     <Animated.View
       pointerEvents={children == null ? "none" : "auto"}
       style={[s.container, {opacity: opacityValue}]}
-      onTouchStart={() => {
+      onTouchEnd={() => {
         if (closable) {
           close();
         }
       }}>
       <View
         style={[s.content, contentStyle]}
-        onTouchStart={(e) => {
+        onTouchEnd={(e) => {
           e.stopPropagation();
         }}>
         {children}
@@ -165,7 +165,7 @@ export const Popup = {
             <View style={confirmStyle.confirmFooter}>
               <View
                 style={confirmStyle.footerButton}
-                onTouchStart={async () => {
+                onTouchEnd={async () => {
                   await close();
 
                   if (onCancel) {
@@ -179,7 +179,7 @@ export const Popup = {
                   confirmStyle.footerButton,
                   confirmStyle.buttonLeftBorder,
                 ]}
-                onTouchStart={async () => {
+                onTouchEnd={async () => {
                   await close();
 
                   if (onConfirm) {

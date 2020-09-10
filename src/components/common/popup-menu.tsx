@@ -9,7 +9,7 @@ export const PopupMenu = {
     items: {
       text: string;
       style?: StyleProp<TextStyle>;
-      onTouchStart?: () => void;
+      onPress?: () => void;
     }[],
   ) => {
     const close = await Popup.show({
@@ -19,11 +19,11 @@ export const PopupMenu = {
           <View
             key={item.text}
             style={[s.item, index !== items.length - 1 && s.itemBorder]}
-            onTouchStart={async () => {
+            onTouchEnd={async () => {
               await close();
 
-              if (item.onTouchStart) {
-                item.onTouchStart();
+              if (item.onPress) {
+                item.onPress();
               }
             }}>
             <Text style={[s.text, item.style]}>{item.text}</Text>

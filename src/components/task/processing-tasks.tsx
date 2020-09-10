@@ -85,7 +85,7 @@ export const ProcessingTasks: React.SFC<IProps> = () => {
                     bottomDivider
                     rightComponent={
                       <View
-                        onTouchStart={(e) => {
+                        onTouchEnd={(e) => {
                           e.stopPropagation();
 
                           finishTaskTriggerer({
@@ -115,11 +115,11 @@ export const ProcessingTasks: React.SFC<IProps> = () => {
                         </Text>
                       </>
                     }
-                    onTouchStart={async () => {
+                    onPress={async () => {
                       PopupMenu.show([
                         {
                           text: t("Edit task"),
-                          onTouchStart: async () => {
+                          onPress: async () => {
                             navigation.navigate(Route.EditTask, {
                               planId: item.planId,
                             });
@@ -128,7 +128,7 @@ export const ProcessingTasks: React.SFC<IProps> = () => {
                         {
                           text: t("Cancel task"),
                           style: s.cancelText,
-                          onTouchStart: () => {
+                          onPress: () => {
                             cancelTaskTriggerer({
                               planId: item.planId,
                               taskTime: item.startedAt,
