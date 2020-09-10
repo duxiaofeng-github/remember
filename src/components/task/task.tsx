@@ -9,12 +9,15 @@ import {useNavigation} from "@react-navigation/native";
 import {AllTasks} from "./all-tasks";
 import {Calendar} from "./calendar";
 import {EditTaskNavigationProp} from "./edit-task";
+import {globalStore, IStore} from "../../store";
+import {useRexContext} from "../../store/store";
 
 interface IProps {}
 
 export const Task: React.SFC<IProps> = () => {
   const navigation = useNavigation<EditTaskNavigationProp>();
   const {t} = useTranslation();
+  const {activedTaskTabIndex} = useRexContext((store: IStore) => store);
 
   return (
     <View style={s.container}>
@@ -34,6 +37,12 @@ export const Task: React.SFC<IProps> = () => {
           {title: t("Calendar"), content: <Calendar />},
           {title: t("All tasks"), content: <AllTasks />},
         ]}
+        activedIndex={activedTaskTabIndex}
+        onIndexChange={(index) => {
+          globalStore.update((store) => {
+            store.activedTaskTabIndex = index;
+          });
+        }}
       />
     </View>
   );

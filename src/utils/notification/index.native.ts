@@ -15,6 +15,10 @@ PushNotification.configure({
 
     plansData.load();
 
+    globalStore.update((store) => {
+      store.activedTaskTabIndex = 0;
+    });
+
     // (required) Called when a remote is received or opened, or local notification is opened
     notification.finish(PushNotificationIOS.FetchResult.NoData);
   },

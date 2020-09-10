@@ -6,11 +6,12 @@ import {colorBorder, colorPrimary} from "../../utils/style";
 interface IProps {
   style?: StyleProp<ViewStyle>;
   tabs: {title: string; content: ReactNode}[];
+  activedIndex: number;
+  onIndexChange: (index: number) => void;
 }
 
 export const Tabs: React.SFC<IProps> = (props) => {
-  const {style, tabs} = props;
-  const [tabIndex, setTabIndex] = useState(0);
+  const {style, tabs, activedIndex, onIndexChange} = props;
 
   return (
     <>
@@ -21,13 +22,13 @@ export const Tabs: React.SFC<IProps> = (props) => {
               key={item.title}
               style={[
                 s.tab,
-                tabIndex === index && s.tabSelected,
+                activedIndex === index && s.tabSelected,
                 {
                   width: `${100 / tabs.length}%`,
                 },
               ]}
-              onTouchEnd={() => {
-                setTabIndex(index);
+              onTouchStart={() => {
+                onIndexChange(index);
               }}>
               <View
                 style={[
@@ -42,7 +43,7 @@ export const Tabs: React.SFC<IProps> = (props) => {
           );
         })}
       </View>
-      <View style={s.viewContainer}>{tabs[tabIndex].content}</View>
+      <View style={s.viewContainer}>{tabs[activedIndex].content}</View>
     </>
   );
 };

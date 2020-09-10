@@ -15,6 +15,8 @@ interface IStoreData<T> {
 }
 
 export interface IStore {
+  activedTaskTabIndex: number;
+  activedRewardTabIndex: number;
   plansData: IStoreData<Plan[]>;
   rewardPlansData: IStoreData<RewardPlan[]>;
   settingsData: IStoreData<Setting>;
@@ -22,6 +24,8 @@ export interface IStore {
 
 export function getInitialStore(): IStore {
   return {
+    activedTaskTabIndex: 0,
+    activedRewardTabIndex: 0,
     plansData: {loading: true, load: loadPlans},
     rewardPlansData: {loading: true, load: loadRewardPlans},
     settingsData: {

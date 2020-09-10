@@ -1,7 +1,9 @@
+import {globalStore} from "../../store";
+
 const errorPermissionDenied = new Error("Notification permission denied");
 
 export async function notify(title: string, body?: string): Promise<void> {
-  const notificationOptions = body ? { body } : undefined;
+  const notificationOptions = body ? {body} : undefined;
   let notification: Notification | undefined;
 
   if (Notification.permission === "granted") {
@@ -21,6 +23,14 @@ export async function notify(title: string, body?: string): Promise<void> {
   if (notification != null) {
     notification.addEventListener("click", () => {
       window.focus();
+
+      const {plansData} = globalStore.getState();
+
+      plansData.load();
+
+      globalStore.update((store) => {
+        store.activedTaskTabIndex = 0;
+      });
     });
 
     return;

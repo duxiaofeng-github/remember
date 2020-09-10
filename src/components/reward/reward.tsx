@@ -14,7 +14,7 @@ import {
 } from "../../utils/style";
 import {Text} from "../common/text";
 import {useRexContext} from "../../store/store";
-import {IStore} from "../../store";
+import {IStore, globalStore} from "../../store";
 import {EditRewardNavigationProp} from "./edit-reward";
 
 interface IProps {}
@@ -23,6 +23,7 @@ export const Rewards: React.SFC<IProps> = () => {
   const navigation = useNavigation<EditRewardNavigationProp>();
   const {t} = useTranslation();
   const {settingsData} = useRexContext((store: IStore) => store);
+  const {activedRewardTabIndex} = useRexContext((store: IStore) => store);
 
   return (
     <View style={s.container}>
@@ -41,6 +42,12 @@ export const Rewards: React.SFC<IProps> = () => {
           {title: t("Available rewards"), content: <AvailableRewards />},
           {title: t("All rewards"), content: <AllRewards />},
         ]}
+        activedIndex={activedRewardTabIndex}
+        onIndexChange={(index) => {
+          globalStore.update((store) => {
+            store.activedRewardTabIndex = index;
+          });
+        }}
       />
       <View style={s.bottomStatusBar}>
         <Text style={s.bottomStatusBarText}>
