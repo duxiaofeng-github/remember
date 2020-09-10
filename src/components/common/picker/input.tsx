@@ -40,6 +40,7 @@ export const Input: React.SFC<IProps> = (props) => {
         dropDownIcon
       ) : (
         <View
+          style={s.iconContainer}
           onTouchStart={(e) => {
             e.stopPropagation();
 
@@ -69,8 +70,12 @@ const s = StyleSheet.create({
     color: "#606770",
     fontSize: 16,
   },
+  iconContainer: {
+    paddingLeft: 10,
+    paddingTop: 10,
+    paddingBottom: 10,
+  },
   icon: {
-    marginLeft: 3,
     transform: [{rotate: "90deg"}],
   },
 });
