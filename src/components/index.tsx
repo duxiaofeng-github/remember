@@ -11,6 +11,7 @@ import {IStore} from "../store";
 import {useRexContext} from "../store/store";
 import kebabCase from "lodash/kebabCase";
 import SplashScreen from "react-native-splash-screen";
+import {Platform} from "react-native";
 
 interface IProps {}
 
@@ -29,7 +30,9 @@ export const Index: React.SFC<IProps> = () => {
   }, [settingsData]);
 
   useEffect(() => {
-    SplashScreen.hide();
+    if (Platform.OS === "android" || Platform.OS === "ios") {
+      SplashScreen.hide();
+    }
 
     settingsData.load();
   }, []);

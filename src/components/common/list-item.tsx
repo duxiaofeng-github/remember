@@ -65,6 +65,7 @@ const s = StyleSheet.create({
   },
   centerContent: {
     flexGrow: 1,
+    flexShrink: 1,
   },
   borderBottom: {
     borderBottomColor: colorBorder,
