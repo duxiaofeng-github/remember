@@ -1,19 +1,19 @@
 import React from "react";
 import {StyleSheet} from "react-native";
-import {colorText} from "../../utils/style";
-import {WeekTimePicker, IWeekTimePickerProps} from "./picker/week-time-picker";
 import {useTranslation} from "react-i18next";
+import {colorText} from "../../../utils/style";
+import {DateTimePicker, IDateTimePickerProps} from "../picker/date-time-picker";
 import {Field, IFieldProps} from "./field";
 
-interface IProps extends IWeekTimePickerProps, IFieldProps {}
+interface IProps extends IDateTimePickerProps, IFieldProps {}
 
-export const WeekTimeSelect: React.SFC<IProps> = (props) => {
+export const DateTimeSelectField: React.SFC<IProps> = (props) => {
   const {label, error, ...restProps} = props;
   const {t} = useTranslation();
 
   return (
     <Field label={label} error={error}>
-      <WeekTimePicker
+      <DateTimePicker
         {...restProps}
         title={t("Select date")}
         titleStyle={s.pickerText}

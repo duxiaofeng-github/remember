@@ -1,8 +1,8 @@
 import React from "react";
 import {View, StyleSheet, StyleProp, TextStyle} from "react-native";
 import {FieldError} from "react-hook-form";
-import {Text} from "./text";
-import {colorError} from "../../utils/style";
+import {Text} from "../text";
+import {colorError} from "../../../utils/style";
 
 export interface IFieldProps {
   label?: string;

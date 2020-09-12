@@ -1,6 +1,6 @@
 import React, {useEffect, useRef} from "react";
 import {Animated, Easing, StyleSheet, View} from "react-native";
-import {colorBackgroundGray, colorPrimary} from "../../utils/style";
+import {colorBackgroundGray, colorPrimary} from "../../../utils/style";
 import {Field, IFieldProps} from "./field";
 
 interface IProps extends IFieldProps {
@@ -9,7 +9,7 @@ interface IProps extends IFieldProps {
   onChange: (value: boolean) => void;
 }
 
-export const Radio: React.SFC<IProps> = (props) => {
+export const RadioField: React.SFC<IProps> = (props) => {
   const {label, error, defaultValue, value = defaultValue, onChange} = props;
   const translateXValue = useRef(new Animated.Value(0)).current;
 

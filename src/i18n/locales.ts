@@ -86,6 +86,8 @@ export const en = {
   "Duration is required": "Duration is required",
   "Please input schedule expression": "Please input schedule expression",
   "Select duration": "Select duration",
+  "Edit points": "Edit points",
+  Submitting: "Submitting",
 };
 
 export const zhCN = {
@@ -176,4 +178,6 @@ export const zhCN = {
   "Duration is required": "持续时间必填",
   "Please input schedule expression": "请输入日程表达式",
   "Select duration": "选择持续时间",
+  "Edit points": "编辑积分",
+  Submitting: "提交中...",
 };

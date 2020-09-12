@@ -1,20 +1,21 @@
 import React from "react";
 import {StyleSheet} from "react-native";
-import {colorText} from "../../utils/style";
-import {DurationPicker, IDurationPickerProps} from "./picker/duration-picker";
-import {Field, IFieldProps} from "./field";
+import {colorText} from "../../../utils/style";
+import {DayTimePicker, IDayTimePickerProps} from "../picker/day-time-picker";
 import {useTranslation} from "react-i18next";
+import {Field, IFieldProps} from "./field";
 
-interface IProps extends IDurationPickerProps, IFieldProps {}
+interface IProps extends IDayTimePickerProps, IFieldProps {}
 
-export const DurationSelect: React.SFC<IProps> = (props) => {
+export const DayTimeSelectField: React.SFC<IProps> = (props) => {
   const {label, error, ...restProps} = props;
   const {t} = useTranslation();
 
   return (
     <Field label={label} error={error}>
-      <DurationPicker
+      <DayTimePicker
         {...restProps}
+        title={t("Select date")}
         titleStyle={s.pickerText}
         textStyle={s.pickerText}
         confirmText={t("Confirm")}

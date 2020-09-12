@@ -13,22 +13,22 @@ import {
   getOneTimeScheduleStartTime,
   parseSchedule,
 } from "../../utils/common";
-import {Select} from "../common/select";
-import {DateTimeSelect} from "../common/date-time-select";
-import {Input} from "../common/input";
+import {SelectField} from "../common/form/select-field";
+import {DateTimeSelectField} from "../common/form/date-time-select-field";
+import {InputField} from "../common/form/input";
 import {RouteProp, useNavigation, useRoute} from "@react-navigation/native";
 import {Toast} from "../common/toast";
 import {useRexContext} from "../../store/store";
-import {TimeSelect} from "../common/time-select";
-import {WeekTimeSelect} from "../common/week-time-select";
-import {DayTimeSelect} from "../common/day-time-select";
+import {TimeSelectField} from "../common/form/time-select-field";
+import {WeekTimeSelectField} from "../common/form/week-time-select-field";
+import {DayTimeSelectField} from "../common/form/day-time-select-field";
 import {
   RewardPlan,
   RewardPlanBase,
   createRewardPlan,
   updateRewardPlan,
 } from "../../db/reward";
-import {Radio} from "../common/radio";
+import {RadioField} from "../common/form/radio-field";
 import {StackNavigationProp} from "@react-navigation/stack";
 import {RootStackParam, Route} from "../../utils/route";
 
@@ -144,7 +144,7 @@ export const EditReward: React.SFC<IProps> = () => {
           name="content"
           rules={{required: t("Content is required") as string}}
           render={({onChange, onBlur, value}) => (
-            <Input
+            <InputField
               multiline
               value={value}
               label={t("Content")}
@@ -169,7 +169,7 @@ export const EditReward: React.SFC<IProps> = () => {
             ];
 
             return (
-              <Select
+              <SelectField
                 onConfirm={(value) => {
                   const type = value ? value[0] : undefined;
 
@@ -216,7 +216,7 @@ export const EditReward: React.SFC<IProps> = () => {
           name="count"
           rules={{required: t("Count is required") as string}}
           render={({onChange, onBlur, value}) => (
-            <Input
+            <InputField
               keyboardType="numeric"
               value={value != null ? `${value}` : ""}
               onBlur={onBlur}
@@ -236,7 +236,7 @@ export const EditReward: React.SFC<IProps> = () => {
           name="consumption"
           render={({onChange, onBlur, value}) => {
             return (
-              <Input
+              <InputField
                 keyboardType="numeric"
                 value={value != null ? `${value}` : ""}
                 onBlur={onBlur}
@@ -279,7 +279,7 @@ export const StartTimeAndEndTimePicker: React.SFC<IStartTimeAndEndTimePickerProp
           switch (repeatType) {
             case Period.Daily:
               return (
-                <TimeSelect
+                <TimeSelectField
                   onChange={onChange}
                   value={value}
                   label={t("Effective time")}
@@ -288,7 +288,7 @@ export const StartTimeAndEndTimePicker: React.SFC<IStartTimeAndEndTimePickerProp
               );
             case Period.Weekly:
               return (
-                <WeekTimeSelect
+                <WeekTimeSelectField
                   onChange={onChange}
                   value={value}
                   label={t("Effective time")}
@@ -297,7 +297,7 @@ export const StartTimeAndEndTimePicker: React.SFC<IStartTimeAndEndTimePickerProp
               );
             case Period.Monthly:
               return (
-                <DayTimeSelect
+                <DayTimeSelectField
                   onChange={onChange}
                   value={value}
                   label={t("Effective time")}
@@ -307,7 +307,7 @@ export const StartTimeAndEndTimePicker: React.SFC<IStartTimeAndEndTimePickerProp
           }
 
           return (
-            <DateTimeSelect
+            <DateTimeSelectField
               onChange={onChange}
               value={value}
               label={t("Effective time")}
@@ -322,7 +322,7 @@ export const StartTimeAndEndTimePicker: React.SFC<IStartTimeAndEndTimePickerProp
           name="disableEndTime"
           render={({onChange, onBlur, value}) => {
             return (
-              <Radio
+              <RadioField
                 label={t("Never expire")}
                 value={value}
                 onChange={onChange}
@@ -345,7 +345,7 @@ export const StartTimeAndEndTimePicker: React.SFC<IStartTimeAndEndTimePickerProp
               ];
 
               return (
-                <Select
+                <SelectField
                   onConfirm={(value) => {
                     const type = value ? value[0] : undefined;
 
@@ -367,7 +367,7 @@ export const StartTimeAndEndTimePicker: React.SFC<IStartTimeAndEndTimePickerProp
               rules={{required: t("Repeat ended date is required") as string}}
               render={({onChange, onBlur, value}) => {
                 return (
-                  <DateTimeSelect
+                  <DateTimeSelectField
                     onChange={onChange}
                     value={value}
                     title={t("Select repeat ended date")}
@@ -384,7 +384,7 @@ export const StartTimeAndEndTimePicker: React.SFC<IStartTimeAndEndTimePickerProp
               name="repeatEndedCount"
               rules={{required: t("Repeat ended count is required") as string}}
               render={({onChange, onBlur, value}) => (
-                <Input
+                <InputField
                   keyboardType="numeric"
                   value={value != null ? `${value}` : ""}
                   onChangeText={(value) => {
