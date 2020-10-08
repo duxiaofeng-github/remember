@@ -14,7 +14,6 @@ import {
   getOneTimeScheduleEndTime,
   secondsToDuration,
   parseSchedule,
-  isValidCronExpression,
 } from "../../utils/common";
 import {SelectField} from "../common/form/select-field";
 import {DateTimeSelectField} from "../common/form/date-time-select-field";
@@ -30,6 +29,7 @@ import {WeekTimeSelectField} from "../common/form/week-time-select-field";
 import {DayTimeSelectField} from "../common/form/day-time-select-field";
 import {StackNavigationProp} from "@react-navigation/stack";
 import {RootStackParam, Route} from "../../utils/route";
+import {isValidCronExpression} from "../../utils/cron";
 
 export type EditTaskNavigationProp = StackNavigationProp<
   RootStackParam,

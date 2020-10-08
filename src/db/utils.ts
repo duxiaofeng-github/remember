@@ -1,7 +1,5 @@
 import {isOneTimeSchedule} from "../utils/common";
-
-import cronParser from "cron-parser";
-import dayjs from "dayjs";
+import {parseExpression} from "../utils/cron";
 
 export function isFinished(
   time: number,
@@ -70,14 +68,10 @@ export function isPlanFinished(options: {
       if (
         allTaskTimes.filter((time) => time === latestTaskTime).length >= count
       ) {
-        const cron = cronParser.parseExpression(schedule, {
-          currentDate: dayjs.unix(latestTaskTime).toDate(),
-        });
-        const nextTime = cron.hasNext()
-          ? dayjs(cron.next().toDate()).unix()
-          : undefined;
+        const cron = parseExpression(schedule, latestTaskTime);
+        const nextTime = cron.next();
 
-        if (nextTime != null && nextTime > repeatEndedDate) {
+        if (nextTime != null && nextTime.unix() > repeatEndedDate) {
           return true;
         }
       }

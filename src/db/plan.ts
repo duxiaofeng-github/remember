@@ -1,6 +1,6 @@
 import dayjs from "dayjs";
 import {nanoid} from "nanoid";
-import cronParser from "cron-parser";
+import {parseExpression} from "../utils/cron";
 import {getRemoteAddr, isOneTimeSchedule} from "../utils/common";
 import {getData, putData, delData} from "./db";
 import {addPoints} from "./setting";
@@ -280,13 +280,14 @@ export function listTasks(options: {
       tasks.push(task);
     }
   } else {
-    const cron = cronParser.parseExpression(schedule);
+    const cron = parseExpression(schedule);
 
     while (true) {
       try {
-        if (cron.hasPrev()) {
-          const taskDate = cron.prev().toDate();
-          const taskTime = dayjs(taskDate).unix();
+        const taskDate = cron.prev();
+
+        if (taskDate) {
+          const taskTime = taskDate.unix();
           const task = getTask({
             plan,
             taskTime,
@@ -320,9 +321,10 @@ export function listTasks(options: {
 
     while (true) {
       try {
-        if (cron.hasNext()) {
-          const taskDate = cron.next().toDate();
-          const taskTime = dayjs(taskDate).unix();
+        const taskDate = cron.next();
+
+        if (taskDate) {
+          const taskTime = taskDate.unix();
           const task = getTask({
             plan,
             taskTime,

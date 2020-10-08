@@ -1,6 +1,6 @@
 import dayjs from "dayjs";
 import {nanoid} from "nanoid";
-import cronParser from "cron-parser";
+import {parseExpression} from "../utils/cron";
 import {getRemoteAddr, isOneTimeSchedule, isTimeout} from "../utils/common";
 import {getData, putData, delData} from "./db";
 import {isFinished, isPlanFinished, isRepeatEnded} from "./utils";
@@ -224,13 +224,14 @@ export function listRewards(options: {
       rewards.push(reward);
     }
   } else {
-    const cron = cronParser.parseExpression(schedule);
+    const cron = parseExpression(schedule);
 
     while (true) {
       try {
-        if (cron.hasPrev()) {
-          const rewardDate = cron.prev().toDate();
-          const rewardTime = dayjs(rewardDate).unix();
+        const rewardDate = cron.prev();
+
+        if (rewardDate) {
+          const rewardTime = rewardDate.unix();
           const reward = getReward({
             plan,
             rewardTime,
@@ -261,9 +262,10 @@ export function listRewards(options: {
 
     while (true) {
       try {
-        if (cron.hasNext()) {
-          const rewardDate = cron.next().toDate();
-          const rewardTime = dayjs(rewardDate).unix();
+        const rewardDate = cron.next();
+
+        if (rewardDate) {
+          const rewardTime = rewardDate.unix();
           const reward = getReward({
             plan,
             rewardTime,

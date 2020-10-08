@@ -8,18 +8,22 @@ import {storage} from "./storage";
 import {notify} from "./notification";
 import i18n from "../i18n";
 import {setNotifiedTasks} from "../db/plan";
-import CronParser from "cron-parser";
 import {getSettings} from "../db/setting";
 import kebabCase from "lodash/kebabCase";
+import {isPcronExpression} from "./cron";
 
 const locales = RNLocalize.getLocales();
 export const defaultLocale =
   locales && locales[0] ? locales[0].languageTag.replace("-", "_") : "en";
 
 export function humanizeCron(cron: string) {
-  return cronstrue.toString(cron, {
-    locale: globalStore.getState().settingsData.data!.lang.replace("-", "_"),
-  });
+  try {
+    return cronstrue.toString(cron, {
+      locale: globalStore.getState().settingsData.data!.lang.replace("-", "_"),
+    });
+  } catch (e) {
+    return cron;
+  }
 }
 
 export function getOneTimeScheduleStartTime(schedule: string) {
@@ -34,6 +38,10 @@ export function getOneTimeScheduleEndTime(schedule: string, duration: number) {
 }
 
 export function isOneTimeSchedule(schedule: string) {
+  if (isPcronExpression(schedule)) {
+    return false;
+  }
+
   const scheduleArray = schedule.split(" ");
 
   return scheduleArray.length !== 5;
@@ -65,6 +73,10 @@ function isIntegerString(str: string) {
 }
 
 export function isDailySchedule(schedule: string) {
+  if (isPcronExpression(schedule)) {
+    return false;
+  }
+
   const [min, hour, date, month, day] = schedule.split(" ");
 
   return (
@@ -77,6 +89,10 @@ export function isDailySchedule(schedule: string) {
 }
 
 export function isWeeklySchedule(schedule: string) {
+  if (isPcronExpression(schedule)) {
+    return false;
+  }
+
   const [min, hour, date, month, day] = schedule.split(" ");
 
   return (
@@ -89,6 +105,10 @@ export function isWeeklySchedule(schedule: string) {
 }
 
 export function isMonthlySchedule(schedule: string) {
+  if (isPcronExpression(schedule)) {
+    return false;
+  }
+
   const [min, hour, date, month, day] = schedule.split(" ");
 
   return (
@@ -163,16 +183,6 @@ export async function notifyTasks(foreground: boolean) {
         item.tasks.map((task) => task.startedAt),
       );
     });
-  }
-}
-
-export function isValidCronExpression(expression: string) {
-  try {
-    CronParser.parseExpression(expression);
-
-    return true;
-  } catch (e) {
-    return false;
   }
 }
 
