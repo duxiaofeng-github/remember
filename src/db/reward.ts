@@ -224,41 +224,7 @@ export function listRewards(options: {
       rewards.push(reward);
     }
   } else {
-    const cron = parseExpression(schedule);
-
-    while (true) {
-      try {
-        const rewardDate = cron.prev();
-
-        if (rewardDate) {
-          const rewardTime = rewardDate.unix();
-          const reward = getReward({
-            plan,
-            rewardTime,
-            startTime,
-            endTime,
-            count,
-            finishedTime,
-            repeatEndedDate,
-            repeatEndedCount,
-          });
-
-          if (reward === false) {
-            break;
-          }
-
-          if (reward != null) {
-            rewards.push(reward);
-          }
-        } else {
-          break;
-        }
-      } catch (e) {
-        break;
-      }
-    }
-
-    cron.reset();
+    const cron = parseExpression(schedule, startTime);
 
     while (true) {
       try {

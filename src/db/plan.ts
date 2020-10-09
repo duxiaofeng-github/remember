@@ -280,44 +280,7 @@ export function listTasks(options: {
       tasks.push(task);
     }
   } else {
-    const cron = parseExpression(schedule);
-
-    while (true) {
-      try {
-        const taskDate = cron.prev();
-
-        if (taskDate) {
-          const taskTime = taskDate.unix();
-          const task = getTask({
-            plan,
-            taskTime,
-            startTime,
-            endTime,
-            count,
-            noticeTime,
-            includeNoticeTime,
-            finishedTime,
-            canceledTime,
-            repeatEndedDate,
-            repeatEndedCount,
-          });
-
-          if (task === false) {
-            break;
-          }
-
-          if (task != null) {
-            tasks.push(task);
-          }
-        } else {
-          break;
-        }
-      } catch (e) {
-        break;
-      }
-    }
-
-    cron.reset();
+    const cron = parseExpression(schedule, startTime);
 
     while (true) {
       try {
